@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+    <title>Site: https://yelp.com</title>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css'>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"> 
+    <style>
+/* Colors for badges */
+
+h1 { font-family: 'Bebas Neue', cursive;}
+
+.badge-red {
+  background-color: #d54625;
+}
+
+.badge-green {
+  background-color: #35bd4a;
+}
+
+.badge-blue {
+  background-color: #357ebd;
+}
+
+.table-sortable > thead > tr > th {
+  cursor: pointer;
+}
+.table-sortable > thead > tr > th[data-sorting="disabled"] {
+  cursor: default;
+}
+.table-sortable > thead > tr > th[data-sorting="disabled"]:hover,
+.table-sortable > thead > tr > th[data-sorting="disabled"]:active {
+  background: inherit;
+}
+.table-sortable > thead > tr > th:hover,
+.table-sortable > thead > tr > th:active {
+  background: #F5F5F5;
+}
+.table-sortable > tbody > tr > td mark,
+.table-sortable > tbody > tr > td .mark {
+  padding-left: 0;
+  padding-right: 0;
+}
+    </style>
+
+</head>
+<body>
+<div class='container-fluid'>
+  <div class='row'>
+    <div class='col-sm-12'>
+      <br>
+      <div class='form-horizontal'>
+        <div class='form-group has-feedback'>
+          <div class='col-sm-12'>
+            <input class='form-control table-sortable-search' placeholder='Search...' type='search'>
+            <span class='glyphicon glyphicon-remove form-control-feedback search-cancel-button'></span>
+          </div>
+        </div>
+      </div>
+      <br>
+      <div class='panel panel-default'>
+        <div class='table-responsive' id="app">
+
+  <h1 style="margin-left:5px">Headers and Cookies for <b>https://yelp.com</b> ⭐️</h1>
+  <hr>
+
+  <label>Rows per page</label>
+  <select v-model="pageSizeModel">
+    <option value="3">3</option>
+    <option value="5">5</option>
+    <option value="10">10</option>
+    <option value="25">25</option>
+  </select>
+    
+  <table class="table table-sortable">
+    <thead>
+      <tr>
+        <th :class="{ sorted: sort === 'id' }" @click="sortBy('id')">
+          Id
+        </th>
+        <th :class="{ sorted: sort === 'name' }" @click="sortBy('name')">
+          Name
+        </th>
+        <th :class="{ sorted: sort === 'value' }" @click="sortBy('value')" >
+          Value
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="row in sortedRows">
+        <td>{{ row.id }}</td>
+        <td>{{ row.name  }}</td>
+        <td>{{ row.value }}</td>
+        <td data-id="{{ row.id }}">
+          <div class='btn-group btn-group-xs'>
+            <button v-on:click="viewRow" class="btn btn-default" title="View">
+              <span class="glyphicon glyphicon-eye-open"></span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <div class="controls">
+    <button class="btn btn-sm" :disabled="!hasPage(-1)" @click="prevPage">←</button> 
+    <button class="btn btn-sm" :disabled="!hasPage(1)"  @click="nextPage">→</button>
+    <span style="float:right; margin-right:30px; margin-top:20px" class="badge badge-primary"><span class="glyphicon glyphicon-heart"></span> vsoch</span>
+
+  </div>
+  <hr>
+</div>
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+  <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js'></script>
+  <script>
+// Handle socket to send /receive messages from server without refresh
+$(document).ready(function(){
+
+});
+
+// tables.js
+function preg_quote( str ) {
+  // http://kevin.vanzonneveld.net
+  // +   original by: booeyOH
+  // +   improved by: Ates Goral (http://magnetiq.com)
+  // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  // +   bugfixed by: Onno Marsman
+  // *     example 1: preg_quote("$40");
+  // *     returns 1: '\$40'
+  // *     example 2: preg_quote("*RRRING* Hello?");
+  // *     returns 2: '\*RRRING\* Hello\?'
+  // *     example 3: preg_quote("\\.+*?[^]$(){}=!<>|:");
+  // *     returns 3: '\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:'
+  return (str+'').replace(/([\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:])/g, "\\$1");
+}
+
+function highlight(data, search){
+  return data.replace(new RegExp( "(" + preg_quote( search ) + ")" , 'gi' ), "<mark>$1</mark>" );
+}
+
+// Table
+    
+function Table($table,$input){
+
+    $table.find("th").each(function($key, el){
+        if ($(el).attr("data-sorting")!="disabled"){
+            $("<span/>").attr("class","fa").attr("row-id",$key+1).appendTo(el);
+    }}).click(function(){
+        var asc=true;
+        if ($(this).find("span.fa").attr("class")=="fa"||$(this).find("span.fa").attr("class")=="fa fa-caret-up fa-fw"){
+            $table.find("th[data-sorting!=disabled] span.fa").attr("class","fa");
+            $(this).find("span.fa").attr("class","fa fa-caret-down fa-fw");
+            asc=true;
+        }
+        else if ($(this).find("span.fa").attr("class")=="fa fa-caret-down fa-fw"){
+            $table.find("th[data-sorting!=disabled] span.fa").attr("class","fa");
+            $(this).find("span.fa").attr("class","fa fa-caret-up fa-fw");
+            asc=false
+        }
+        value=$.map($table.find("td:nth-child("+($(this).find("span.fa").attr("row-id"))+")"),function(el){
+            return {text:$(el).text().trim(),row:$(el).parent()};
+        });
+
+        value.sort(function(x, y){ 
+            if (asc){
+                if (x.text < y.text) {
+                    return -1;
+                }
+                if (x.text > y.text) {
+                    return 1;
+                }
+            } else {
+                if (x.text < y.text) {
+                    return 1;
+                }
+                if (x.text > y.text) {
+                    return -1;
+                }
+            }
+            return 0;
+        });
+        $table.find("tr:gt(0)").remove();
+        $.each(value,function(key,value){
+            $(value.row).appendTo($table);
+        });
+    });
+    $table.find("th:first").click();
+    $input.on("keyup change",function(){
+        var newText=$(this).val();
+        $table.find("span.text-wrap").each(function(key,value){
+            $(value).html($(value).text());
+            $(value).contents().unwrap();
+        });        
+        if (newText.trim()!=""){    
+            $table.find("tr:gt(0)").hide();                        
+            var textNode=$table.find("tr:gt(0) *")
+              .contents()
+              .filter(function() {
+                return this.nodeType === 3; //Node.TEXT_NODE
+              }).each(function(key,value){
+                    var nodeText=value.data;
+                    if (nodeText.toLowerCase().indexOf(newText.toLowerCase())!=-1){
+                        $(value).closest("tr").show();
+                        if ($(value).parent().attr("class")!="text-wrap")
+                            $(value).wrap("<span class='text-wrap'></span>");
+                        $(value).parent().html(highlight(nodeText ,newText));
+                    }
+                
+              });;
+              
+              }else{
+                $table.find("tr").show();
+              }
+    });
+    
+}
+
+$(function(){
+    Table($(".table-sortable"),$(".table-sortable-search"));
+});
+
+// Search
+
+$('input[type="search"]').keyup(function () {
+  var t = $(this);
+  t.next('span').toggle(Boolean(t.val()));
+});
+
+$('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val()).click(function () {
+  $(this).prev('input').val('').focus();
+  $(this).hide();
+});
+
+const app = new Vue({
+  data: () => ({
+    rows: [{"id": 1, "name": "connection", "value": "keep-alive"},{"id": 2, "name": "server", "value": "nginx"},{"id": 3, "name": "content-type", "value": "text/html; charset=UTF-8"},{"id": 4, "name": "cache-control", "value": "max-age=0, must-revalidate, no-cache, no-store, private, no-transform"},{"id": 5, "name": "pragma", "value": "no-cache"},{"id": 6, "name": "set-cookie", "value": "['expires', 'Path', 'HttpOnly, location', 'pid', 'Domain', 'Max-Age']"},{"id": 7, "name": "strict-transport-security", "value": "max-age=31536000; includeSubDomains; preload"},{"id": 8, "name": "expires", "value": "Tue, 26 May 2020 18:01:06 GMT"},{"id": 9, "name": "x-node", "value": "www_all, 10-65-67-77-useast1aprod-f4ff8349-9f74-11ea-8b65-4e6fc2ed439"},{"id": 10, "name": "content-security-policy", "value": "report-uri https://www.yelp.com/csp_block?id=169258cbebcb9ddf&page=enforced_by_default_directives&policy_hash=7b6f2d6630868fdb2698dac44731677c&site=www&timestamp=1590516066; object-src 'self'; base-uri 'self' https://*.yelpcdn.com https://*.adsrvr.org https://6372968.fls.doubleclick.net; font-src data: 'self' https://*.yelp.com https://*.yelpcdn.com https://fonts.gstatic.com https://connect.facebook.net https://cdnjs.cloudflare.com https://apis.google.com https://www.google-analytics.com https://use.typekit.net https://player.ooyala.com https://use.fontawesome.com https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com"},{"id": 11, "name": "x-b3-sampled", "value": "0"},{"id": 12, "name": "x-xss-protection", "value": "1; report=https://www.yelp.com/xss_protection_report"},{"id": 13, "name": "x-content-type-options", "value": "nosniff"},{"id": 14, "name": "content-security-policy-report-only", "value": "report-uri https://www.yelp.com/csp_report_only?id=169258cbebcb9ddf&page=csp_report_frame_directives%2Cfull_site_ssl_csp_report_directives&policy_hash=3275ba4c5b0741fb6e8d1b21e9975e80&site=www&timestamp=1590516066; frame-ancestors 'self' https://*.yelp.com; default-src https:; img-src https: data: https://*.adsrvr.org; script-src https: data: 'unsafe-inline' 'unsafe-eval' blob:; style-src https: 'unsafe-inline' data:; connect-src https:; font-src data: 'self' https://*.yelp.com https://*.yelpcdn.com https://fonts.gstatic.com https://connect.facebook.net https://cdnjs.cloudflare.com https://apis.google.com https://www.google-analytics.com https://use.typekit.net https://player.ooyala.com https://use.fontawesome.com https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com; frame-src https: yelp-webview://* yelp://* data:; child-src https: yelp-webview://* yelp://*; media-src https:; object-src 'self'; worker-src blob: https:; base-uri 'self' https://*.yelpcdn.com https://*.adsrvr.org https://6372968.fls.doubleclick.net; form-action https: 'self'"},{"id": 15, "name": "x-zipkin-id", "value": "271142e782403c63"},{"id": 16, "name": "x-routing-service", "value": "10-65-147-222-useast1bprod; site=www"},{"id": 17, "name": "referrer-policy", "value": "origin-when-cross-origin"},{"id": 18, "name": "x-mode", "value": "ro"},{"id": 19, "name": "x-proxied", "value": "10-65-174-132-useast1bprod"},{"id": 20, "name": "content-encoding", "value": "gzip"},{"id": 21, "name": "accept-ranges", "value": "bytes, bytes"},{"id": 22, "name": "age", "value": "0, 0"},{"id": 23, "name": "date", "value": "Tue, 26 May 2020 18:01:08 GMT"},{"id": 24, "name": "via", "value": "1.1 varnish"},{"id": 25, "name": "x-served-by", "value": "cache-ewr18127-EWR"},{"id": 26, "name": "x-cache", "value": "MISS"},{"id": 27, "name": "x-cache-hits", "value": "0"},{"id": 28, "name": "x-timer", "value": "S1590516067.920241,VS0,VE1842"},{"id": 29, "name": "vary", "value": "User-Agent, Accept-Encoding"},{"id": 30, "name": "transfer-encoding", "value": "chunked"}],
+    lookup: {  "1": "connection", "2": "server", "3": "content-type", "4": "cache-control", "5": "pragma", "6": "set-cookie", "7": "strict-transport-security", "8": "expires", "9": "x-node", "10": "content-security-policy", "11": "x-b3-sampled", "12": "x-xss-protection", "13": "x-content-type-options", "14": "content-security-policy-report-only", "15": "x-zipkin-id", "16": "x-routing-service", "17": "referrer-policy", "18": "x-mode", "19": "x-proxied", "20": "content-encoding", "21": "accept-ranges", "22": "age", "23": "date", "24": "via", "25": "x-served-by", "26": "x-cache", "27": "x-cache-hits", "28": "x-timer", "29": "vary", "30": "transfer-encoding" },
+    sort: 'id',
+    sortDir:'asc',
+    page: 0,
+    pageSize: 25
+  }),
+  methods: {
+    viewRow: function(event) {
+        var rowId = $(event.target).closest('tr').find('td:first').text()
+        var site = this.lookup[rowId]
+        document.location = "/header/" + site
+    },
+    sortBy: function(s) {
+      if (s === this.sort) {
+        this.sortDir = (this.sortDir === 'asc') ? 'desc' : 'asc';
+      } else {
+        this.sortDir = 'asc';
+      }
+      this.sort = s;
+    },
+    isActiveSort: function(s) { 
+      return this.sort === s; 
+    },
+    hasPage: function(dir) {
+      if (dir === -1 && (this.page > 0)) return true;
+      if (dir ===  1 && (((this.page+1)*this.pageSize) < this.rows.length)) return true;
+      return false;
+    },
+    prevPage: function() {
+      if (this.hasPage(-1)) this.page--;
+    },
+    nextPage: function() {
+      if (this.hasPage(1)) this.page++;
+    }
+  },
+  computed: {
+    sortedRows: function() {
+      return this.rows.sort((a, b) => {
+        let dir = (this.sortDir === 'asc') ? 1 : -1;
+        if (a[this.sort] < b[this.sort]) {
+          return -1 * dir;
+        } else if (a[this.sort] > b[this.sort]) {
+          return  1 * dir;
+        } else {
+          return 0;
+        }
+      }).filter((row, idx) => {
+        let s = this.page*this.pageSize;
+        let e = (this.page+1)*this.pageSize;
+        return (idx >= s && idx < e);
+        });
+    },
+    pageSizeModel: {
+      get() {
+        return this.pageSize;
+      },
+      set(v) {
+        this.pageSize = v;
+        this.page = 0;
+      }
+    }
+  },
+  filters: {
+    capitalize: function (v) {
+      if (!v) return ''
+      v = v.toString()
+      return v.charAt(0).toUpperCase() + v.slice(1)
+    }
+  }
+}).$mount('#app');
+</script>
+</body>
+</html>

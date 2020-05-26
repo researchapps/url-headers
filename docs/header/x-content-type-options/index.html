@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+    <title>HTML Header Counts</title>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css'>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"> 
+    <style>
+/* Colors for badges */
+
+h1 { font-family: 'Bebas Neue', cursive;}
+
+.badge-red {
+  background-color: #d54625;
+}
+
+.badge-green {
+  background-color: #35bd4a;
+}
+
+.badge-blue {
+  background-color: #357ebd;
+}
+
+.table-sortable > thead > tr > th {
+  cursor: pointer;
+}
+.table-sortable > thead > tr > th[data-sorting="disabled"] {
+  cursor: default;
+}
+.table-sortable > thead > tr > th[data-sorting="disabled"]:hover,
+.table-sortable > thead > tr > th[data-sorting="disabled"]:active {
+  background: inherit;
+}
+.table-sortable > thead > tr > th:hover,
+.table-sortable > thead > tr > th:active {
+  background: #F5F5F5;
+}
+.table-sortable > tbody > tr > td mark,
+.table-sortable > tbody > tr > td .mark {
+  padding-left: 0;
+  padding-right: 0;
+}
+    </style>
+
+</head>
+<body>
+<div class='container-fluid'>
+  <div class='row'>
+    <div class='col-sm-12'>
+      <br>
+      <div class='form-horizontal'>
+        <div class='form-group has-feedback'>
+          <div class='col-sm-12'>
+            <input class='form-control table-sortable-search' placeholder='Search...' type='search'>
+            <span class='glyphicon glyphicon-remove form-control-feedback search-cancel-button'></span>
+          </div>
+        </div>
+      </div>
+      <br>
+      <div class='panel panel-default'>
+        <div class='table-responsive' id="app">
+
+  <h1 style="margin-left:5px">Sites for <b>X-CONTENT-TYPE-OPTIONS</b> ⭐️</h1>
+  <hr>
+
+  <label>Rows per page</label>
+  <select v-model="pageSizeModel">
+    <option value="3">3</option>
+    <option value="5">5</option>
+    <option value="10">10</option>
+    <option value="25">25</option>
+  </select>
+    
+  <table class="table table-sortable">
+    <thead>
+      <tr>
+        <th :class="{ sorted: sort === 'id' }" @click="sortBy('id')">
+          Id
+        </th>
+        <th :class="{ sorted: sort === 'name' }" @click="sortBy('name')">
+          Name
+        </th>
+        <th :class="{ sorted: sort === 'value' }" @click="sortBy('value')" >
+          Value
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="row in sortedRows">
+        <td>{{ row.id }}</td>
+        <td>{{ row.name  }}</td>
+        <td>{{ row.value }}</td>
+        <td data-id="{{ row.id }}">
+          <div class='btn-group btn-group-xs'>
+            <button v-on:click="viewRow" class="btn btn-default" title="View">
+              <span class="glyphicon glyphicon-eye-open"></span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <div class="controls">
+    <button class="btn btn-sm" :disabled="!hasPage(-1)" @click="prevPage">←</button> 
+    <button class="btn btn-sm" :disabled="!hasPage(1)"  @click="nextPage">→</button>
+    <span style="float:right; margin-right:30px; margin-top:20px" class="badge badge-primary"><span class="glyphicon glyphicon-heart"></span> vsoch</span>
+
+  </div>
+  <hr>
+</div>
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+  <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js'></script>
+  <script>
+// Handle socket to send /receive messages from server without refresh
+$(document).ready(function(){
+
+});
+
+// tables.js
+function preg_quote( str ) {
+  // http://kevin.vanzonneveld.net
+  // +   original by: booeyOH
+  // +   improved by: Ates Goral (http://magnetiq.com)
+  // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  // +   bugfixed by: Onno Marsman
+  // *     example 1: preg_quote("$40");
+  // *     returns 1: '\$40'
+  // *     example 2: preg_quote("*RRRING* Hello?");
+  // *     returns 2: '\*RRRING\* Hello\?'
+  // *     example 3: preg_quote("\\.+*?[^]$(){}=!<>|:");
+  // *     returns 3: '\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:'
+  return (str+'').replace(/([\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:])/g, "\\$1");
+}
+
+function highlight(data, search){
+  return data.replace(new RegExp( "(" + preg_quote( search ) + ")" , 'gi' ), "<mark>$1</mark>" );
+}
+
+// Table
+    
+function Table($table,$input){
+
+    $table.find("th").each(function($key, el){
+        if ($(el).attr("data-sorting")!="disabled"){
+            $("<span/>").attr("class","fa").attr("row-id",$key+1).appendTo(el);
+    }}).click(function(){
+        var asc=true;
+        if ($(this).find("span.fa").attr("class")=="fa"||$(this).find("span.fa").attr("class")=="fa fa-caret-up fa-fw"){
+            $table.find("th[data-sorting!=disabled] span.fa").attr("class","fa");
+            $(this).find("span.fa").attr("class","fa fa-caret-down fa-fw");
+            asc=true;
+        }
+        else if ($(this).find("span.fa").attr("class")=="fa fa-caret-down fa-fw"){
+            $table.find("th[data-sorting!=disabled] span.fa").attr("class","fa");
+            $(this).find("span.fa").attr("class","fa fa-caret-up fa-fw");
+            asc=false
+        }
+        value=$.map($table.find("td:nth-child("+($(this).find("span.fa").attr("row-id"))+")"),function(el){
+            return {text:$(el).text().trim(),row:$(el).parent()};
+        });
+
+        value.sort(function(x, y){ 
+            if (asc){
+                if (x.text < y.text) {
+                    return -1;
+                }
+                if (x.text > y.text) {
+                    return 1;
+                }
+            } else {
+                if (x.text < y.text) {
+                    return 1;
+                }
+                if (x.text > y.text) {
+                    return -1;
+                }
+            }
+            return 0;
+        });
+        $table.find("tr:gt(0)").remove();
+        $.each(value,function(key,value){
+            $(value.row).appendTo($table);
+        });
+    });
+    $table.find("th:first").click();
+    $input.on("keyup change",function(){
+        var newText=$(this).val();
+        $table.find("span.text-wrap").each(function(key,value){
+            $(value).html($(value).text());
+            $(value).contents().unwrap();
+        });        
+        if (newText.trim()!=""){    
+            $table.find("tr:gt(0)").hide();                        
+            var textNode=$table.find("tr:gt(0) *")
+              .contents()
+              .filter(function() {
+                return this.nodeType === 3; //Node.TEXT_NODE
+              }).each(function(key,value){
+                    var nodeText=value.data;
+                    if (nodeText.toLowerCase().indexOf(newText.toLowerCase())!=-1){
+                        $(value).closest("tr").show();
+                        if ($(value).parent().attr("class")!="text-wrap")
+                            $(value).wrap("<span class='text-wrap'></span>");
+                        $(value).parent().html(highlight(nodeText ,newText));
+                    }
+                
+              });;
+              
+              }else{
+                $table.find("tr").show();
+              }
+    });
+    
+}
+
+$(function(){
+    Table($(".table-sortable"),$(".table-sortable-search"));
+});
+
+// Search
+
+$('input[type="search"]').keyup(function () {
+  var t = $(this);
+  t.next('span').toggle(Boolean(t.val()));
+});
+
+$('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val()).click(function () {
+  $(this).prev('input').val('').focus();
+  $(this).hide();
+});
+
+const app = new Vue({
+  data: () => ({
+    rows: [{"id": 1, "name": "https://youtube.com", "value": "nosniff"},{"id": 2, "name": "https://apple.com", "value": "nosniff"},{"id": 3, "name": "https://docs.google.com", "value": "nosniff"},{"id": 4, "name": "https://www.blogger.com", "value": "nosniff"},{"id": 5, "name": "https://microsoft.com", "value": "nosniff"},{"id": 6, "name": "https://support.google.com", "value": "nosniff"},{"id": 7, "name": "https://play.google.com", "value": "nosniff"},{"id": 8, "name": "https://adobe.com", "value": "nosniff"},{"id": 9, "name": "https://plus.google.com", "value": "nosniff"},{"id": 10, "name": "https://cloudflare.com", "value": "nosniff"},{"id": 11, "name": "https://linkedin.com", "value": "nosniff"},{"id": 12, "name": "https://en.wikipedia.org", "value": "nosniff"},{"id": 13, "name": "https://vimeo.com", "value": "nosniff"},{"id": 14, "name": "https://mozilla.org", "value": "nosniff"},{"id": 15, "name": "https://sites.google.com", "value": "nosniff"},{"id": 16, "name": "https://accounts.google.com", "value": "nosniff"},{"id": 17, "name": "https://youtu.be", "value": "nosniff"},{"id": 18, "name": "https://drive.google.com", "value": "nosniff"},{"id": 19, "name": "https://istockphoto.com", "value": "nosniff"},{"id": 20, "name": "https://github.com", "value": "nosniff"},{"id": 21, "name": "https://facebook.com", "value": "nosniff"},{"id": 22, "name": "https://medium.com", "value": "nosniff"},{"id": 23, "name": "https://es.wikipedia.org", "value": "nosniff"},{"id": 24, "name": "https://cnn.com", "value": "nosniff"},{"id": 25, "name": "https://live.com", "value": "nosniff"},{"id": 26, "name": "https://nytimes.com", "value": "nosniff"},{"id": 27, "name": "https://jimdofree.com", "value": "nosniff"},{"id": 28, "name": "https://theguardian.com", "value": "nosniff"},{"id": 29, "name": "https://dropbox.com", "value": "nosniff"},{"id": 30, "name": "https://policies.google.com", "value": "nosniff"},{"id": 31, "name": "https://whatsapp.com", "value": "nosniff"},{"id": 32, "name": "https://msn.com", "value": "nosniff"},{"id": 33, "name": "https://pt.wikipedia.org", "value": "nosniff"},{"id": 34, "name": "https://fr.wikipedia.org", "value": "nosniff"},{"id": 35, "name": "https://feedburner.com", "value": "nosniff"},{"id": 36, "name": "https://slideshare.net", "value": "nosniff, nosniff"},{"id": 37, "name": "https://paypal.com", "value": "nosniff"},{"id": 38, "name": "https://line.me", "value": "nosniff"},{"id": 39, "name": "https://creativecommons.org", "value": "nosniff"},{"id": 40, "name": "https://news.google.com", "value": "nosniff"},{"id": 41, "name": "https://developers.google.com", "value": "nosniff"},{"id": 42, "name": "https://mail.ru", "value": "nosniff"},{"id": 43, "name": "https://photos.google.com", "value": "nosniff"},{"id": 44, "name": "https://www.yahoo.com", "value": "nosniff"},{"id": 45, "name": "https://aliexpress.com", "value": "nosniff"},{"id": 46, "name": "https://mail.google.com", "value": "nosniff"},{"id": 47, "name": "https://networkadvertising.org", "value": "nosniff, nosniff"},{"id": 48, "name": "https://cpanel.com", "value": "nosniff"},{"id": 49, "name": "https://www.nasa.gov", "value": "nosniff"},{"id": 50, "name": "https://news.yahoo.com", "value": "nosniff"},{"id": 51, "name": "https://aol.com", "value": "nosniff"},{"id": 52, "name": "https://ft.com", "value": "nosniff"},{"id": 53, "name": "https://office.com", "value": "nosniff"},{"id": 54, "name": "https://cpanel.net", "value": "nosniff"},{"id": 55, "name": "https://issuu.com", "value": "nosniff"},{"id": 56, "name": "https://ebay.com", "value": "nosniff"},{"id": 57, "name": "https://nypost.com", "value": "nosniff"},{"id": 58, "name": "https://huffingtonpost.com", "value": "nosniff"},{"id": 59, "name": "https://wsj.com", "value": "nosniff"},{"id": 60, "name": "https://amazon.de", "value": "nosniff"},{"id": 61, "name": "https://tools.google.com", "value": "nosniff"},{"id": 62, "name": "https://plesk.com", "value": "nosniff"},{"id": 63, "name": "https://ok.ru", "value": "nosniff"},{"id": 64, "name": "https://amazon.co.jp", "value": "nosniff"},{"id": 65, "name": "https://code.google.com", "value": "nosniff"},{"id": 66, "name": "https://draft.blogger.com", "value": "nosniff"},{"id": 67, "name": "https://picasaweb.google.com", "value": "nosniff"},{"id": 68, "name": "https://themeforest.net", "value": "nosniff"},{"id": 69, "name": "https://books.google.com", "value": "nosniff"},{"id": 70, "name": "https://twitter.com", "value": "nosniff"},{"id": 71, "name": "https://pinterest.com", "value": "nosniff"},{"id": 72, "name": "https://change.org", "value": "nosniff"},{"id": 73, "name": "https://aboutads.info", "value": "nosniff"},{"id": 74, "name": "https://marketingplatform.google.com", "value": "nosniff"},{"id": 75, "name": "https://myaccount.google.com", "value": "nosniff"},{"id": 76, "name": "https://scribd.com", "value": "nosniff"},{"id": 77, "name": "https://translate.google.com", "value": "nosniff"},{"id": 78, "name": "https://picasa.google.com", "value": "nosniff"},{"id": 79, "name": "https://opera.com", "value": "nosniff"},{"id": 80, "name": "https://amazon.co.uk", "value": "nosniff"},{"id": 81, "name": "https://booking.com", "value": "nosniff"},{"id": 82, "name": "https://lefigaro.fr", "value": "nosniff"},{"id": 83, "name": "https://de.wikipedia.org", "value": "nosniff"},{"id": 84, "name": "https://goo.gl", "value": "nosniff"},{"id": 85, "name": "https://android.com", "value": "nosniff"},{"id": 86, "name": "https://amazon.it", "value": "nosniff"},{"id": 87, "name": "https://it.wikipedia.org", "value": "nosniff"},{"id": 88, "name": "https://sciencedaily.com", "value": "nosniff"},{"id": 89, "name": "https://blackberry.com", "value": "nosniff"},{"id": 90, "name": "https://xbox.com", "value": "nosniff"},{"id": 91, "name": "https://vox.com", "value": "nosniff"},{"id": 92, "name": "https://yandex.ru", "value": "nosniff"},{"id": 93, "name": "https://ox.ac.uk", "value": "nosniff"},{"id": 94, "name": "https://foursquare.com", "value": "nosniff, nosniff"},{"id": 95, "name": "https://goodreads.com", "value": "nosniff, nosniff"},{"id": 96, "name": "https://gmail.com", "value": "nosniff"},{"id": 97, "name": "https://huffpost.com", "value": "nosniff"},{"id": 98, "name": "https://abc.net.au", "value": "nosniff"},{"id": 99, "name": "https://spotify.com", "value": "nosniff"},{"id": 100, "name": "https://digg.com", "value": "nosniff"},{"id": 101, "name": "https://parallels.com", "value": "nosniff"},{"id": 102, "name": "https://amazon.es", "value": "nosniff"},{"id": 103, "name": "https://ietf.org", "value": "nosniff"},{"id": 104, "name": "https://bt.com", "value": "nosniff"},{"id": 105, "name": "https://channel4.com", "value": "nosniff"},{"id": 106, "name": "https://yale.edu", "value": "nosniff"},{"id": 107, "name": "https://ja.wikipedia.org", "value": "nosniff"},{"id": 108, "name": "https://tes.com", "value": "nosniff"},{"id": 109, "name": "https://www.ikea.com", "value": "nosniff"},{"id": 110, "name": "https://en.unesco.org", "value": "nosniff"},{"id": 111, "name": "https://surveymonkey.com", "value": "nosniff, nosniff"},{"id": 112, "name": "https://cisco.com", "value": "nosniff"},{"id": 113, "name": "https://id.wikipedia.org", "value": "nosniff"},{"id": 114, "name": "https://addtoany.com", "value": "nosniff"},{"id": 115, "name": "https://target.com", "value": "nosniff"},{"id": 116, "name": "https://ovh.co.uk", "value": "nosniff"},{"id": 117, "name": "https://amazon.fr", "value": "nosniff"},{"id": 118, "name": "https://yelp.com", "value": "nosniff"},{"id": 119, "name": "https://000webhost.com", "value": "nosniff"},{"id": 120, "name": "https://psychologytoday.com", "value": "nosniff, nosniff"},{"id": 121, "name": "https://academia.edu", "value": "nosniff"},{"id": 122, "name": "https://adssettings.google.com", "value": "nosniff"},{"id": 123, "name": "https://engadget.com", "value": "nosniff"},{"id": 124, "name": "https://www.khanacademy.org", "value": "nosniff"},{"id": 125, "name": "https://buzzfeed.com", "value": "nosniff"},{"id": 126, "name": "https://fastcompany.com", "value": "nosniff"},{"id": 127, "name": "https://sciencedirect.com", "value": "nosniff"},{"id": 128, "name": "https://doubleclick.net", "value": "nosniff"},{"id": 129, "name": "https://guardian.co.uk", "value": "nosniff"},{"id": 130, "name": "https://yahoo.co.jp", "value": "nosniff"},{"id": 131, "name": "https://nature.com", "value": "nosniff"},{"id": 132, "name": "https://dan.com", "value": "nosniff"},{"id": 133, "name": "https://twitch.tv", "value": "nosniff"},{"id": 134, "name": "https://goo.ne.jp", "value": "nosniff"},{"id": 135, "name": "https://news.com.au", "value": "nosniff"},{"id": 136, "name": "https://wikihow.com", "value": "nosniff"},{"id": 137, "name": "https://instagram.com", "value": "nosniff"},{"id": 138, "name": "https://eventbrite.com", "value": "nosniff"},{"id": 139, "name": "https://princeton.edu", "value": "nosniff"},{"id": 140, "name": "https://researchgate.net", "value": "nosniff"},{"id": 141, "name": "https://sendspace.com", "value": "nosniff"},{"id": 142, "name": "https://nvidia.com", "value": "nosniff"},{"id": 143, "name": "https://disney.com", "value": "nosniff"},{"id": 144, "name": "https://disqus.com", "value": "nosniff"},{"id": 145, "name": "https://vice.com", "value": "nosniff"},{"id": 146, "name": "https://ted.com", "value": "nosniff"},{"id": 147, "name": "https://sapo.pt", "value": "nosniff"},{"id": 148, "name": "https://fifa.com", "value": "nosniff"},{"id": 149, "name": "https://hm.com", "value": "nosniff"},{"id": 150, "name": "https://pl.wikipedia.org", "value": "nosniff"},{"id": 151, "name": "https://npr.org", "value": "nosniff"},{"id": 152, "name": "https://oracle.com", "value": "nosniff"},{"id": 153, "name": "https://finance.yahoo.com", "value": "nosniff"},{"id": 154, "name": "https://kickstarter.com", "value": "nosniff"},{"id": 155, "name": "https://theverge.com", "value": "nosniff"},{"id": 156, "name": "https://netflix.com", "value": "nosniff"},{"id": 157, "name": "https://mashable.com", "value": "nosniff"},{"id": 158, "name": "https://ovh.com", "value": "nosniff"},{"id": 159, "name": "https://groups.google.com", "value": "nosniff"},{"id": 160, "name": "https://my.yahoo.com", "value": "nosniff"},{"id": 161, "name": "https://nokia.com", "value": "nosniff"},{"id": 162, "name": "https://gizmodo.com", "value": "nosniff"},{"id": 163, "name": "https://shopify.com", "value": "nosniff"},{"id": 164, "name": "https://columbia.edu", "value": "nosniff"},{"id": 165, "name": "https://deezer.com", "value": "nosniff"},{"id": 166, "name": "https://instructables.com", "value": "nosniff"},{"id": 167, "name": "https://mysql.com", "value": "nosniff"},{"id": 168, "name": "https://ibm.com", "value": "nosniff"},{"id": 169, "name": "https://ru.wikipedia.org", "value": "nosniff"},{"id": 170, "name": "https://www.over-blog.com", "value": "nosniff"},{"id": 171, "name": "https://yadi.sk", "value": "nosniff"},{"id": 172, "name": "https://newsweek.com", "value": "nosniff"},{"id": 173, "name": "https://netvibes.com", "value": "nosniff"},{"id": 174, "name": "https://quora.com", "value": "nosniff"},{"id": 175, "name": "https://utexas.edu", "value": "nosniff"},{"id": 176, "name": "https://plos.org", "value": "nosniff"},{"id": 177, "name": "https://airbnb.com", "value": "nosniff"},{"id": 178, "name": "https://trello.com", "value": "nosniff"},{"id": 179, "name": "https://eonline.com", "value": "nosniff"},{"id": 180, "name": "https://fb.me", "value": "nosniff"},{"id": 181, "name": "https://thoughtco.com", "value": "nosniff"},{"id": 182, "name": "https://ask.fm", "value": "nosniff"},{"id": 183, "name": "https://soratemplates.com", "value": "nosniff"},{"id": 184, "name": "https://groups.yahoo.com", "value": "nosniff"},{"id": 185, "name": "https://evernote.com", "value": "nosniff"},{"id": 186, "name": "https://nicovideo.jp", "value": "nosniff"},{"id": 187, "name": "https://ebay.co.uk", "value": "nosniff"},{"id": 188, "name": "https://www.fda.gov", "value": "nosniff, nosniff"},{"id": 189, "name": "https://statista.com", "value": "nosniff"},{"id": 190, "name": "https://unicef.org", "value": "nosniff"},{"id": 191, "name": "https://answers.yahoo.com", "value": "nosniff"},{"id": 192, "name": "https://intel.com", "value": "nosniff"},{"id": 193, "name": "https://etsy.com", "value": "nosniff"},{"id": 194, "name": "https://tabelog.com", "value": "nosniff"},{"id": 195, "name": "https://zdnet.com", "value": "nosniff"},{"id": 196, "name": "https://ftc.gov", "value": "nosniff, nosniff"},{"id": 197, "name": "https://xing.com", "value": "nosniff"},{"id": 198, "name": "https://thedailybeast.com", "value": "nosniff"},{"id": 199, "name": "https://inc.com", "value": "nosniff"},{"id": 200, "name": "https://pinterest.co.uk", "value": "nosniff"},{"id": 201, "name": "https://mixcloud.com", "value": "nosniff"},{"id": 202, "name": "https://wiley.com", "value": "nosniff"},{"id": 203, "name": "https://usgs.gov", "value": "nosniff"},{"id": 204, "name": "https://rottentomatoes.com", "value": "nosniff"},{"id": 205, "name": "https://dribbble.com", "value": "nosniff"},{"id": 206, "name": "https://sports.yahoo.com", "value": "nosniff"},{"id": 207, "name": "https://coursera.org", "value": "nosniff"},{"id": 208, "name": "https://mystrikingly.com", "value": "nosniff"},{"id": 209, "name": "https://mozilla.com", "value": "nosniff"},{"id": 210, "name": "https://behance.net", "value": "nosniff"},{"id": 211, "name": "https://amazon.in", "value": "nosniff"},{"id": 212, "name": "https://stripe.com", "value": "nosniff"},{"id": 213, "name": "https://scientificamerican.com", "value": "nosniff"},{"id": 214, "name": "https://psu.edu", "value": "nosniff, nosniff"},{"id": 215, "name": "https://timeout.com", "value": "nosniff"},{"id": 216, "name": "https://house.gov", "value": "nosniff, nosniff"},{"id": 217, "name": "https://autodesk.com", "value": "nosniff"},{"id": 218, "name": "https://entrepreneur.com", "value": "nosniff"},{"id": 219, "name": "https://nba.com", "value": "nosniff"},{"id": 220, "name": "https://pastebin.com", "value": "nosniff"},{"id": 221, "name": "https://arstechnica.com", "value": "nosniff"},{"id": 222, "name": "https://www.instacart.com", "value": "nosniff"},{"id": 223, "name": "https://www.mcdonalds.com/us/", "value": "nosniff"},{"id": 224, "name": "https://www.wendys.com", "value": "nosniff"},{"id": 225, "name": "https://zoom.us", "value": "nosniff"},{"id": 226, "name": "https://www.salesforce.com", "value": "nosniff"},{"id": 227, "name": "https://www.docusign.com", "value": "nosniff"},{"id": 228, "name": "https://www.ultimatesoftware.com", "value": "nosniff"},{"id": 229, "name": "https://www.fastly.com", "value": "nosniff"},{"id": 230, "name": "https://www.sap.com", "value": "nosniff"},{"id": 231, "name": "https://www.docker.com", "value": "nosniff"},{"id": 232, "name": "https://www.redhat.com", "value": "nosniff, nosniff"},{"id": 233, "name": "https://readthedocs.org", "value": "nosniff"},{"id": 234, "name": "https://www.rust-lang.org", "value": "nosniff"}],
+    lookup: {  "1": "https://youtube.com", "2": "https://apple.com", "3": "https://docs.google.com", "4": "https://www.blogger.com", "5": "https://microsoft.com", "6": "https://support.google.com", "7": "https://play.google.com", "8": "https://adobe.com", "9": "https://plus.google.com", "10": "https://cloudflare.com", "11": "https://linkedin.com", "12": "https://en.wikipedia.org", "13": "https://vimeo.com", "14": "https://mozilla.org", "15": "https://sites.google.com", "16": "https://accounts.google.com", "17": "https://youtu.be", "18": "https://drive.google.com", "19": "https://istockphoto.com", "20": "https://github.com", "21": "https://facebook.com", "22": "https://medium.com", "23": "https://es.wikipedia.org", "24": "https://cnn.com", "25": "https://live.com", "26": "https://nytimes.com", "27": "https://jimdofree.com", "28": "https://theguardian.com", "29": "https://dropbox.com", "30": "https://policies.google.com", "31": "https://whatsapp.com", "32": "https://msn.com", "33": "https://pt.wikipedia.org", "34": "https://fr.wikipedia.org", "35": "https://feedburner.com", "36": "https://slideshare.net", "37": "https://paypal.com", "38": "https://line.me", "39": "https://creativecommons.org", "40": "https://news.google.com", "41": "https://developers.google.com", "42": "https://mail.ru", "43": "https://photos.google.com", "44": "https://www.yahoo.com", "45": "https://aliexpress.com", "46": "https://mail.google.com", "47": "https://networkadvertising.org", "48": "https://cpanel.com", "49": "https://www.nasa.gov", "50": "https://news.yahoo.com", "51": "https://aol.com", "52": "https://ft.com", "53": "https://office.com", "54": "https://cpanel.net", "55": "https://issuu.com", "56": "https://ebay.com", "57": "https://nypost.com", "58": "https://huffingtonpost.com", "59": "https://wsj.com", "60": "https://amazon.de", "61": "https://tools.google.com", "62": "https://plesk.com", "63": "https://ok.ru", "64": "https://amazon.co.jp", "65": "https://code.google.com", "66": "https://draft.blogger.com", "67": "https://picasaweb.google.com", "68": "https://themeforest.net", "69": "https://books.google.com", "70": "https://twitter.com", "71": "https://pinterest.com", "72": "https://change.org", "73": "https://aboutads.info", "74": "https://marketingplatform.google.com", "75": "https://myaccount.google.com", "76": "https://scribd.com", "77": "https://translate.google.com", "78": "https://picasa.google.com", "79": "https://opera.com", "80": "https://amazon.co.uk", "81": "https://booking.com", "82": "https://lefigaro.fr", "83": "https://de.wikipedia.org", "84": "https://goo.gl", "85": "https://android.com", "86": "https://amazon.it", "87": "https://it.wikipedia.org", "88": "https://sciencedaily.com", "89": "https://blackberry.com", "90": "https://xbox.com", "91": "https://vox.com", "92": "https://yandex.ru", "93": "https://ox.ac.uk", "94": "https://foursquare.com", "95": "https://goodreads.com", "96": "https://gmail.com", "97": "https://huffpost.com", "98": "https://abc.net.au", "99": "https://spotify.com", "100": "https://digg.com", "101": "https://parallels.com", "102": "https://amazon.es", "103": "https://ietf.org", "104": "https://bt.com", "105": "https://channel4.com", "106": "https://yale.edu", "107": "https://ja.wikipedia.org", "108": "https://tes.com", "109": "https://www.ikea.com", "110": "https://en.unesco.org", "111": "https://surveymonkey.com", "112": "https://cisco.com", "113": "https://id.wikipedia.org", "114": "https://addtoany.com", "115": "https://target.com", "116": "https://ovh.co.uk", "117": "https://amazon.fr", "118": "https://yelp.com", "119": "https://000webhost.com", "120": "https://psychologytoday.com", "121": "https://academia.edu", "122": "https://adssettings.google.com", "123": "https://engadget.com", "124": "https://www.khanacademy.org", "125": "https://buzzfeed.com", "126": "https://fastcompany.com", "127": "https://sciencedirect.com", "128": "https://doubleclick.net", "129": "https://guardian.co.uk", "130": "https://yahoo.co.jp", "131": "https://nature.com", "132": "https://dan.com", "133": "https://twitch.tv", "134": "https://goo.ne.jp", "135": "https://news.com.au", "136": "https://wikihow.com", "137": "https://instagram.com", "138": "https://eventbrite.com", "139": "https://princeton.edu", "140": "https://researchgate.net", "141": "https://sendspace.com", "142": "https://nvidia.com", "143": "https://disney.com", "144": "https://disqus.com", "145": "https://vice.com", "146": "https://ted.com", "147": "https://sapo.pt", "148": "https://fifa.com", "149": "https://hm.com", "150": "https://pl.wikipedia.org", "151": "https://npr.org", "152": "https://oracle.com", "153": "https://finance.yahoo.com", "154": "https://kickstarter.com", "155": "https://theverge.com", "156": "https://netflix.com", "157": "https://mashable.com", "158": "https://ovh.com", "159": "https://groups.google.com", "160": "https://my.yahoo.com", "161": "https://nokia.com", "162": "https://gizmodo.com", "163": "https://shopify.com", "164": "https://columbia.edu", "165": "https://deezer.com", "166": "https://instructables.com", "167": "https://mysql.com", "168": "https://ibm.com", "169": "https://ru.wikipedia.org", "170": "https://www.over-blog.com", "171": "https://yadi.sk", "172": "https://newsweek.com", "173": "https://netvibes.com", "174": "https://quora.com", "175": "https://utexas.edu", "176": "https://plos.org", "177": "https://airbnb.com", "178": "https://trello.com", "179": "https://eonline.com", "180": "https://fb.me", "181": "https://thoughtco.com", "182": "https://ask.fm", "183": "https://soratemplates.com", "184": "https://groups.yahoo.com", "185": "https://evernote.com", "186": "https://nicovideo.jp", "187": "https://ebay.co.uk", "188": "https://www.fda.gov", "189": "https://statista.com", "190": "https://unicef.org", "191": "https://answers.yahoo.com", "192": "https://intel.com", "193": "https://etsy.com", "194": "https://tabelog.com", "195": "https://zdnet.com", "196": "https://ftc.gov", "197": "https://xing.com", "198": "https://thedailybeast.com", "199": "https://inc.com", "200": "https://pinterest.co.uk", "201": "https://mixcloud.com", "202": "https://wiley.com", "203": "https://usgs.gov", "204": "https://rottentomatoes.com", "205": "https://dribbble.com", "206": "https://sports.yahoo.com", "207": "https://coursera.org", "208": "https://mystrikingly.com", "209": "https://mozilla.com", "210": "https://behance.net", "211": "https://amazon.in", "212": "https://stripe.com", "213": "https://scientificamerican.com", "214": "https://psu.edu", "215": "https://timeout.com", "216": "https://house.gov", "217": "https://autodesk.com", "218": "https://entrepreneur.com", "219": "https://nba.com", "220": "https://pastebin.com", "221": "https://arstechnica.com", "222": "https://www.instacart.com", "223": "https://www.mcdonalds.com/us/", "224": "https://www.wendys.com", "225": "https://zoom.us", "226": "https://www.salesforce.com", "227": "https://www.docusign.com", "228": "https://www.ultimatesoftware.com", "229": "https://www.fastly.com", "230": "https://www.sap.com", "231": "https://www.docker.com", "232": "https://www.redhat.com", "233": "https://readthedocs.org", "234": "https://www.rust-lang.org" },
+    sort: 'id',
+    sortDir:'asc',
+    page: 0,
+    pageSize: 25
+  }),
+  methods: {
+    viewRow: function(event) {
+        var rowId = $(event.target).closest('tr').find('td:first').text()
+        var site = this.lookup[rowId].replace(/(^\w+:|^)\/\//, '');
+        document.location = "/site/" + site
+    },
+    sortBy: function(s) {
+      if (s === this.sort) {
+        this.sortDir = (this.sortDir === 'asc') ? 'desc' : 'asc';
+      } else {
+        this.sortDir = 'asc';
+      }
+      this.sort = s;
+    },
+    isActiveSort: function(s) { 
+      return this.sort === s; 
+    },
+    hasPage: function(dir) {
+      if (dir === -1 && (this.page > 0)) return true;
+      if (dir ===  1 && (((this.page+1)*this.pageSize) < this.rows.length)) return true;
+      return false;
+    },
+    prevPage: function() {
+      if (this.hasPage(-1)) this.page--;
+    },
+    nextPage: function() {
+      if (this.hasPage(1)) this.page++;
+    }
+  },
+  computed: {
+    sortedRows: function() {
+      return this.rows.sort((a, b) => {
+        let dir = (this.sortDir === 'asc') ? 1 : -1;
+        if (a[this.sort] < b[this.sort]) {
+          return -1 * dir;
+        } else if (a[this.sort] > b[this.sort]) {
+          return  1 * dir;
+        } else {
+          return 0;
+        }
+      }).filter((row, idx) => {
+        let s = this.page*this.pageSize;
+        let e = (this.page+1)*this.pageSize;
+        return (idx >= s && idx < e);
+        });
+    },
+    pageSizeModel: {
+      get() {
+        return this.pageSize;
+      },
+      set(v) {
+        this.pageSize = v;
+        this.page = 0;
+      }
+    }
+  },
+  filters: {
+    capitalize: function (v) {
+      if (!v) return ''
+      v = v.toString()
+      return v.charAt(0).toUpperCase() + v.slice(1)
+    }
+  }
+}).$mount('#app');
+</script>
+</body>
+</html>

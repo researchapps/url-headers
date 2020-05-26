@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+    <title>HTML Header Counts</title>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css'>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"> 
+    <style>
+/* Colors for badges */
+
+h1 { font-family: 'Bebas Neue', cursive;}
+
+.badge-red {
+  background-color: #d54625;
+}
+
+.badge-green {
+  background-color: #35bd4a;
+}
+
+.badge-blue {
+  background-color: #357ebd;
+}
+
+.table-sortable > thead > tr > th {
+  cursor: pointer;
+}
+.table-sortable > thead > tr > th[data-sorting="disabled"] {
+  cursor: default;
+}
+.table-sortable > thead > tr > th[data-sorting="disabled"]:hover,
+.table-sortable > thead > tr > th[data-sorting="disabled"]:active {
+  background: inherit;
+}
+.table-sortable > thead > tr > th:hover,
+.table-sortable > thead > tr > th:active {
+  background: #F5F5F5;
+}
+.table-sortable > tbody > tr > td mark,
+.table-sortable > tbody > tr > td .mark {
+  padding-left: 0;
+  padding-right: 0;
+}
+    </style>
+
+</head>
+<body>
+<div class='container-fluid'>
+  <div class='row'>
+    <div class='col-sm-12'>
+      <br>
+      <div class='form-horizontal'>
+        <div class='form-group has-feedback'>
+          <div class='col-sm-12'>
+            <input class='form-control table-sortable-search' placeholder='Search...' type='search'>
+            <span class='glyphicon glyphicon-remove form-control-feedback search-cancel-button'></span>
+          </div>
+        </div>
+      </div>
+      <br>
+      <div class='panel panel-default'>
+        <div class='table-responsive' id="app">
+
+  <h1 style="margin-left:5px">Sites for <b>CONNECTION</b> ⭐️</h1>
+  <hr>
+
+  <label>Rows per page</label>
+  <select v-model="pageSizeModel">
+    <option value="3">3</option>
+    <option value="5">5</option>
+    <option value="10">10</option>
+    <option value="25">25</option>
+  </select>
+    
+  <table class="table table-sortable">
+    <thead>
+      <tr>
+        <th :class="{ sorted: sort === 'id' }" @click="sortBy('id')">
+          Id
+        </th>
+        <th :class="{ sorted: sort === 'name' }" @click="sortBy('name')">
+          Name
+        </th>
+        <th :class="{ sorted: sort === 'value' }" @click="sortBy('value')" >
+          Value
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="row in sortedRows">
+        <td>{{ row.id }}</td>
+        <td>{{ row.name  }}</td>
+        <td>{{ row.value }}</td>
+        <td data-id="{{ row.id }}">
+          <div class='btn-group btn-group-xs'>
+            <button v-on:click="viewRow" class="btn btn-default" title="View">
+              <span class="glyphicon glyphicon-eye-open"></span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <div class="controls">
+    <button class="btn btn-sm" :disabled="!hasPage(-1)" @click="prevPage">←</button> 
+    <button class="btn btn-sm" :disabled="!hasPage(1)"  @click="nextPage">→</button>
+    <span style="float:right; margin-right:30px; margin-top:20px" class="badge badge-primary"><span class="glyphicon glyphicon-heart"></span> vsoch</span>
+
+  </div>
+  <hr>
+</div>
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+  <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js'></script>
+  <script>
+// Handle socket to send /receive messages from server without refresh
+$(document).ready(function(){
+
+});
+
+// tables.js
+function preg_quote( str ) {
+  // http://kevin.vanzonneveld.net
+  // +   original by: booeyOH
+  // +   improved by: Ates Goral (http://magnetiq.com)
+  // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  // +   bugfixed by: Onno Marsman
+  // *     example 1: preg_quote("$40");
+  // *     returns 1: '\$40'
+  // *     example 2: preg_quote("*RRRING* Hello?");
+  // *     returns 2: '\*RRRING\* Hello\?'
+  // *     example 3: preg_quote("\\.+*?[^]$(){}=!<>|:");
+  // *     returns 3: '\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:'
+  return (str+'').replace(/([\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:])/g, "\\$1");
+}
+
+function highlight(data, search){
+  return data.replace(new RegExp( "(" + preg_quote( search ) + ")" , 'gi' ), "<mark>$1</mark>" );
+}
+
+// Table
+    
+function Table($table,$input){
+
+    $table.find("th").each(function($key, el){
+        if ($(el).attr("data-sorting")!="disabled"){
+            $("<span/>").attr("class","fa").attr("row-id",$key+1).appendTo(el);
+    }}).click(function(){
+        var asc=true;
+        if ($(this).find("span.fa").attr("class")=="fa"||$(this).find("span.fa").attr("class")=="fa fa-caret-up fa-fw"){
+            $table.find("th[data-sorting!=disabled] span.fa").attr("class","fa");
+            $(this).find("span.fa").attr("class","fa fa-caret-down fa-fw");
+            asc=true;
+        }
+        else if ($(this).find("span.fa").attr("class")=="fa fa-caret-down fa-fw"){
+            $table.find("th[data-sorting!=disabled] span.fa").attr("class","fa");
+            $(this).find("span.fa").attr("class","fa fa-caret-up fa-fw");
+            asc=false
+        }
+        value=$.map($table.find("td:nth-child("+($(this).find("span.fa").attr("row-id"))+")"),function(el){
+            return {text:$(el).text().trim(),row:$(el).parent()};
+        });
+
+        value.sort(function(x, y){ 
+            if (asc){
+                if (x.text < y.text) {
+                    return -1;
+                }
+                if (x.text > y.text) {
+                    return 1;
+                }
+            } else {
+                if (x.text < y.text) {
+                    return 1;
+                }
+                if (x.text > y.text) {
+                    return -1;
+                }
+            }
+            return 0;
+        });
+        $table.find("tr:gt(0)").remove();
+        $.each(value,function(key,value){
+            $(value.row).appendTo($table);
+        });
+    });
+    $table.find("th:first").click();
+    $input.on("keyup change",function(){
+        var newText=$(this).val();
+        $table.find("span.text-wrap").each(function(key,value){
+            $(value).html($(value).text());
+            $(value).contents().unwrap();
+        });        
+        if (newText.trim()!=""){    
+            $table.find("tr:gt(0)").hide();                        
+            var textNode=$table.find("tr:gt(0) *")
+              .contents()
+              .filter(function() {
+                return this.nodeType === 3; //Node.TEXT_NODE
+              }).each(function(key,value){
+                    var nodeText=value.data;
+                    if (nodeText.toLowerCase().indexOf(newText.toLowerCase())!=-1){
+                        $(value).closest("tr").show();
+                        if ($(value).parent().attr("class")!="text-wrap")
+                            $(value).wrap("<span class='text-wrap'></span>");
+                        $(value).parent().html(highlight(nodeText ,newText));
+                    }
+                
+              });;
+              
+              }else{
+                $table.find("tr").show();
+              }
+    });
+    
+}
+
+$(function(){
+    Table($(".table-sortable"),$(".table-sortable-search"));
+});
+
+// Search
+
+$('input[type="search"]').keyup(function () {
+  var t = $(this);
+  t.next('span').toggle(Boolean(t.val()));
+});
+
+$('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val()).click(function () {
+  $(this).prev('input').val('').focus();
+  $(this).hide();
+});
+
+const app = new Vue({
+  data: () => ({
+    rows: [{"id": 1, "name": "https://apple.com", "value": "keep-alive"},{"id": 2, "name": "https://microsoft.com", "value": "keep-alive"},{"id": 3, "name": "https://adobe.com", "value": "keep-alive"},{"id": 4, "name": "https://wordpress.org", "value": "keep-alive"},{"id": 5, "name": "https://cloudflare.com", "value": "keep-alive"},{"id": 6, "name": "https://en.wikipedia.org", "value": "keep-alive"},{"id": 7, "name": "https://vimeo.com", "value": "keep-alive"},{"id": 8, "name": "https://mozilla.org", "value": "keep-alive"},{"id": 9, "name": "https://europa.eu", "value": "Keep-Alive"},{"id": 10, "name": "https://istockphoto.com", "value": "keep-alive"},{"id": 11, "name": "https://amazon.com", "value": "keep-alive"},{"id": 12, "name": "https://vk.com", "value": "keep-alive"},{"id": 13, "name": "https://facebook.com", "value": "keep-alive"},{"id": 14, "name": "https://medium.com", "value": "keep-alive"},{"id": 15, "name": "https://bbc.co.uk", "value": "keep-alive"},{"id": 16, "name": "https://es.wikipedia.org", "value": "keep-alive"},{"id": 17, "name": "https://cnn.com", "value": "keep-alive"},{"id": 18, "name": "https://nytimes.com", "value": "close"},{"id": 19, "name": "https://jimdofree.com", "value": "keep-alive"},{"id": 20, "name": "https://theguardian.com", "value": "keep-alive"},{"id": 21, "name": "https://who.int", "value": "keep-alive"},{"id": 22, "name": "https://dropbox.com", "value": "keep-alive"},{"id": 23, "name": "https://bbc.com", "value": "keep-alive"},{"id": 24, "name": "https://nih.gov", "value": "keep-alive"},{"id": 25, "name": "https://whatsapp.com", "value": "keep-alive"},{"id": 26, "name": "https://reuters.com", "value": "keep-alive"},{"id": 27, "name": "https://pt.wikipedia.org", "value": "keep-alive"},{"id": 28, "name": "https://fr.wikipedia.org", "value": "keep-alive"},{"id": 29, "name": "https://uol.com.br", "value": "keep-alive"},{"id": 30, "name": "https://myspace.com", "value": "keep-alive"},{"id": 31, "name": "https://slideshare.net", "value": "keep-alive"},{"id": 32, "name": "https://paypal.com", "value": "keep-alive"},{"id": 33, "name": "https://line.me", "value": "keep-alive"},{"id": 34, "name": "https://creativecommons.org", "value": "keep-alive"},{"id": 35, "name": "https://dailymotion.com", "value": "Keep-Alive"},{"id": 36, "name": "https://t.me", "value": "keep-alive"},{"id": 37, "name": "https://wikimedia.org", "value": "keep-alive"},{"id": 38, "name": "https://imdb.com", "value": "keep-alive"},{"id": 39, "name": "https://forbes.com", "value": "keep-alive"},{"id": 40, "name": "https://mail.ru", "value": "keep-alive"},{"id": 41, "name": "https://washingtonpost.com", "value": "keep-alive"},{"id": 42, "name": "https://www.yahoo.com", "value": "keep-alive"},{"id": 43, "name": "https://aliexpress.com", "value": "keep-alive, Transfer-Encoding"},{"id": 44, "name": "https://networkadvertising.org", "value": "keep-alive"},{"id": 45, "name": "https://hugedomains.com", "value": "keep-alive"},{"id": 46, "name": "https://www.bluehost.com", "value": "keep-alive"},{"id": 47, "name": "https://tinyurl.com", "value": "keep-alive"},{"id": 48, "name": "https://cpanel.com", "value": "Keep-Alive"},{"id": 49, "name": "https://businessinsider.com", "value": "keep-alive"},{"id": 50, "name": "https://www.nasa.gov", "value": "keep-alive"},{"id": 51, "name": "https://news.yahoo.com", "value": "keep-alive"},{"id": 52, "name": "https://aol.com", "value": "keep-alive"},{"id": 53, "name": "https://ft.com", "value": "keep-alive"},{"id": 54, "name": "https://wikia.com", "value": "keep-alive"},{"id": 55, "name": "https://cpanel.net", "value": "Keep-Alive"},{"id": 56, "name": "https://issuu.com", "value": "keep-alive"},{"id": 57, "name": "https://ebay.com", "value": "keep-alive, Transfer-Encoding"},{"id": 58, "name": "https://nypost.com", "value": "keep-alive"},{"id": 59, "name": "https://dailymail.co.uk", "value": "close"},{"id": 60, "name": "https://wsj.com", "value": "keep-alive"},{"id": 61, "name": "https://wired.com", "value": "keep-alive"},{"id": 62, "name": "https://amazon.de", "value": "keep-alive"},{"id": 63, "name": "https://abril.com.br", "value": "keep-alive"},{"id": 64, "name": "https://plesk.com", "value": "keep-alive"},{"id": 65, "name": "https://ok.ru", "value": "keep-alive"},{"id": 66, "name": "https://amazon.co.jp", "value": "keep-alive, Transfer-Encoding"},{"id": 67, "name": "https://bloomberg.com", "value": "keep-alive"},{"id": 68, "name": "https://steampowered.com", "value": "keep-alive, Transfer-Encoding"},{"id": 69, "name": "https://independent.co.uk", "value": "keep-alive"},{"id": 70, "name": "https://themeforest.net", "value": "keep-alive"},{"id": 71, "name": "https://archive.org", "value": "keep-alive"},{"id": 72, "name": "https://samsung.com", "value": "keep-alive"},{"id": 73, "name": "https://harvard.edu", "value": "keep-alive"},{"id": 74, "name": "https://indiatimes.com", "value": "keep-alive, Transfer-Encoding"},{"id": 75, "name": "https://latimes.com", "value": "keep-alive"},{"id": 76, "name": "https://mirror.co.uk", "value": "keep-alive"},{"id": 77, "name": "https://telegraph.co.uk", "value": "keep-alive, Transfer-Encoding"},{"id": 78, "name": "https://pinterest.com", "value": "keep-alive, Transfer-Encoding"},{"id": 79, "name": "https://files.wordpress.com", "value": "keep-alive"},{"id": 80, "name": "https://elpais.com", "value": "keep-alive, Transfer-Encoding"},{"id": 81, "name": "https://mediafire.com", "value": "keep-alive"},{"id": 82, "name": "https://abcnews.go.com", "value": "keep-alive"},{"id": 83, "name": "https://usatoday.com", "value": "keep-alive"},{"id": 84, "name": "https://foxnews.com", "value": "keep-alive, Transfer-Encoding"},{"id": 85, "name": "https://change.org", "value": "keep-alive"},{"id": 86, "name": "https://aboutads.info", "value": "keep-alive"},{"id": 87, "name": "https://scribd.com", "value": "keep-alive"},{"id": 88, "name": "https://terra.com.br", "value": "keep-alive"},{"id": 89, "name": "https://hatena.ne.jp", "value": "keep-alive"},{"id": 90, "name": "https://opera.com", "value": "keep-alive"},{"id": 91, "name": "https://fandom.com", "value": "keep-alive"},{"id": 92, "name": "https://amazon.co.uk", "value": "keep-alive"},{"id": 93, "name": "https://youronlinechoices.com", "value": "keep-alive"},{"id": 94, "name": "https://telegram.me", "value": "keep-alive"},{"id": 95, "name": "https://lefigaro.fr", "value": "keep-alive"},{"id": 96, "name": "https://www.gov.uk", "value": "keep-alive"},{"id": 97, "name": "https://cdc.gov", "value": "keep-alive, Transfer-Encoding"},{"id": 98, "name": "https://cnet.com", "value": "keep-alive"},{"id": 99, "name": "https://thesun.co.uk", "value": "keep-alive, Transfer-Encoding"},{"id": 100, "name": "https://de.wikipedia.org", "value": "keep-alive"},{"id": 101, "name": "https://gravatar.com", "value": "keep-alive"},{"id": 102, "name": "https://un.org", "value": "Keep-Alive"},{"id": 103, "name": "https://time.com", "value": "keep-alive"},{"id": 104, "name": "https://rakuten.co.jp", "value": "keep-alive"},{"id": 105, "name": "https://a8.net", "value": "keep-alive"},{"id": 106, "name": "https://amazon.it", "value": "keep-alive, Transfer-Encoding"},{"id": 107, "name": "https://asahi.com", "value": "keep-alive"},{"id": 108, "name": "https://it.wikipedia.org", "value": "keep-alive"},{"id": 109, "name": "https://bandcamp.com", "value": "keep-alive"},{"id": 110, "name": "https://sciencedaily.com", "value": "keep-alive"},{"id": 111, "name": "https://e-recht24.de", "value": "Keep-Alive"},{"id": 112, "name": "https://sedo.com", "value": "keep-alive"},{"id": 113, "name": "https://berkeley.edu", "value": "keep-alive"},{"id": 114, "name": "https://walmart.com", "value": "keep-alive"},{"id": 115, "name": "https://www.noaa.gov", "value": "keep-alive"},{"id": 116, "name": "https://m.wikipedia.org", "value": "keep-alive"},{"id": 117, "name": "https://blackberry.com", "value": "Keep-Alive"},{"id": 118, "name": "https://icann.org", "value": "Keep-Alive"},{"id": 119, "name": "https://dell.com", "value": "keep-alive"},{"id": 120, "name": "https://soundcloud.com", "value": "keep-alive"},{"id": 121, "name": "https://depositfiles.com", "value": "close"},{"id": 122, "name": "https://sciencemag.org", "value": "keep-alive"},{"id": 123, "name": "https://pbs.org", "value": "keep-alive"},{"id": 124, "name": "https://www.weebly.com", "value": "Keep-Alive"},{"id": 125, "name": "https://xbox.com", "value": "keep-alive"},{"id": 126, "name": "https://wp.com", "value": "keep-alive"},{"id": 127, "name": "https://vox.com", "value": "keep-alive"},{"id": 128, "name": "https://ign.com", "value": "keep-alive"},{"id": 129, "name": "https://stackoverflow.com", "value": "keep-alive"},{"id": 130, "name": "https://theatlantic.com", "value": "keep-alive"},{"id": 131, "name": "https://ox.ac.uk", "value": "Keep-Alive"},{"id": 132, "name": "https://fortune.com", "value": "keep-alive"},{"id": 133, "name": "https://foursquare.com", "value": "keep-alive"},{"id": 134, "name": "https://www.worldbank.org/", "value": "keep-alive"},{"id": 135, "name": "https://goodreads.com", "value": "keep-alive"},{"id": 136, "name": "https://lemonde.fr", "value": "keep-alive"},{"id": 137, "name": "https://abc.net.au", "value": "keep-alive"},{"id": 138, "name": "https://thetimes.co.uk", "value": "keep-alive, Transfer-Encoding"},{"id": 139, "name": "https://digg.com", "value": "keep-alive"},{"id": 140, "name": "https://parallels.com", "value": "keep-alive"},{"id": 141, "name": "https://imageshack.us", "value": "keep-alive"},{"id": 142, "name": "https://cbc.ca", "value": "keep-alive"},{"id": 143, "name": "https://photobucket.com", "value": "Keep-Alive"},{"id": 144, "name": "https://whitehouse.gov", "value": "keep-alive"},{"id": 145, "name": "https://ndtv.com", "value": "keep-alive, Transfer-Encoding"},{"id": 146, "name": "https://dw.com", "value": "keep-alive"},{"id": 147, "name": "https://amazon.es", "value": "keep-alive, Transfer-Encoding"},{"id": 148, "name": "https://ietf.org", "value": "Keep-Alive"},{"id": 149, "name": "https://bt.com", "value": "keep-alive"},{"id": 150, "name": "https://nginx.com", "value": "keep-alive"},{"id": 151, "name": "https://iubenda.com", "value": "keep-alive"},{"id": 152, "name": "https://channel4.com", "value": "keep-alive"},{"id": 153, "name": "https://yale.edu", "value": "keep-alive"},{"id": 154, "name": "https://hp.com", "value": "keep-alive, Transfer-Encoding"},{"id": 155, "name": "https://marriott.com", "value": "keep-alive"},{"id": 156, "name": "https://express.co.uk", "value": "keep-alive"},{"id": 157, "name": "https://ja.wikipedia.org", "value": "keep-alive"},{"id": 158, "name": "https://qq.com", "value": "keep-alive"},{"id": 159, "name": "https://tes.com", "value": "keep-alive"},{"id": 160, "name": "https://www.ikea.com", "value": "keep-alive"},{"id": 161, "name": "https://smh.com.au", "value": "keep-alive"},{"id": 162, "name": "https://hollywoodreporter.com", "value": "keep-alive"},{"id": 163, "name": "https://biglobe.ne.jp", "value": "Keep-Alive"},{"id": 164, "name": "https://www.wikipedia.org", "value": "keep-alive"},{"id": 165, "name": "https://ea.com", "value": "keep-alive"},{"id": 166, "name": "https://namecheap.com", "value": "keep-alive"},{"id": 167, "name": "https://surveymonkey.com", "value": "keep-alive"},{"id": 168, "name": "https://cisco.com", "value": "keep-alive"},{"id": 169, "name": "https://www.chicagotribune.com", "value": "keep-alive, Transfer-Encoding"},{"id": 170, "name": "https://www.cambridge.org", "value": "keep-alive"},{"id": 171, "name": "https://nikkei.com", "value": "keep-alive"},{"id": 172, "name": "https://id.wikipedia.org", "value": "keep-alive"},{"id": 173, "name": "https://sfgate.com", "value": "keep-alive"},{"id": 174, "name": "https://naver.jp", "value": "close"},{"id": 175, "name": "https://detik.com", "value": "keep-alive"},{"id": 176, "name": "https://addtoany.com", "value": "keep-alive"},{"id": 177, "name": "https://target.com", "value": "keep-alive"},{"id": 178, "name": "https://metro.co.uk", "value": "keep-alive"},{"id": 179, "name": "https://ovh.co.uk", "value": "keep-alive"},{"id": 180, "name": "https://amazon.fr", "value": "keep-alive"},{"id": 181, "name": "https://yelp.com", "value": "keep-alive"},{"id": 182, "name": "https://000webhost.com", "value": "keep-alive"},{"id": 183, "name": "https://umich.edu", "value": "Keep-Alive"},{"id": 184, "name": "https://psychologytoday.com", "value": "keep-alive"},{"id": 185, "name": "https://academia.edu", "value": "keep-alive"},{"id": 186, "name": "https://espn.com", "value": "keep-alive"},{"id": 187, "name": "https://theglobeandmail.com", "value": "keep-alive, Transfer-Encoding"},{"id": 188, "name": "https://engadget.com", "value": "keep-alive"},{"id": 189, "name": "https://www.khanacademy.org", "value": "keep-alive"},{"id": 190, "name": "https://gofundme.com", "value": "keep-alive"},{"id": 191, "name": "https://buzzfeed.com", "value": "keep-alive"},{"id": 192, "name": "https://www.wix.com", "value": "keep-alive"},{"id": 193, "name": "https://cbsnews.com", "value": "keep-alive"},{"id": 194, "name": "https://britannica.com", "value": "keep-alive"},{"id": 195, "name": "https://rtve.es", "value": "keep-alive"},{"id": 196, "name": "https://fastcompany.com", "value": "keep-alive"},{"id": 197, "name": "https://gnu.org", "value": "Keep-Alive"},{"id": 198, "name": "https://abc.es", "value": "keep-alive, Transfer-Encoding"},{"id": 199, "name": "https://gooyaabitemplates.com", "value": "keep-alive"},{"id": 200, "name": "https://sciencedirect.com", "value": "keep-alive"},{"id": 201, "name": "https://apache.org", "value": "Keep-Alive"},{"id": 202, "name": "https://ria.ru", "value": "keep-alive"},{"id": 203, "name": "https://nationalgeographic.com", "value": "keep-alive"},{"id": 204, "name": "https://guardian.co.uk", "value": "keep-alive"},{"id": 205, "name": "https://yahoo.co.jp", "value": "keep-alive"},{"id": 206, "name": "https://shutterstock.com", "value": "keep-alive, Transfer-Encoding"},{"id": 207, "name": "https://rt.com", "value": "keep-alive"},{"id": 208, "name": "https://mit.edu", "value": "keep-alive"},{"id": 209, "name": "https://nature.com", "value": "keep-alive"},{"id": 210, "name": "https://scoop.it", "value": "keep-alive"},{"id": 211, "name": "https://cnbc.com", "value": "keep-alive"},{"id": 212, "name": "https://nginx.org", "value": "keep-alive"},{"id": 213, "name": "https://dan.com", "value": "keep-alive"},{"id": 214, "name": "https://www.nydailynews.com/", "value": "keep-alive, Transfer-Encoding"},{"id": 215, "name": "https://godaddy.com", "value": "keep-alive"},{"id": 216, "name": "https://twitch.tv", "value": "keep-alive"},{"id": 217, "name": "https://news.com.au", "value": "keep-alive, Transfer-Encoding"},{"id": 218, "name": "https://rambler.ru", "value": "keep-alive"},{"id": 219, "name": "https://stanford.edu", "value": "keep-alive"},{"id": 220, "name": "https://bloglovin.com", "value": "keep-alive"},{"id": 221, "name": "https://wikihow.com", "value": "keep-alive"},{"id": 222, "name": "https://instagram.com", "value": "keep-alive"},{"id": 223, "name": "https://eventbrite.com", "value": "keep-alive"},{"id": 224, "name": "https://princeton.edu", "value": "keep-alive"},{"id": 225, "name": "https://researchgate.net", "value": "keep-alive"},{"id": 226, "name": "https://sendspace.com", "value": "keep-alive"},{"id": 227, "name": "https://nvidia.com", "value": "keep-alive"},{"id": 228, "name": "https://disney.com", "value": "keep-alive"},{"id": 229, "name": "https://disqus.com", "value": "keep-alive"},{"id": 230, "name": "https://loc.gov", "value": "keep-alive"},{"id": 231, "name": "https://urbandictionary.com", "value": "keep-alive"},{"id": 232, "name": "https://welt.de", "value": "keep-alive"},{"id": 233, "name": "https://addthis.com", "value": "keep-alive"},{"id": 234, "name": "https://vice.com", "value": "keep-alive"},{"id": 235, "name": "https://ted.com", "value": "keep-alive"},{"id": 236, "name": "https://sapo.pt", "value": "keep-alive"},{"id": 237, "name": "https://fifa.com", "value": "keep-alive, Transfer-Encoding"},{"id": 238, "name": "https://hm.com", "value": "keep-alive"},{"id": 239, "name": "https://pl.wikipedia.org", "value": "keep-alive"},{"id": 240, "name": "https://tripadvisor.com", "value": "Keep-Alive"},{"id": 241, "name": "https://npr.org", "value": "keep-alive"},{"id": 242, "name": "https://playstation.com", "value": "keep-alive"},{"id": 243, "name": "https://oracle.com", "value": "keep-alive"},{"id": 244, "name": "https://finance.yahoo.com", "value": "keep-alive"},{"id": 245, "name": "https://weibo.com", "value": "keep-alive, Transfer-Encoding"},{"id": 246, "name": "https://kickstarter.com", "value": "keep-alive"},{"id": 247, "name": "https://www.elmundo.es", "value": "keep-alive"},{"id": 248, "name": "https://theverge.com", "value": "keep-alive"},{"id": 249, "name": "https://about.com", "value": "keep-alive"},{"id": 250, "name": "https://netflix.com", "value": "keep-alive"},{"id": 251, "name": "https://naver.com", "value": "keep-alive"},{"id": 252, "name": "https://mashable.com", "value": "keep-alive"},{"id": 253, "name": "https://ovh.com", "value": "keep-alive"},{"id": 254, "name": "https://my.yahoo.com", "value": "keep-alive"},{"id": 255, "name": "https://nokia.com", "value": "keep-alive"},{"id": 256, "name": "https://standard.co.uk", "value": "keep-alive"},{"id": 257, "name": "https://gizmodo.com", "value": "keep-alive"},{"id": 258, "name": "https://shopify.com", "value": "keep-alive"},{"id": 259, "name": "https://columbia.edu", "value": "keep-alive"},{"id": 260, "name": "https://deezer.com", "value": "keep-alive, Transfer-Encoding"},{"id": 261, "name": "https://variety.com", "value": "keep-alive"},{"id": 262, "name": "https://instructables.com", "value": "keep-alive"},{"id": 263, "name": "https://mysql.com", "value": "Keep-Alive"},{"id": 264, "name": "https://ibm.com", "value": "keep-alive"},{"id": 265, "name": "https://box.com", "value": "keep-alive"},{"id": 266, "name": "https://imageshack.com", "value": "keep-alive"},{"id": 267, "name": "https://ru.wikipedia.org", "value": "keep-alive"},{"id": 268, "name": "https://www.over-blog.com", "value": "close"},{"id": 269, "name": "https://yadi.sk", "value": "keep-alive"},{"id": 270, "name": "https://alibaba.com", "value": "keep-alive"},{"id": 271, "name": "https://mega.nz", "value": "Keep-Alive"},{"id": 272, "name": "https://newsweek.com", "value": "keep-alive"},{"id": 273, "name": "https://netvibes.com", "value": "keep-alive"},{"id": 274, "name": "https://quora.com", "value": "keep-alive"},{"id": 275, "name": "https://economist.com", "value": "keep-alive"},{"id": 276, "name": "https://zendesk.com", "value": "keep-alive"},{"id": 277, "name": "https://utexas.edu", "value": "keep-alive"},{"id": 278, "name": "https://boston.com", "value": "keep-alive"},{"id": 279, "name": "https://plos.org", "value": "keep-alive"},{"id": 280, "name": "https://sina.com.cn", "value": "keep-alive"},{"id": 281, "name": "https://corriere.it", "value": "keep-alive"},{"id": 282, "name": "https://chron.com", "value": "keep-alive"},{"id": 283, "name": "https://airbnb.com", "value": "keep-alive"},{"id": 284, "name": "https://trello.com", "value": "keep-alive, Transfer-Encoding"},{"id": 285, "name": "https://eonline.com", "value": "keep-alive"},{"id": 286, "name": "https://fb.me", "value": "keep-alive"},{"id": 287, "name": "https://arxiv.org", "value": "Keep-Alive"},{"id": 288, "name": "https://thoughtco.com", "value": "keep-alive"},{"id": 289, "name": "https://billboard.com", "value": "keep-alive"},{"id": 290, "name": "https://ucoz.ru", "value": "keep-alive"},{"id": 291, "name": "https://orange.fr", "value": "Keep-Alive"},{"id": 292, "name": "https://narod.ru", "value": "keep-alive"},{"id": 293, "name": "https://e-monsite.com", "value": "keep-alive"},{"id": 294, "name": "https://venturebeat.com", "value": "keep-alive"},{"id": 295, "name": "https://daum.net", "value": "close"},{"id": 296, "name": "https://vkontakte.ru", "value": "keep-alive"},{"id": 297, "name": "https://groups.yahoo.com", "value": "keep-alive"},{"id": 298, "name": "https://nicovideo.jp", "value": "close"},{"id": 299, "name": "https://history.com", "value": "keep-alive"},{"id": 300, "name": "https://ap.org", "value": "keep-alive"},{"id": 301, "name": "https://imgur.com", "value": "keep-alive"},{"id": 302, "name": "https://prnewswire.com", "value": "keep-alive"},{"id": 303, "name": "https://ebay.co.uk", "value": "keep-alive, Transfer-Encoding"},{"id": 304, "name": "https://biblegateway.com", "value": "keep-alive"},{"id": 305, "name": "https://www.fda.gov", "value": "keep-alive"},{"id": 306, "name": "https://statista.com", "value": "keep-alive"},{"id": 307, "name": "https://unicef.org", "value": "keep-alive"},{"id": 308, "name": "https://cia.gov", "value": "keep-alive"},{"id": 309, "name": "https://sky.com", "value": "keep-alive"},{"id": 310, "name": "https://amzn.to", "value": "keep-alive"},{"id": 311, "name": "https://answers.yahoo.com", "value": "keep-alive"},{"id": 312, "name": "https://dictionary.com", "value": "keep-alive"},{"id": 313, "name": "https://broadcom.com", "value": "keep-alive"},{"id": 314, "name": "https://intel.com", "value": "keep-alive"},{"id": 315, "name": "https://answers.com", "value": "keep-alive"},{"id": 316, "name": "https://etsy.com", "value": "keep-alive"},{"id": 317, "name": "https://tabelog.com", "value": "keep-alive"},{"id": 318, "name": "https://espn.go.com", "value": "keep-alive"},{"id": 319, "name": "https://offset.com", "value": "keep-alive"},{"id": 320, "name": "https://zdnet.com", "value": "keep-alive"},{"id": 321, "name": "https://ftc.gov", "value": "keep-alive"},{"id": 322, "name": "https://xing.com", "value": "keep-alive"},{"id": 323, "name": "https://thedailybeast.com", "value": "keep-alive"},{"id": 324, "name": "https://inc.com", "value": "keep-alive"},{"id": 325, "name": "https://trustpilot.com", "value": "keep-alive"},{"id": 326, "name": "https://cbslocal.com", "value": "keep-alive"},{"id": 327, "name": "https://newyorker.com", "value": "keep-alive"},{"id": 328, "name": "https://pinterest.co.uk", "value": "keep-alive"},{"id": 329, "name": "https://steamcommunity.com", "value": "keep-alive"},{"id": 330, "name": "https://about.me", "value": "keep-alive"},{"id": 331, "name": "https://marketwatch.com", "value": "keep-alive, Transfer-Encoding"},{"id": 332, "name": "https://mixcloud.com", "value": "keep-alive"},{"id": 333, "name": "https://wiktionary.org", "value": "keep-alive"},{"id": 334, "name": "https://politico.com", "value": "keep-alive"},{"id": 335, "name": "https://wiley.com", "value": "keep-alive"},{"id": 336, "name": "https://usgs.gov", "value": "keep-alive"},{"id": 337, "name": "https://rottentomatoes.com", "value": "keep-alive"},{"id": 338, "name": "https://dribbble.com", "value": "keep-alive"},{"id": 339, "name": "https://sports.yahoo.com", "value": "keep-alive"},{"id": 340, "name": "https://coursera.org", "value": "keep-alive"},{"id": 341, "name": "https://amazon.ca", "value": "keep-alive"},{"id": 342, "name": "https://upenn.edu", "value": "keep-alive"},{"id": 343, "name": "https://csmonitor.com", "value": "keep-alive"},{"id": 344, "name": "https://state.gov", "value": "keep-alive"},{"id": 345, "name": "https://greenpeace.org", "value": "keep-alive"},{"id": 346, "name": "https://20minutos.es", "value": "keep-alive"},{"id": 347, "name": "https://mystrikingly.com", "value": "keep-alive"},{"id": 348, "name": "https://dreamstime.com", "value": "keep-alive"},{"id": 349, "name": "https://mozilla.com", "value": "keep-alive"},{"id": 350, "name": "https://behance.net", "value": "keep-alive"},{"id": 351, "name": "https://amazon.in", "value": "keep-alive, Transfer-Encoding"},{"id": 352, "name": "https://stripe.com", "value": "keep-alive"},{"id": 353, "name": "https://scientificamerican.com", "value": "keep-alive"},{"id": 354, "name": "https://psu.edu", "value": "keep-alive"},{"id": 355, "name": "https://timeout.com", "value": "keep-alive"},{"id": 356, "name": "https://house.gov", "value": "keep-alive"},{"id": 357, "name": "https://www.skyrock.com", "value": "Keep-Alive"},{"id": 358, "name": "https://membership.businesswire.com", "value": "keep-alive"},{"id": 359, "name": "https://autodesk.com", "value": "keep-alive, Transfer-Encoding"},{"id": 360, "name": "https://chinadaily.com.cn", "value": "keep-alive"},{"id": 361, "name": "https://entrepreneur.com", "value": "keep-alive"},{"id": 362, "name": "https://nbcnews.com", "value": "keep-alive"},{"id": 363, "name": "https://nba.com", "value": "keep-alive"},{"id": 364, "name": "https://oreilly.com", "value": "keep-alive"},{"id": 365, "name": "https://mayoclinic.org", "value": "keep-alive"},{"id": 366, "name": "https://pastebin.com", "value": "keep-alive"},{"id": 367, "name": "https://rediff.com", "value": "keep-alive"},{"id": 368, "name": "https://arstechnica.com", "value": "keep-alive"},{"id": 369, "name": "https://sputniknews.com", "value": "keep-alive"},{"id": 370, "name": "https://gitlab.com", "value": "keep-alive"},{"id": 371, "name": "https://sylabs.io", "value": "keep-alive"},{"id": 372, "name": "https://www.observe.ai", "value": "keep-alive"},{"id": 373, "name": "https://www.instacart.com", "value": "keep-alive"},{"id": 374, "name": "https://www.pizzahut.com", "value": "keep-alive"},{"id": 375, "name": "https://www.dominos.com/en/", "value": "keep-alive"},{"id": 376, "name": "https://www.mcdonalds.com/us/", "value": "keep-alive"},{"id": 377, "name": "https://www.wendys.com", "value": "keep-alive"},{"id": 378, "name": "https://www.nike.com", "value": "keep-alive, Transfer-Encoding"},{"id": 379, "name": "https://www.lyft.com", "value": "keep-alive"},{"id": 380, "name": "https://www.glassdoor.com", "value": "keep-alive"},{"id": 381, "name": "https://zoom.us", "value": "keep-alive"},{"id": 382, "name": "https://www.hellosign.com", "value": "keep-alive"},{"id": 383, "name": "https://www.docusign.com", "value": "keep-alive"},{"id": 384, "name": "https://www.fastly.com", "value": "keep-alive"},{"id": 385, "name": "https://www.sap.com", "value": "keep-alive"},{"id": 386, "name": "https://www.intuit.com", "value": "keep-alive, Transfer-Encoding"},{"id": 387, "name": "https://www.vmware.com", "value": "keep-alive"},{"id": 388, "name": "https://www.docker.com", "value": "keep-alive"},{"id": 389, "name": "https://www.redhat.com", "value": "keep-alive"},{"id": 390, "name": "https://readthedocs.org", "value": "keep-alive"},{"id": 391, "name": "https://www.rust-lang.org", "value": "keep-alive"},{"id": 392, "name": "https://us-rse.org", "value": "keep-alive"}],
+    lookup: {  "1": "https://apple.com", "2": "https://microsoft.com", "3": "https://adobe.com", "4": "https://wordpress.org", "5": "https://cloudflare.com", "6": "https://en.wikipedia.org", "7": "https://vimeo.com", "8": "https://mozilla.org", "9": "https://europa.eu", "10": "https://istockphoto.com", "11": "https://amazon.com", "12": "https://vk.com", "13": "https://facebook.com", "14": "https://medium.com", "15": "https://bbc.co.uk", "16": "https://es.wikipedia.org", "17": "https://cnn.com", "18": "https://nytimes.com", "19": "https://jimdofree.com", "20": "https://theguardian.com", "21": "https://who.int", "22": "https://dropbox.com", "23": "https://bbc.com", "24": "https://nih.gov", "25": "https://whatsapp.com", "26": "https://reuters.com", "27": "https://pt.wikipedia.org", "28": "https://fr.wikipedia.org", "29": "https://uol.com.br", "30": "https://myspace.com", "31": "https://slideshare.net", "32": "https://paypal.com", "33": "https://line.me", "34": "https://creativecommons.org", "35": "https://dailymotion.com", "36": "https://t.me", "37": "https://wikimedia.org", "38": "https://imdb.com", "39": "https://forbes.com", "40": "https://mail.ru", "41": "https://washingtonpost.com", "42": "https://www.yahoo.com", "43": "https://aliexpress.com", "44": "https://networkadvertising.org", "45": "https://hugedomains.com", "46": "https://www.bluehost.com", "47": "https://tinyurl.com", "48": "https://cpanel.com", "49": "https://businessinsider.com", "50": "https://www.nasa.gov", "51": "https://news.yahoo.com", "52": "https://aol.com", "53": "https://ft.com", "54": "https://wikia.com", "55": "https://cpanel.net", "56": "https://issuu.com", "57": "https://ebay.com", "58": "https://nypost.com", "59": "https://dailymail.co.uk", "60": "https://wsj.com", "61": "https://wired.com", "62": "https://amazon.de", "63": "https://abril.com.br", "64": "https://plesk.com", "65": "https://ok.ru", "66": "https://amazon.co.jp", "67": "https://bloomberg.com", "68": "https://steampowered.com", "69": "https://independent.co.uk", "70": "https://themeforest.net", "71": "https://archive.org", "72": "https://samsung.com", "73": "https://harvard.edu", "74": "https://indiatimes.com", "75": "https://latimes.com", "76": "https://mirror.co.uk", "77": "https://telegraph.co.uk", "78": "https://pinterest.com", "79": "https://files.wordpress.com", "80": "https://elpais.com", "81": "https://mediafire.com", "82": "https://abcnews.go.com", "83": "https://usatoday.com", "84": "https://foxnews.com", "85": "https://change.org", "86": "https://aboutads.info", "87": "https://scribd.com", "88": "https://terra.com.br", "89": "https://hatena.ne.jp", "90": "https://opera.com", "91": "https://fandom.com", "92": "https://amazon.co.uk", "93": "https://youronlinechoices.com", "94": "https://telegram.me", "95": "https://lefigaro.fr", "96": "https://www.gov.uk", "97": "https://cdc.gov", "98": "https://cnet.com", "99": "https://thesun.co.uk", "100": "https://de.wikipedia.org", "101": "https://gravatar.com", "102": "https://un.org", "103": "https://time.com", "104": "https://rakuten.co.jp", "105": "https://a8.net", "106": "https://amazon.it", "107": "https://asahi.com", "108": "https://it.wikipedia.org", "109": "https://bandcamp.com", "110": "https://sciencedaily.com", "111": "https://e-recht24.de", "112": "https://sedo.com", "113": "https://berkeley.edu", "114": "https://walmart.com", "115": "https://www.noaa.gov", "116": "https://m.wikipedia.org", "117": "https://blackberry.com", "118": "https://icann.org", "119": "https://dell.com", "120": "https://soundcloud.com", "121": "https://depositfiles.com", "122": "https://sciencemag.org", "123": "https://pbs.org", "124": "https://www.weebly.com", "125": "https://xbox.com", "126": "https://wp.com", "127": "https://vox.com", "128": "https://ign.com", "129": "https://stackoverflow.com", "130": "https://theatlantic.com", "131": "https://ox.ac.uk", "132": "https://fortune.com", "133": "https://foursquare.com", "134": "https://www.worldbank.org/", "135": "https://goodreads.com", "136": "https://lemonde.fr", "137": "https://abc.net.au", "138": "https://thetimes.co.uk", "139": "https://digg.com", "140": "https://parallels.com", "141": "https://imageshack.us", "142": "https://cbc.ca", "143": "https://photobucket.com", "144": "https://whitehouse.gov", "145": "https://ndtv.com", "146": "https://dw.com", "147": "https://amazon.es", "148": "https://ietf.org", "149": "https://bt.com", "150": "https://nginx.com", "151": "https://iubenda.com", "152": "https://channel4.com", "153": "https://yale.edu", "154": "https://hp.com", "155": "https://marriott.com", "156": "https://express.co.uk", "157": "https://ja.wikipedia.org", "158": "https://qq.com", "159": "https://tes.com", "160": "https://www.ikea.com", "161": "https://smh.com.au", "162": "https://hollywoodreporter.com", "163": "https://biglobe.ne.jp", "164": "https://www.wikipedia.org", "165": "https://ea.com", "166": "https://namecheap.com", "167": "https://surveymonkey.com", "168": "https://cisco.com", "169": "https://www.chicagotribune.com", "170": "https://www.cambridge.org", "171": "https://nikkei.com", "172": "https://id.wikipedia.org", "173": "https://sfgate.com", "174": "https://naver.jp", "175": "https://detik.com", "176": "https://addtoany.com", "177": "https://target.com", "178": "https://metro.co.uk", "179": "https://ovh.co.uk", "180": "https://amazon.fr", "181": "https://yelp.com", "182": "https://000webhost.com", "183": "https://umich.edu", "184": "https://psychologytoday.com", "185": "https://academia.edu", "186": "https://espn.com", "187": "https://theglobeandmail.com", "188": "https://engadget.com", "189": "https://www.khanacademy.org", "190": "https://gofundme.com", "191": "https://buzzfeed.com", "192": "https://www.wix.com", "193": "https://cbsnews.com", "194": "https://britannica.com", "195": "https://rtve.es", "196": "https://fastcompany.com", "197": "https://gnu.org", "198": "https://abc.es", "199": "https://gooyaabitemplates.com", "200": "https://sciencedirect.com", "201": "https://apache.org", "202": "https://ria.ru", "203": "https://nationalgeographic.com", "204": "https://guardian.co.uk", "205": "https://yahoo.co.jp", "206": "https://shutterstock.com", "207": "https://rt.com", "208": "https://mit.edu", "209": "https://nature.com", "210": "https://scoop.it", "211": "https://cnbc.com", "212": "https://nginx.org", "213": "https://dan.com", "214": "https://www.nydailynews.com/", "215": "https://godaddy.com", "216": "https://twitch.tv", "217": "https://news.com.au", "218": "https://rambler.ru", "219": "https://stanford.edu", "220": "https://bloglovin.com", "221": "https://wikihow.com", "222": "https://instagram.com", "223": "https://eventbrite.com", "224": "https://princeton.edu", "225": "https://researchgate.net", "226": "https://sendspace.com", "227": "https://nvidia.com", "228": "https://disney.com", "229": "https://disqus.com", "230": "https://loc.gov", "231": "https://urbandictionary.com", "232": "https://welt.de", "233": "https://addthis.com", "234": "https://vice.com", "235": "https://ted.com", "236": "https://sapo.pt", "237": "https://fifa.com", "238": "https://hm.com", "239": "https://pl.wikipedia.org", "240": "https://tripadvisor.com", "241": "https://npr.org", "242": "https://playstation.com", "243": "https://oracle.com", "244": "https://finance.yahoo.com", "245": "https://weibo.com", "246": "https://kickstarter.com", "247": "https://www.elmundo.es", "248": "https://theverge.com", "249": "https://about.com", "250": "https://netflix.com", "251": "https://naver.com", "252": "https://mashable.com", "253": "https://ovh.com", "254": "https://my.yahoo.com", "255": "https://nokia.com", "256": "https://standard.co.uk", "257": "https://gizmodo.com", "258": "https://shopify.com", "259": "https://columbia.edu", "260": "https://deezer.com", "261": "https://variety.com", "262": "https://instructables.com", "263": "https://mysql.com", "264": "https://ibm.com", "265": "https://box.com", "266": "https://imageshack.com", "267": "https://ru.wikipedia.org", "268": "https://www.over-blog.com", "269": "https://yadi.sk", "270": "https://alibaba.com", "271": "https://mega.nz", "272": "https://newsweek.com", "273": "https://netvibes.com", "274": "https://quora.com", "275": "https://economist.com", "276": "https://zendesk.com", "277": "https://utexas.edu", "278": "https://boston.com", "279": "https://plos.org", "280": "https://sina.com.cn", "281": "https://corriere.it", "282": "https://chron.com", "283": "https://airbnb.com", "284": "https://trello.com", "285": "https://eonline.com", "286": "https://fb.me", "287": "https://arxiv.org", "288": "https://thoughtco.com", "289": "https://billboard.com", "290": "https://ucoz.ru", "291": "https://orange.fr", "292": "https://narod.ru", "293": "https://e-monsite.com", "294": "https://venturebeat.com", "295": "https://daum.net", "296": "https://vkontakte.ru", "297": "https://groups.yahoo.com", "298": "https://nicovideo.jp", "299": "https://history.com", "300": "https://ap.org", "301": "https://imgur.com", "302": "https://prnewswire.com", "303": "https://ebay.co.uk", "304": "https://biblegateway.com", "305": "https://www.fda.gov", "306": "https://statista.com", "307": "https://unicef.org", "308": "https://cia.gov", "309": "https://sky.com", "310": "https://amzn.to", "311": "https://answers.yahoo.com", "312": "https://dictionary.com", "313": "https://broadcom.com", "314": "https://intel.com", "315": "https://answers.com", "316": "https://etsy.com", "317": "https://tabelog.com", "318": "https://espn.go.com", "319": "https://offset.com", "320": "https://zdnet.com", "321": "https://ftc.gov", "322": "https://xing.com", "323": "https://thedailybeast.com", "324": "https://inc.com", "325": "https://trustpilot.com", "326": "https://cbslocal.com", "327": "https://newyorker.com", "328": "https://pinterest.co.uk", "329": "https://steamcommunity.com", "330": "https://about.me", "331": "https://marketwatch.com", "332": "https://mixcloud.com", "333": "https://wiktionary.org", "334": "https://politico.com", "335": "https://wiley.com", "336": "https://usgs.gov", "337": "https://rottentomatoes.com", "338": "https://dribbble.com", "339": "https://sports.yahoo.com", "340": "https://coursera.org", "341": "https://amazon.ca", "342": "https://upenn.edu", "343": "https://csmonitor.com", "344": "https://state.gov", "345": "https://greenpeace.org", "346": "https://20minutos.es", "347": "https://mystrikingly.com", "348": "https://dreamstime.com", "349": "https://mozilla.com", "350": "https://behance.net", "351": "https://amazon.in", "352": "https://stripe.com", "353": "https://scientificamerican.com", "354": "https://psu.edu", "355": "https://timeout.com", "356": "https://house.gov", "357": "https://www.skyrock.com", "358": "https://membership.businesswire.com", "359": "https://autodesk.com", "360": "https://chinadaily.com.cn", "361": "https://entrepreneur.com", "362": "https://nbcnews.com", "363": "https://nba.com", "364": "https://oreilly.com", "365": "https://mayoclinic.org", "366": "https://pastebin.com", "367": "https://rediff.com", "368": "https://arstechnica.com", "369": "https://sputniknews.com", "370": "https://gitlab.com", "371": "https://sylabs.io", "372": "https://www.observe.ai", "373": "https://www.instacart.com", "374": "https://www.pizzahut.com", "375": "https://www.dominos.com/en/", "376": "https://www.mcdonalds.com/us/", "377": "https://www.wendys.com", "378": "https://www.nike.com", "379": "https://www.lyft.com", "380": "https://www.glassdoor.com", "381": "https://zoom.us", "382": "https://www.hellosign.com", "383": "https://www.docusign.com", "384": "https://www.fastly.com", "385": "https://www.sap.com", "386": "https://www.intuit.com", "387": "https://www.vmware.com", "388": "https://www.docker.com", "389": "https://www.redhat.com", "390": "https://readthedocs.org", "391": "https://www.rust-lang.org", "392": "https://us-rse.org" },
+    sort: 'id',
+    sortDir:'asc',
+    page: 0,
+    pageSize: 25
+  }),
+  methods: {
+    viewRow: function(event) {
+        var rowId = $(event.target).closest('tr').find('td:first').text()
+        var site = this.lookup[rowId].replace(/(^\w+:|^)\/\//, '');
+        document.location = "/site/" + site
+    },
+    sortBy: function(s) {
+      if (s === this.sort) {
+        this.sortDir = (this.sortDir === 'asc') ? 'desc' : 'asc';
+      } else {
+        this.sortDir = 'asc';
+      }
+      this.sort = s;
+    },
+    isActiveSort: function(s) { 
+      return this.sort === s; 
+    },
+    hasPage: function(dir) {
+      if (dir === -1 && (this.page > 0)) return true;
+      if (dir ===  1 && (((this.page+1)*this.pageSize) < this.rows.length)) return true;
+      return false;
+    },
+    prevPage: function() {
+      if (this.hasPage(-1)) this.page--;
+    },
+    nextPage: function() {
+      if (this.hasPage(1)) this.page++;
+    }
+  },
+  computed: {
+    sortedRows: function() {
+      return this.rows.sort((a, b) => {
+        let dir = (this.sortDir === 'asc') ? 1 : -1;
+        if (a[this.sort] < b[this.sort]) {
+          return -1 * dir;
+        } else if (a[this.sort] > b[this.sort]) {
+          return  1 * dir;
+        } else {
+          return 0;
+        }
+      }).filter((row, idx) => {
+        let s = this.page*this.pageSize;
+        let e = (this.page+1)*this.pageSize;
+        return (idx >= s && idx < e);
+        });
+    },
+    pageSizeModel: {
+      get() {
+        return this.pageSize;
+      },
+      set(v) {
+        this.pageSize = v;
+        this.page = 0;
+      }
+    }
+  },
+  filters: {
+    capitalize: function (v) {
+      if (!v) return ''
+      v = v.toString()
+      return v.charAt(0).toUpperCase() + v.slice(1)
+    }
+  }
+}).$mount('#app');
+</script>
+</body>
+</html>

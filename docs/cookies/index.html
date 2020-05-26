@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>HTML Cookies Counts</title>
+    <script src='static/Chart.min.js'></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"> 
+    <style>
+      body{ font-family: 'Bebas Neue', cursive;}
+    </style>
+  </head>
+  <body>
+
+    <h1>HTML Cookies Counts</h1>
+    <p id="caption">What response cookies do we see across 500 sites?</p>
+    <canvas id="myChart" width="800px" height="5000px"></canvas>
+
+    <script>
+      Chart.defaults.global.responsive = true;
+      Chart.defaults.global.maintainAspectRatio = true;
+
+      var chartData = {
+        labels : [
+                   "expires",
+                  
+                   "Secure, NID",
+                  
+                   "HttpOnly",
+                  
+                   "domain",
+                  
+                   "1P_JAR",
+                  
+                   "Secure",
+                  
+                   "path",
+                  
+                   "secure",
+                  
+                   "VISITOR_INFO1_LIVE",
+                  
+                   "httponly, GPS",
+                  
+                   "httponly, YSC",
+                  
+                   "geo",
+                  
+                   "Priority",
+                  
+                   "Path",
+                  
+                   "GAPS",
+                  
+                   "Expires",
+                  
+                   "secure, X-FD-FEATURES",
+                  
+                   "SameSite",
+                  
+                   "HttpOnly, X-FD-Time",
+                  
+                   "HttpOnly, akacd_OneRF",
+                  
+                   "isFirstSession",
+                  
+                   "HttpOnly, MUID",
+                  
+                   "NID",
+                  
+                   "max-age",
+                  
+                   "mpulseinject",
+                  
+                   "HttpOnly, bm_mi",
+                  
+                   "Domain",
+                  
+                   "Max-Age",
+                  
+                   "secure, ak_bmsc",
+                  
+                   "__cfduid",
+                  
+                   "JSESSIONID",
+                  
+                   "HttpOnly, lidc",
+                  
+                   "Secure, lang",
+                  
+                   "Secure, bcookie",
+                  
+                   "vuid",
+                  
+                   "httponly",
+                  
+                   "YSC",
+                  
+                   "unisess",
+                  
+                   "HttpOnly, vis",
+                  
+                   "Secure, _octo",
+                  
+                   "_gh_sess",
+                  
+                   "Secure, logged_in",
+                  
+                   "secure, remixlhk",
+                  
+                   "remixlang",
+                  
+                   "secure, remixstid",
+                  
+                   "httponly, sb",
+                  
+                   "fr",
+                  
+                   "secure, __cfruid",
+                  
+                   "samesite",
+                  
+                   "httponly, optimizelyEndUserId",
+                  
+                   "HttpOnly, sid",
+                  
+                   "countryCode",
+                  
+                   "HttpOnly, O365Consumer",
+                  
+                   "secure, RoutingKeyCookie",
+                  
+                   "secure, OptInPrg",
+                  
+                   "ClientId",
+                  
+                   "secure, HostSwitchPrg",
+                  
+                   "secure, ClientId",
+                  
+                   "secure, logonLatency",
+                  
+                   "nyt-a",
+                  
+                   "Secure, nyt-gdpr",
+                  
+                   "GU_mvt_id",
+                  
+                   "Secure, GU_geo_continent",
+                  
+                   "secure, __Host-js_csrf",
+                  
+                   "__Host-ss",
+                  
+                   "secure, locale",
+                  
+                   "secure, t",
+                  
+                   "secure, gvc",
+                  
+                   "secure, puc",
+                  
+                   "secure, bang",
+                  
+                   "secure, flash",
+                  
+                   "httponly, wa_ul",
+                  
+                   "httponly, wa_csrf",
+                  
+                   "wa_lang_pref",
+                  
+                   "HttpOnly, _EDGE_S",
+                  
+                   "HttpOnly, RecentStocks",
+                  
+                   "HttpOnly, marketPref",
+                  
+                   "PreferencesMsn",
+                  
+                   "HttpOnly, anoncknm",
+                  
+                   "persistent_id",
+                  
+                   "httpOnly, beacons_enabled",
+                  
+                   "httpOnly, visit_id",
+                  
+                   "language",
+                  
+                   "secure, bcookie",
+                  
+                   "enforce_policy",
+                  
+                   "Secure, x-cdn",
+                  
+                   "Secure, LANG",
+                  
+                   "Secure, cookie_check",
+                  
+                   "Secure, x-pp-s",
+                  
+                   "Secure, X-PP-L7",
+                  
+                   "Secure, X-PP-SILOVER",
+                  
+                   "secure, akavpau_ppsd",
+                  
+                   "ldsuid",
+                  
+                   ", v1st",
+                  
+                   "ts",
+                  
+                   "stel_ssid",
+                  
+                   "GN_PREF",
+                  
+                   "ubid-main",
+                  
+                   "act",
+                  
+                   "HttpOnly, mrcu",
+                  
+                   "secure, rplampr",
+                  
+                   "wp_country",
+                  
+                   "autorf",
+                  
+                   "xman_us_f",
+                  
+                   "HttpOnly, intl_common_forever",
+                  
+                   "HttpOnly, JSESSIONID",
+                  
+                   "HttpOnly, xman_f",
+                  
+                   "secure, host",
+                  
+                   "secure, session_id",
+                  
+                   "country",
+                  
+                   "secure, Currency",
+                  
+                   "secure, eigi-geolocated-country-code",
+                  
+                   "secure, Currency_Symbol",
+                  
+                   "secure, customerpixel",
+                  
+                   "secure, currency",
+                  
+                   "B",
+                  
+                   "FTAllocation",
+                  
+                   "",
+                  
+                   ", Geo",
+                  
+                   "wikia_beacon_id",
+                  
+                   ", wikia_session_id",
+                  
+                   "A1",
+                  
+                   "HttpOnly, A3",
+                  
+                   "Secure, GUC",
+                  
+                   "HttpOnly, A1S",
+                  
+                   "httponly, OhpAuth",
+                  
+                   "httponly, OH.DCAffinity",
+                  
+                   "httponly, p.UnAuthUserCookie",
+                  
+                   "OH.SID",
+                  
+                   "iutk",
+                  
+                   "HttpOnly, ebay",
+                  
+                   "dp1",
+                  
+                   "Secure, BX",
+                  
+                   "x-loc",
+                  
+                   "DJSESSION",
+                  
+                   "secure, anon_u",
+                  
+                   "_xsrf",
+                  
+                   ", xid1",
+                  
+                   "pay_ent_smp",
+                  
+                   ", verso_bucket",
+                  
+                   ", CN_xid",
+                  
+                   ", CN_segments",
+                  
+                   "session-id",
+                  
+                   "Secure, PHPSESSID",
+                  
+                   "HttpOnly, _statid",
+                  
+                   "bci",
+                  
+                   "skin",
+                  
+                   "secure, steamCountry",
+                  
+                   "secure, sessionid",
+                  
+                   "browserid",
+                  
+                   ", subscriber_origin",
+                  
+                   ", fresh8_toggle",
+                  
+                   "Secure, fonts_installed",
+                  
+                   "gdpr",
+                  
+                   ", esi-uuid",
+                  
+                   "PHPSESSID",
+                  
+                   "__COM_GNB",
+                  
+                   "personalization_id",
+                  
+                   "GS_GROUP",
+                  
+                   "secure, _pinterest_sess",
+                  
+                   "csrftoken",
+                  
+                   "httponly, _routing_id",
+                  
+                   "httponly, _auth",
+                  
+                   "arc-geo",
+                  
+                   "SWID",
+                  
+                   "DigitalRenovation",
+                  
+                   ", gnt_sb",
+                  
+                   ", gnt_ub",
+                  
+                   "Secure, _change_lang",
+                  
+                   "_change_session",
+                  
+                   "Secure, tracking_data",
+                  
+                   "drupalSGCacheBypass",
+                  
+                   "secure, _scribd_session",
+                  
+                   "__CJ_nwt",
+                  
+                   "trrgeo",
+                  
+                   "secure, X-XAct-ID",
+                  
+                   "SRCHD",
+                  
+                   "_pxhd",
+                  
+                   "HTTPOnly",
+                  
+                   ", fly_zip",
+                  
+                   ", fly_device",
+                  
+                   "fly_geo",
+                  
+                   "nuk_customer_country_code",
+                  
+                   "HttpOnly, _abck",
+                  
+                   "HttpOnly, bm_sz",
+                  
+                   "LocChecked",
+                  
+                   "client_id",
+                  
+                   "next-day",
+                  
+                   "WMF-Last-Access",
+                  
+                   "_new_icann_session",
+                  
+                   "HttpOnly, bm_sv",
+                  
+                   "akaas_EnableHomepage",
+                  
+                   "sc_anonymous_id",
+                  
+                   "uprand",
+                  
+                   "gdpr-kb",
+                  
+                   "defCulture",
+                  
+                   "_chorus_geoip_continent",
+                  
+                   "prov",
+                  
+                   "atltestbucketv1",
+                  
+                   "yp",
+                  
+                   "bbhive",
+                  
+                   "ccsid",
+                  
+                   "critical-home-free-desktop",
+                  
+                   "ABCGuestID",
+                  
+                   "secure, nuk_customer_time_zone",
+                  
+                   "main_uuid",
+                  
+                   "secure, nuk_customer_location_hint",
+                  
+                   "secure, nuk_customer_region_code",
+                  
+                   "sp_t",
+                  
+                   "HttpOnly, spsess",
+                  
+                   "secure, sp_ab",
+                  
+                   "secure, spot",
+                  
+                   "Secure, sp_new",
+                  
+                   "Secure, sp_landing",
+                  
+                   "HttpOnly, sp_usid",
+                  
+                   "Secure, connect.sid",
+                  
+                   "ak_bmsc",
+                  
+                   "HttpOnly, physical%2Fuser_credentials",
+                  
+                   "_iubenda_session",
+                  
+                   "ADRUM_BT",
+                  
+                   "geoCountry",
+                  
+                   "Secure, siteCurrency",
+                  
+                   "Secure, geoCurrency",
+                  
+                   "Secure, siteCountry",
+                  
+                   "Secure, __tese",
+                  
+                   "Secure, csrf",
+                  
+                   "bm_sz",
+                  
+                   "btop_pg",
+                  
+                   "SERVERID",
+                  
+                   "ep201",
+                  
+                   "HttpOnly, apex__sm",
+                  
+                   "HttpOnly, sm_rec",
+                  
+                   "HttpOnly, sm_dc",
+                  
+                   "_lbz",
+                  
+                   "httponly, preferredLocale",
+                  
+                   "httponly, localeChecker",
+                  
+                   "httponly, isLoggedIn-IE",
+                  
+                   "btype",
+                  
+                   ", location_data",
+                  
+                   ", ab_bucket",
+                  
+                   "page_uid",
+                  
+                   ", visitorId",
+                  
+                   "TealeafAkaSid",
+                  
+                   "HttpOnly, location",
+                  
+                   "pid",
+                  
+                   "single_request_tracker",
+                  
+                   "HttpOnly, request_id",
+                  
+                   ", country",
+                  
+                   "connectionspeed",
+                  
+                   ", region",
+                  
+                   ", SWID",
+                  
+                   ", edition-view",
+                  
+                   ", edition",
+                  
+                   ", _dcf",
+                  
+                   "ak_user",
+                  
+                   "AMPCSRF",
+                  
+                   "httponly, BX",
+                  
+                   "ARRAffinityCU",
+                  
+                   "secure, ka_session",
+                  
+                   "fkey",
+                  
+                   "visitor",
+                  
+                   ", bf-geo-country",
+                  
+                   ", ccpa",
+                  
+                   "dsl25_frhf",
+                  
+                   "Version",
+                  
+                   "HttpOnly, ssr-caching",
+                  
+                   "XSRF-TOKEN",
+                  
+                   "fly_device",
+                  
+                   "bcomID",
+                  
+                   "ev_sid",
+                  
+                   "HttpOnly, acw",
+                  
+                   "HttpOnly, id_ab",
+                  
+                   "Secure, EUID",
+                  
+                   "visit_id",
+                  
+                   "userId",
+                  
+                   "region",
+                  
+                   "xpcmsheader",
+                  
+                   "unique_id",
+                  
+                   "httponly, twitch.lohp.countryCode",
+                  
+                   "secure, gootopstay",
+                  
+                   "httponly, gooproperty",
+                  
+                   "httponly, gootop",
+                  
+                   "secure, top_session",
+                  
+                   "secure, mental",
+                  
+                   "secure, TS01ea13e3",
+                  
+                   "nk",
+                  
+                   "spa_primeHideButton",
+                  
+                   "wordpress_google_apps_login",
+                  
+                   "secure, su-homesite-show-alert",
+                  
+                   "bloglovin[session]",
+                  
+                   "httponly, bloglovin-auth",
+                  
+                   "httponly, bloglovin[referrer_page_type]",
+                  
+                   "httponly, bloglovin[page_type]",
+                  
+                   "httponly, bloglovin[data]",
+                  
+                   "whv",
+                  
+                   "secure, vi",
+                  
+                   "secure, vr",
+                  
+                   "sessionid",
+                  
+                   "Secure, mid",
+                  
+                   "Secure, did",
+                  
+                   "httponly, ptc",
+                  
+                   "httponly, pl",
+                  
+                   "httponly, sid",
+                  
+                   "SID",
+                  
+                   "mdr_browser",
+                  
+                   ", X-GeoIP-Region-Code",
+                  
+                   "HttpOnly, X-GeoIP-Country-Code",
+                  
+                   "Vice-H2-Push-Sig",
+                  
+                   "_nu",
+                  
+                   "day1host",
+                  
+                   "uu",
+                  
+                   "HttpOnly, SRT",
+                  
+                   "HttpOnly, TATravelInfo",
+                  
+                   "HttpOnly, TAUnique",
+                  
+                   "HttpOnly, TART",
+                  
+                   "TADCID",
+                  
+                   "HttpOnly, TASSK",
+                  
+                   "HttpOnly, TASession",
+                  
+                   "login_sid_t",
+                  
+                   "secure, lang",
+                  
+                   "secure, woe_id",
+                  
+                   "vis",
+                  
+                   "HttpOnly, request_time",
+                  
+                   "secure, optimizely_current_variations",
+                  
+                   "secure, _ksr_session",
+                  
+                   "secure, last_page",
+                  
+                   "flwssn",
+                  
+                   "nok_ip_locale",
+                  
+                   "ines_tg",
+                  
+                   ", fonts_installed",
+                  
+                   ", ines_tv",
+                  
+                   ", KinjaBucket",
+                  
+                   ", KinjaSetBucket",
+                  
+                   "geocc",
+                  
+                   "sid",
+                  
+                   "HttpOnly, dzr_uniq_id",
+                  
+                   "MySQL_S",
+                  
+                   "secure, site_preference",
+                  
+                   "secure, bv",
+                  
+                   "HttpOnly, z",
+                  
+                   "z",
+                  
+                   "secure, cn",
+                  
+                   "secure, uid",
+                  
+                   "yandexuid",
+                  
+                   "geoip",
+                  
+                   "X-UA-Info",
+                  
+                   "m-b",
+                  
+                   "HttpOnly, m-ans_frontend_early_version",
+                  
+                   ", geo_region",
+                  
+                   ", geo_country",
+                  
+                   ", rvjourney",
+                  
+                   "economist_has_visited_app_before",
+                  
+                   "cdn_exp_cc2ff326689728cf0",
+                  
+                   "Secure, mab",
+                  
+                   "dsc",
+                  
+                   "adEdition",
+                  
+                   "browser",
+                  
+                   "TMog",
+                  
+                   "Secure, PGMINFO",
+                  
+                   "locale",
+                  
+                   "HttpOnly, country",
+                  
+                   "uSID",
+                  
+                   "idzone",
+                  
+                   "HttpOnly, izclientid",
+                  
+                   "0narodruuCoz",
+                  
+                   "CMSPreferredCulture",
+                  
+                   "remixbdr",
+                  
+                   "web50017PreUserGuid",
+                  
+                   "nicosid",
+                  
+                   "AETN-Country-Code",
+                  
+                   "Country-Code",
+                  
+                   "frontpagebetav2",
+                  
+                   "abtest",
+                  
+                   "countryAKA",
+                  
+                   "detected_bandwidth",
+                  
+                   "HttpOnly, src_countrycode",
+                  
+                   "Secure, XSRF-TOKEN",
+                  
+                   "httponly, xgeo",
+                  
+                   "AWSALB",
+                  
+                   "HttpOnly, last_browse_page",
+                  
+                   "secure, user_prefs",
+                  
+                   "uaid",
+                  
+                   "secure, exp_hangover",
+                  
+                   "HttpOnly, mo_r",
+                  
+                   "HttpOnly, do_i",
+                  
+                   "_tabelog_session_id",
+                  
+                   "secure, ta_l",
+                  
+                   "HttpOnly, ma_k",
+                  
+                   "edition",
+                  
+                   ", connectionspeed",
+                  
+                   "_photo_session_id",
+                  
+                   ", fly_preferred_edition",
+                  
+                   ", fly_default_edition",
+                  
+                   "xing_csrf_token",
+                  
+                   "Secure, visitor_id",
+                  
+                   "httponly, kppid.sig",
+                  
+                   "httponly, kppid",
+                  
+                   "httponly, __tdbbrowser.sig",
+                  
+                   "httponly, __tdbsesh.sig",
+                  
+                   "httponly, __tdbsesh",
+                  
+                   "fastlygeo",
+                  
+                   ", pay_ent_smp",
+                  
+                   "CN_xid",
+                  
+                   "aboutme_anon_id",
+                  
+                   "httponly, session.sig",
+                  
+                   "HttpOnly, session",
+                  
+                   "mw_loc",
+                  
+                   "secure, previmpr",
+                  
+                   "Secure, AWSALB",
+                  
+                   "akamai_generated_location",
+                  
+                   "_dribbble_loc",
+                  
+                   "HttpOnly, firstvisit",
+                  
+                   "scfc",
+                  
+                   "_TO_AB_Testing",
+                  
+                   "tz",
+                  
+                   "cdn-user-cc",
+                  
+                   "akaas_NBCNews",
+                  
+                   "akacd_www_nba_com_prod",
+                  
+                   "httpOnly",
+                  
+                   "techradar-homepage-jwplayer-video_1588584230",
+                  
+                   "build_sha",
+                  
+                   ", ahoy_visitor",
+                  
+                   "QOSESSID",
+                  
+                   "HTTPOnly, TS011d6839",
+                  
+                   "Httponly",
+                  
+                   "Secure, WEBTRENDS_ID",
+                  
+                   "Secure, akadcgtm",
+                  
+                   "HTTPonly",
+                  
+                   "MCDCountry_code",
+                  
+                   "AnalysisUserId",
+                  
+                   "HttpOnly, anonymousId",
+                  
+                   "accountAuthXSRFToken",
+                  
+                   "Secure, sessId",
+                  
+                   "Secure, JSESSIONID",
+                  
+                   "HttpOnly, _zm_page_auth",
+                  
+                   "HttpOnly, _zm_everlogin_type",
+                  
+                   "HttpOnly, _zm_currency",
+                  
+                   "HttpOnly, _zm_ssid",
+                  
+                   "HttpOnly, zm_haid",
+                  
+                   "HttpOnly, _zm_ga_trackid",
+                  
+                   "HttpOnly, zm_gnl_ruid",
+                  
+                   "HttpOnly, zm_aid",
+                  
+                   "zm_gnl_guid",
+                  
+                   "Secure, _zm_mtk_guid",
+                  
+                   "HttpOnly, cred",
+                  
+                   "web_core_geoCountry",
+                  
+                   "Secure, web_core_geoRedirected",
+                  
+                   "ASP.NET_SessionId",
+                  
+                   "HTTPOnly, TS0186f969",
+                  
+                   "fcn_mode",
+                  
+                   "Secure, BIGipServer~partition-sap_it_wcms-dx_prod~lb-0c01f14f-cca1",
+                  ],
+        datasets : [{
+            label: 'Cookie Counts',
+            fill: true,
+            lineTension: 0.1,
+            backgroundColor: "rgba(75,192,192,0.4)",
+            borderColor: "rgba(75,192,192,1)",
+            borderCapStyle: 'butt',
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: 'miter',
+            pointBorderColor: "rgba(75,192,192,1)",
+            pointBackgroundColor: "#fff",
+            pointBorderWidth: 1,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: "rgba(75,192,192,1)",
+            pointHoverBorderColor: "rgba(220,220,220,1)",
+            pointHoverBorderWidth: 2,
+            pointRadius: 1,
+            pointHitRadius: 10,
+            data : [
+                      177,
+                    
+                      15,
+                    
+                      105,
+                    
+                      171,
+                    
+                      19,
+                    
+                      103,
+                    
+                      214,
+                    
+                      53,
+                    
+                      1,
+                    
+                      2,
+                    
+                      1,
+                    
+                      1,
+                    
+                      7,
+                    
+                      110,
+                    
+                      7,
+                    
+                      82,
+                    
+                      1,
+                    
+                      74,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      4,
+                    
+                      12,
+                    
+                      1,
+                    
+                      3,
+                    
+                      80,
+                    
+                      72,
+                    
+                      1,
+                    
+                      27,
+                    
+                      3,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      13,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      2,
+                    
+                      1,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      1,
+                    
+                      7,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      2,
+                    
+                      2,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      2,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      2,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      2,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      2,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      2,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      7,
+                    
+                      1,
+                    
+                      30,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      3,
+                    
+                      3,
+                    
+                      3,
+                    
+                      3,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      2,
+                    
+                      1,
+                    
+                      1,
+                    
+                      6,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      2,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      5,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      2,
+                    
+                      3,
+                    
+                      2,
+                    
+                      2,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      2,
+                    
+                      1,
+                    
+                      2,
+                    
+                      2,
+                    
+                      1,
+                    
+                      4,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      2,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      2,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      3,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      2,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      2,
+                    
+                      1,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      1,
+                    
+                      2,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      3,
+                    
+                      1,
+                    
+                      3,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      2,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      3,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      2,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    ],
+            spanGaps: false
+        }]
+      }
+
+      // get chart canvas
+      var ctx = document.getElementById("myChart").getContext("2d");
+
+      // create the chart using the chart canvas
+      var myChart = new Chart(ctx, {
+        type: 'horizontalBar',
+        data: chartData
+      });
+
+      // Get index of bar clicked to return label
+      document.getElementById("myChart").onclick = function(e) {
+        var activeElement = myChart.lastActive;
+        var idx = activeElement[0]._index
+        var label = myChart.chart.config.data.labels[idx]
+        document.location = "/cookies/" + label
+      };
+    </script>
+
+  </body>
+</html>

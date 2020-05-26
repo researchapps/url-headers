@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+    <title>HTML Header Counts</title>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css'>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"> 
+    <style>
+/* Colors for badges */
+
+h1 { font-family: 'Bebas Neue', cursive;}
+
+.badge-red {
+  background-color: #d54625;
+}
+
+.badge-green {
+  background-color: #35bd4a;
+}
+
+.badge-blue {
+  background-color: #357ebd;
+}
+
+.table-sortable > thead > tr > th {
+  cursor: pointer;
+}
+.table-sortable > thead > tr > th[data-sorting="disabled"] {
+  cursor: default;
+}
+.table-sortable > thead > tr > th[data-sorting="disabled"]:hover,
+.table-sortable > thead > tr > th[data-sorting="disabled"]:active {
+  background: inherit;
+}
+.table-sortable > thead > tr > th:hover,
+.table-sortable > thead > tr > th:active {
+  background: #F5F5F5;
+}
+.table-sortable > tbody > tr > td mark,
+.table-sortable > tbody > tr > td .mark {
+  padding-left: 0;
+  padding-right: 0;
+}
+    </style>
+
+</head>
+<body>
+<div class='container-fluid'>
+  <div class='row'>
+    <div class='col-sm-12'>
+      <br>
+      <div class='form-horizontal'>
+        <div class='form-group has-feedback'>
+          <div class='col-sm-12'>
+            <input class='form-control table-sortable-search' placeholder='Search...' type='search'>
+            <span class='glyphicon glyphicon-remove form-control-feedback search-cancel-button'></span>
+          </div>
+        </div>
+      </div>
+      <br>
+      <div class='panel panel-default'>
+        <div class='table-responsive' id="app">
+
+  <h1 style="margin-left:5px">Sites for <b>CONTENT-ENCODING</b> ⭐️</h1>
+  <hr>
+
+  <label>Rows per page</label>
+  <select v-model="pageSizeModel">
+    <option value="3">3</option>
+    <option value="5">5</option>
+    <option value="10">10</option>
+    <option value="25">25</option>
+  </select>
+    
+  <table class="table table-sortable">
+    <thead>
+      <tr>
+        <th :class="{ sorted: sort === 'id' }" @click="sortBy('id')">
+          Id
+        </th>
+        <th :class="{ sorted: sort === 'name' }" @click="sortBy('name')">
+          Name
+        </th>
+        <th :class="{ sorted: sort === 'value' }" @click="sortBy('value')" >
+          Value
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="row in sortedRows">
+        <td>{{ row.id }}</td>
+        <td>{{ row.name  }}</td>
+        <td>{{ row.value }}</td>
+        <td data-id="{{ row.id }}">
+          <div class='btn-group btn-group-xs'>
+            <button v-on:click="viewRow" class="btn btn-default" title="View">
+              <span class="glyphicon glyphicon-eye-open"></span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <div class="controls">
+    <button class="btn btn-sm" :disabled="!hasPage(-1)" @click="prevPage">←</button> 
+    <button class="btn btn-sm" :disabled="!hasPage(1)"  @click="nextPage">→</button>
+    <span style="float:right; margin-right:30px; margin-top:20px" class="badge badge-primary"><span class="glyphicon glyphicon-heart"></span> vsoch</span>
+
+  </div>
+  <hr>
+</div>
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+  <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js'></script>
+  <script>
+// Handle socket to send /receive messages from server without refresh
+$(document).ready(function(){
+
+});
+
+// tables.js
+function preg_quote( str ) {
+  // http://kevin.vanzonneveld.net
+  // +   original by: booeyOH
+  // +   improved by: Ates Goral (http://magnetiq.com)
+  // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  // +   bugfixed by: Onno Marsman
+  // *     example 1: preg_quote("$40");
+  // *     returns 1: '\$40'
+  // *     example 2: preg_quote("*RRRING* Hello?");
+  // *     returns 2: '\*RRRING\* Hello\?'
+  // *     example 3: preg_quote("\\.+*?[^]$(){}=!<>|:");
+  // *     returns 3: '\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:'
+  return (str+'').replace(/([\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:])/g, "\\$1");
+}
+
+function highlight(data, search){
+  return data.replace(new RegExp( "(" + preg_quote( search ) + ")" , 'gi' ), "<mark>$1</mark>" );
+}
+
+// Table
+    
+function Table($table,$input){
+
+    $table.find("th").each(function($key, el){
+        if ($(el).attr("data-sorting")!="disabled"){
+            $("<span/>").attr("class","fa").attr("row-id",$key+1).appendTo(el);
+    }}).click(function(){
+        var asc=true;
+        if ($(this).find("span.fa").attr("class")=="fa"||$(this).find("span.fa").attr("class")=="fa fa-caret-up fa-fw"){
+            $table.find("th[data-sorting!=disabled] span.fa").attr("class","fa");
+            $(this).find("span.fa").attr("class","fa fa-caret-down fa-fw");
+            asc=true;
+        }
+        else if ($(this).find("span.fa").attr("class")=="fa fa-caret-down fa-fw"){
+            $table.find("th[data-sorting!=disabled] span.fa").attr("class","fa");
+            $(this).find("span.fa").attr("class","fa fa-caret-up fa-fw");
+            asc=false
+        }
+        value=$.map($table.find("td:nth-child("+($(this).find("span.fa").attr("row-id"))+")"),function(el){
+            return {text:$(el).text().trim(),row:$(el).parent()};
+        });
+
+        value.sort(function(x, y){ 
+            if (asc){
+                if (x.text < y.text) {
+                    return -1;
+                }
+                if (x.text > y.text) {
+                    return 1;
+                }
+            } else {
+                if (x.text < y.text) {
+                    return 1;
+                }
+                if (x.text > y.text) {
+                    return -1;
+                }
+            }
+            return 0;
+        });
+        $table.find("tr:gt(0)").remove();
+        $.each(value,function(key,value){
+            $(value.row).appendTo($table);
+        });
+    });
+    $table.find("th:first").click();
+    $input.on("keyup change",function(){
+        var newText=$(this).val();
+        $table.find("span.text-wrap").each(function(key,value){
+            $(value).html($(value).text());
+            $(value).contents().unwrap();
+        });        
+        if (newText.trim()!=""){    
+            $table.find("tr:gt(0)").hide();                        
+            var textNode=$table.find("tr:gt(0) *")
+              .contents()
+              .filter(function() {
+                return this.nodeType === 3; //Node.TEXT_NODE
+              }).each(function(key,value){
+                    var nodeText=value.data;
+                    if (nodeText.toLowerCase().indexOf(newText.toLowerCase())!=-1){
+                        $(value).closest("tr").show();
+                        if ($(value).parent().attr("class")!="text-wrap")
+                            $(value).wrap("<span class='text-wrap'></span>");
+                        $(value).parent().html(highlight(nodeText ,newText));
+                    }
+                
+              });;
+              
+              }else{
+                $table.find("tr").show();
+              }
+    });
+    
+}
+
+$(function(){
+    Table($(".table-sortable"),$(".table-sortable-search"));
+});
+
+// Search
+
+$('input[type="search"]').keyup(function () {
+  var t = $(this);
+  t.next('span').toggle(Boolean(t.val()));
+});
+
+$('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val()).click(function () {
+  $(this).prev('input').val('').focus();
+  $(this).hide();
+});
+
+const app = new Vue({
+  data: () => ({
+    rows: [{"id": 1, "name": "https://www.google.com", "value": "gzip"},{"id": 2, "name": "https://youtube.com", "value": "gzip"},{"id": 3, "name": "https://apple.com", "value": "gzip"},{"id": 4, "name": "https://docs.google.com", "value": "gzip"},{"id": 5, "name": "https://www.blogger.com", "value": "gzip"},{"id": 6, "name": "https://microsoft.com", "value": "gzip"},{"id": 7, "name": "https://support.google.com", "value": "gzip"},{"id": 8, "name": "https://play.google.com", "value": "gzip"},{"id": 9, "name": "https://adobe.com", "value": "gzip"},{"id": 10, "name": "https://plus.google.com", "value": "gzip"},{"id": 11, "name": "https://wordpress.org", "value": "gzip"},{"id": 12, "name": "https://cloudflare.com", "value": "gzip"},{"id": 13, "name": "https://linkedin.com", "value": "gzip"},{"id": 14, "name": "https://maps.google.com", "value": "gzip"},{"id": 15, "name": "https://en.wikipedia.org", "value": "gzip"},{"id": 16, "name": "https://vimeo.com", "value": "gzip"},{"id": 17, "name": "https://sites.google.com", "value": "gzip"},{"id": 18, "name": "https://accounts.google.com", "value": "gzip"},{"id": 19, "name": "https://europa.eu", "value": "gzip"},{"id": 20, "name": "https://youtu.be", "value": "gzip"},{"id": 21, "name": "https://drive.google.com", "value": "gzip"},{"id": 22, "name": "https://istockphoto.com", "value": "gzip"},{"id": 23, "name": "https://github.com", "value": "gzip"},{"id": 24, "name": "https://amazon.com", "value": "gzip"},{"id": 25, "name": "https://vk.com", "value": "gzip"},{"id": 26, "name": "https://facebook.com", "value": "gzip"},{"id": 27, "name": "https://medium.com", "value": "gzip"},{"id": 28, "name": "https://bbc.co.uk", "value": "gzip"},{"id": 29, "name": "https://es.wikipedia.org", "value": "gzip"},{"id": 30, "name": "https://cnn.com", "value": "gzip"},{"id": 31, "name": "https://live.com", "value": "gzip"},{"id": 32, "name": "https://nytimes.com", "value": "gzip"},{"id": 33, "name": "https://jimdofree.com", "value": "gzip"},{"id": 34, "name": "https://google.fr", "value": "gzip"},{"id": 35, "name": "https://theguardian.com", "value": "gzip"},{"id": 36, "name": "https://who.int", "value": "gzip"},{"id": 37, "name": "https://google.co.uk", "value": "gzip"},{"id": 38, "name": "https://dropbox.com", "value": "gzip"},{"id": 39, "name": "https://policies.google.com", "value": "gzip"},{"id": 40, "name": "https://bbc.com", "value": "gzip"},{"id": 41, "name": "https://nih.gov", "value": "gzip"},{"id": 42, "name": "https://whatsapp.com", "value": "gzip"},{"id": 43, "name": "https://msn.com", "value": "gzip"},{"id": 44, "name": "https://reuters.com", "value": "gzip"},{"id": 45, "name": "https://pt.wikipedia.org", "value": "gzip"},{"id": 46, "name": "https://fr.wikipedia.org", "value": "gzip"},{"id": 47, "name": "https://uol.com.br", "value": "gzip"},{"id": 48, "name": "https://myspace.com", "value": "gzip"},{"id": 49, "name": "https://feedburner.com", "value": "gzip"},{"id": 50, "name": "https://slideshare.net", "value": "gzip"},{"id": 51, "name": "https://paypal.com", "value": "gzip"},{"id": 52, "name": "https://creativecommons.org", "value": "gzip"},{"id": 53, "name": "https://google.es", "value": "gzip"},{"id": 54, "name": "https://dailymotion.com", "value": "gzip"},{"id": 55, "name": "https://t.me", "value": "gzip"},{"id": 56, "name": "https://news.google.com", "value": "gzip"},{"id": 57, "name": "https://wikimedia.org", "value": "gzip"},{"id": 58, "name": "https://developers.google.com", "value": "gzip"},{"id": 59, "name": "https://imdb.com", "value": "gzip"},{"id": 60, "name": "https://forbes.com", "value": "gzip"},{"id": 61, "name": "https://mail.ru", "value": "gzip"},{"id": 62, "name": "https://washingtonpost.com", "value": "gzip"},{"id": 63, "name": "https://photos.google.com", "value": "gzip"},{"id": 64, "name": "https://google.de", "value": "gzip"},{"id": 65, "name": "https://w3.org", "value": "gzip"},{"id": 66, "name": "https://www.yahoo.com", "value": "gzip"},{"id": 67, "name": "https://aliexpress.com", "value": "gzip"},{"id": 68, "name": "https://google.com.br", "value": "gzip"},{"id": 69, "name": "https://google.co.jp", "value": "gzip"},{"id": 70, "name": "https://mail.google.com", "value": "gzip"},{"id": 71, "name": "https://networkadvertising.org", "value": "gzip"},{"id": 72, "name": "https://hugedomains.com", "value": "gzip"},{"id": 73, "name": "https://www.bluehost.com", "value": "gzip"},{"id": 74, "name": "https://tinyurl.com", "value": "gzip"},{"id": 75, "name": "https://cpanel.com", "value": "gzip"},{"id": 76, "name": "https://businessinsider.com", "value": "gzip"},{"id": 77, "name": "https://news.yahoo.com", "value": "gzip"},{"id": 78, "name": "https://aol.com", "value": "gzip"},{"id": 79, "name": "https://ft.com", "value": "gzip"},{"id": 80, "name": "https://wikia.com", "value": "gzip"},{"id": 81, "name": "https://techcrunch.com", "value": "gzip"},{"id": 82, "name": "https://office.com", "value": "gzip"},{"id": 83, "name": "https://cpanel.net", "value": "gzip"},{"id": 84, "name": "https://issuu.com", "value": "gzip"},{"id": 85, "name": "https://ebay.com", "value": "gzip"},{"id": 86, "name": "https://google.ru", "value": "gzip"},{"id": 87, "name": "https://nypost.com", "value": "gzip"},{"id": 88, "name": "https://huffingtonpost.com", "value": "gzip"},{"id": 89, "name": "https://dailymail.co.uk", "value": "gzip"},{"id": 90, "name": "https://wsj.com", "value": "gzip"},{"id": 91, "name": "https://wired.com", "value": "gzip"},{"id": 92, "name": "https://amazon.de", "value": "gzip"},{"id": 93, "name": "https://tools.google.com", "value": "gzip"},{"id": 94, "name": "https://abril.com.br", "value": "gzip"},{"id": 95, "name": "https://plesk.com", "value": "gzip"},{"id": 96, "name": "https://ok.ru", "value": "gzip"},{"id": 97, "name": "https://amazon.co.jp", "value": "gzip"},{"id": 98, "name": "https://bloomberg.com", "value": "gzip"},{"id": 99, "name": "https://steampowered.com", "value": "gzip"},{"id": 100, "name": "https://independent.co.uk", "value": "gzip"},{"id": 101, "name": "https://code.google.com", "value": "gzip"},{"id": 102, "name": "https://draft.blogger.com", "value": "gzip"},{"id": 103, "name": "https://picasaweb.google.com", "value": "gzip"},{"id": 104, "name": "https://themeforest.net", "value": "gzip"},{"id": 105, "name": "https://archive.org", "value": "gzip"},{"id": 106, "name": "https://samsung.com", "value": "gzip"},{"id": 107, "name": "https://harvard.edu", "value": "gzip"},{"id": 108, "name": "https://indiatimes.com", "value": "gzip"},{"id": 109, "name": "https://books.google.com", "value": "gzip"},{"id": 110, "name": "https://twitter.com", "value": "gzip"},{"id": 111, "name": "https://ipv4.google.com", "value": "gzip"},{"id": 112, "name": "https://latimes.com", "value": "gzip"},{"id": 113, "name": "https://mirror.co.uk", "value": "gzip"},{"id": 114, "name": "https://get.google.com", "value": "gzip"},{"id": 115, "name": "https://telegraph.co.uk", "value": "gzip"},{"id": 116, "name": "https://pinterest.com", "value": "gzip"},{"id": 117, "name": "https://files.wordpress.com", "value": "gzip"},{"id": 118, "name": "https://elpais.com", "value": "gzip"},{"id": 119, "name": "https://mediafire.com", "value": "gzip"},{"id": 120, "name": "https://abcnews.go.com", "value": "gzip"},{"id": 121, "name": "https://usatoday.com", "value": "gzip"},{"id": 122, "name": "https://foxnews.com", "value": "gzip"},{"id": 123, "name": "https://change.org", "value": "gzip"},{"id": 124, "name": "https://marketingplatform.google.com", "value": "gzip"},{"id": 125, "name": "https://myaccount.google.com", "value": "gzip"},{"id": 126, "name": "https://scribd.com", "value": "gzip"},{"id": 127, "name": "https://translate.google.com", "value": "gzip"},{"id": 128, "name": "https://picasa.google.com", "value": "gzip"},{"id": 129, "name": "https://terra.com.br", "value": "gzip"},{"id": 130, "name": "https://hatena.ne.jp", "value": "gzip"},{"id": 131, "name": "https://bing.com", "value": "gzip"},{"id": 132, "name": "https://google.it", "value": "gzip"},{"id": 133, "name": "https://opera.com", "value": "gzip"},{"id": 134, "name": "https://fandom.com", "value": "gzip"},{"id": 135, "name": "https://amazon.co.uk", "value": "gzip"},{"id": 136, "name": "https://booking.com", "value": "gzip"},{"id": 137, "name": "https://youronlinechoices.com", "value": "gzip"},{"id": 138, "name": "https://telegram.me", "value": "gzip"},{"id": 139, "name": "https://lefigaro.fr", "value": "gzip"},{"id": 140, "name": "https://www.gov.uk", "value": "gzip"},{"id": 141, "name": "https://cdc.gov", "value": "gzip"},{"id": 142, "name": "https://cnet.com", "value": "gzip"},{"id": 143, "name": "https://thesun.co.uk", "value": "gzip"},{"id": 144, "name": "https://de.wikipedia.org", "value": "gzip"},{"id": 145, "name": "https://gravatar.com", "value": "gzip"},{"id": 146, "name": "https://un.org", "value": "gzip"},{"id": 147, "name": "https://goo.gl", "value": "gzip"},{"id": 148, "name": "https://android.com", "value": "gzip"},{"id": 149, "name": "https://search.google.com", "value": "gzip"},{"id": 150, "name": "https://time.com", "value": "gzip"},{"id": 151, "name": "https://amazon.it", "value": "gzip"},{"id": 152, "name": "https://asahi.com", "value": "gzip"},{"id": 153, "name": "https://it.wikipedia.org", "value": "gzip"},{"id": 154, "name": "https://bandcamp.com", "value": "gzip"},{"id": 155, "name": "https://sciencedaily.com", "value": "gzip"},{"id": 156, "name": "https://e-recht24.de", "value": "gzip"},{"id": 157, "name": "https://sedo.com", "value": "gzip"},{"id": 158, "name": "https://berkeley.edu", "value": "gzip"},{"id": 159, "name": "https://walmart.com", "value": "gzip"},{"id": 160, "name": "https://www.noaa.gov", "value": "gzip"},{"id": 161, "name": "https://m.wikipedia.org", "value": "gzip"},{"id": 162, "name": "https://blackberry.com", "value": "gzip"},{"id": 163, "name": "https://icann.org", "value": "gzip"},{"id": 164, "name": "https://google.pl", "value": "gzip"},{"id": 165, "name": "https://dell.com", "value": "gzip"},{"id": 166, "name": "https://soundcloud.com", "value": "gzip"},{"id": 167, "name": "https://depositfiles.com", "value": "gzip"},{"id": 168, "name": "https://sciencemag.org", "value": "gzip"},{"id": 169, "name": "https://pbs.org", "value": "gzip"},{"id": 170, "name": "https://www.weebly.com", "value": "gzip"},{"id": 171, "name": "https://xbox.com", "value": "gzip"},{"id": 172, "name": "https://wp.com", "value": "gzip"},{"id": 173, "name": "https://vox.com", "value": "gzip"},{"id": 174, "name": "https://ign.com", "value": "gzip"},{"id": 175, "name": "https://stackoverflow.com", "value": "gzip"},{"id": 176, "name": "https://theatlantic.com", "value": "gzip"},{"id": 177, "name": "https://yandex.ru", "value": "gzip"},{"id": 178, "name": "https://ox.ac.uk", "value": "gzip"},{"id": 179, "name": "https://fortune.com", "value": "gzip"},{"id": 180, "name": "https://foursquare.com", "value": "gzip"},{"id": 181, "name": "https://www.worldbank.org/", "value": "gzip"},{"id": 182, "name": "https://goodreads.com", "value": "gzip"},{"id": 183, "name": "https://gmail.com", "value": "gzip"},{"id": 184, "name": "https://huffpost.com", "value": "gzip"},{"id": 185, "name": "https://lemonde.fr", "value": "gzip"},{"id": 186, "name": "https://abc.net.au", "value": "gzip"},{"id": 187, "name": "https://thetimes.co.uk", "value": "gzip"},{"id": 188, "name": "https://spotify.com", "value": "gzip"},{"id": 189, "name": "https://digg.com", "value": "gzip"},{"id": 190, "name": "https://parallels.com", "value": "gzip"},{"id": 191, "name": "https://imageshack.us", "value": "gzip"},{"id": 192, "name": "https://cbc.ca", "value": "gzip"},{"id": 193, "name": "https://photobucket.com", "value": "gzip"},{"id": 194, "name": "https://whitehouse.gov", "value": "gzip"},{"id": 195, "name": "https://ndtv.com", "value": "gzip"},{"id": 196, "name": "https://dw.com", "value": "gzip"},{"id": 197, "name": "https://amazon.es", "value": "gzip"},{"id": 198, "name": "https://ietf.org", "value": "gzip"},{"id": 199, "name": "https://bt.com", "value": "gzip"},{"id": 200, "name": "https://nginx.com", "value": "gzip"},{"id": 201, "name": "https://iubenda.com", "value": "gzip"},{"id": 202, "name": "https://channel4.com", "value": "gzip"},{"id": 203, "name": "https://yale.edu", "value": "gzip"},{"id": 204, "name": "https://marriott.com", "value": "gzip"},{"id": 205, "name": "https://express.co.uk", "value": "gzip"},{"id": 206, "name": "https://ja.wikipedia.org", "value": "gzip"},{"id": 207, "name": "https://qq.com", "value": "gzip"},{"id": 208, "name": "https://tes.com", "value": "gzip"},{"id": 209, "name": "https://www.ikea.com", "value": "gzip"},{"id": 210, "name": "https://smh.com.au", "value": "gzip"},{"id": 211, "name": "https://hollywoodreporter.com", "value": "gzip"},{"id": 212, "name": "https://biglobe.ne.jp", "value": "gzip"},{"id": 213, "name": "https://www.wikipedia.org", "value": "gzip"},{"id": 214, "name": "https://google.co.in", "value": "gzip"},{"id": 215, "name": "https://ea.com", "value": "gzip"},{"id": 216, "name": "https://en.unesco.org", "value": "gzip"},{"id": 217, "name": "https://namecheap.com", "value": "gzip"},{"id": 218, "name": "https://surveymonkey.com", "value": "gzip"},{"id": 219, "name": "https://cisco.com", "value": "gzip"},{"id": 220, "name": "https://www.chicagotribune.com", "value": "gzip"},{"id": 221, "name": "https://www.cambridge.org", "value": "gzip"},{"id": 222, "name": "https://nikkei.com", "value": "gzip"},{"id": 223, "name": "https://id.wikipedia.org", "value": "gzip"},{"id": 224, "name": "https://sfgate.com", "value": "gzip"},{"id": 225, "name": "https://naver.jp", "value": "gzip"},{"id": 226, "name": "https://detik.com", "value": "gzip"},{"id": 227, "name": "https://addtoany.com", "value": "gzip"},{"id": 228, "name": "https://target.com", "value": "gzip"},{"id": 229, "name": "https://metro.co.uk", "value": "gzip"},{"id": 230, "name": "https://ovh.co.uk", "value": "gzip"},{"id": 231, "name": "https://amazon.fr", "value": "gzip"},{"id": 232, "name": "https://yelp.com", "value": "gzip"},{"id": 233, "name": "https://000webhost.com", "value": "gzip"},{"id": 234, "name": "https://umich.edu", "value": "gzip"},{"id": 235, "name": "https://psychologytoday.com", "value": "gzip"},{"id": 236, "name": "https://academia.edu", "value": "gzip"},{"id": 237, "name": "https://espn.com", "value": "gzip"},{"id": 238, "name": "https://theglobeandmail.com", "value": "gzip"},{"id": 239, "name": "https://adssettings.google.com", "value": "gzip"},{"id": 240, "name": "https://engadget.com", "value": "gzip"},{"id": 241, "name": "https://cornell.edu", "value": "gzip"},{"id": 242, "name": "https://www.khanacademy.org", "value": "gzip"},{"id": 243, "name": "https://gofundme.com", "value": "gzip"},{"id": 244, "name": "https://buzzfeed.com", "value": "gzip"},{"id": 245, "name": "https://www.wix.com", "value": "gzip"},{"id": 246, "name": "https://cbsnews.com", "value": "gzip"},{"id": 247, "name": "https://britannica.com", "value": "gzip"},{"id": 248, "name": "https://washington.edu", "value": "gzip"},{"id": 249, "name": "https://rtve.es", "value": "gzip"},{"id": 250, "name": "https://fastcompany.com", "value": "gzip"},{"id": 251, "name": "https://gnu.org", "value": "gzip"},{"id": 252, "name": "https://abc.es", "value": "gzip"},{"id": 253, "name": "https://gooyaabitemplates.com", "value": "gzip"},{"id": 254, "name": "https://sciencedirect.com", "value": "gzip"},{"id": 255, "name": "https://apache.org", "value": "gzip"},{"id": 256, "name": "https://ria.ru", "value": "gzip"},{"id": 257, "name": "https://nationalgeographic.com", "value": "gzip"},{"id": 258, "name": "https://doubleclick.net", "value": "gzip"},{"id": 259, "name": "https://guardian.co.uk", "value": "gzip"},{"id": 260, "name": "https://yahoo.co.jp", "value": "gzip"},{"id": 261, "name": "https://shutterstock.com", "value": "gzip"},{"id": 262, "name": "https://rt.com", "value": "gzip"},{"id": 263, "name": "https://mit.edu", "value": "gzip"},{"id": 264, "name": "https://t.co", "value": "gzip"},{"id": 265, "name": "https://nature.com", "value": "gzip"},{"id": 266, "name": "https://scoop.it", "value": "gzip"},{"id": 267, "name": "https://spiegel.de", "value": "gzip"},{"id": 268, "name": "https://cnbc.com", "value": "gzip"},{"id": 269, "name": "https://nginx.org", "value": "gzip"},{"id": 270, "name": "https://dan.com", "value": "gzip"},{"id": 271, "name": "https://www.nydailynews.com/", "value": "gzip"},{"id": 272, "name": "https://godaddy.com", "value": "gzip"},{"id": 273, "name": "https://twitch.tv", "value": "gzip"},{"id": 274, "name": "https://goo.ne.jp", "value": "gzip"},{"id": 275, "name": "https://news.com.au", "value": "gzip"},{"id": 276, "name": "https://rambler.ru", "value": "gzip"},{"id": 277, "name": "https://stanford.edu", "value": "gzip"},{"id": 278, "name": "https://bloglovin.com", "value": "gzip"},{"id": 279, "name": "https://wikihow.com", "value": "gzip"},{"id": 280, "name": "https://instagram.com", "value": "gzip"},{"id": 281, "name": "https://eventbrite.com", "value": "gzip"},{"id": 282, "name": "https://princeton.edu", "value": "gzip"},{"id": 283, "name": "https://researchgate.net", "value": "gzip"},{"id": 284, "name": "https://sendspace.com", "value": "gzip"},{"id": 285, "name": "https://nvidia.com", "value": "gzip"},{"id": 286, "name": "https://disney.com", "value": "gzip"},{"id": 287, "name": "https://disqus.com", "value": "gzip"},{"id": 288, "name": "https://urbandictionary.com", "value": "gzip"},{"id": 289, "name": "https://welt.de", "value": "gzip"},{"id": 290, "name": "https://google.com.tw", "value": "gzip"},{"id": 291, "name": "https://addthis.com", "value": "gzip"},{"id": 292, "name": "https://vice.com", "value": "gzip"},{"id": 293, "name": "https://ted.com", "value": "gzip"},{"id": 294, "name": "https://sapo.pt", "value": "gzip"},{"id": 295, "name": "https://fifa.com", "value": "gzip"},{"id": 296, "name": "https://hm.com", "value": "gzip"},{"id": 297, "name": "https://pl.wikipedia.org", "value": "gzip"},{"id": 298, "name": "https://tripadvisor.com", "value": "gzip"},{"id": 299, "name": "https://npr.org", "value": "gzip"},{"id": 300, "name": "https://playstation.com", "value": "gzip"},{"id": 301, "name": "https://oracle.com", "value": "gzip"},{"id": 302, "name": "https://finance.yahoo.com", "value": "gzip"},{"id": 303, "name": "https://weibo.com", "value": "gzip"},{"id": 304, "name": "https://kickstarter.com", "value": "gzip"},{"id": 305, "name": "https://www.elmundo.es", "value": "gzip"},{"id": 306, "name": "https://theverge.com", "value": "gzip"},{"id": 307, "name": "https://netflix.com", "value": "gzip"},{"id": 308, "name": "https://naver.com", "value": "gzip"},{"id": 309, "name": "https://mashable.com", "value": "gzip"},{"id": 310, "name": "https://ovh.com", "value": "gzip"},{"id": 311, "name": "https://groups.google.com", "value": "gzip"},{"id": 312, "name": "https://my.yahoo.com", "value": "gzip"},{"id": 313, "name": "https://nokia.com", "value": "gzip"},{"id": 314, "name": "https://standard.co.uk", "value": "gzip"},{"id": 315, "name": "https://gizmodo.com", "value": "gzip"},{"id": 316, "name": "https://shopify.com", "value": "gzip"},{"id": 317, "name": "https://deezer.com", "value": "gzip"},{"id": 318, "name": "https://variety.com", "value": "gzip"},{"id": 319, "name": "https://instructables.com", "value": "gzip"},{"id": 320, "name": "https://mysql.com", "value": "gzip"},{"id": 321, "name": "https://ibm.com", "value": "gzip"},{"id": 322, "name": "https://box.com", "value": "gzip"},{"id": 323, "name": "https://imageshack.com", "value": "gzip"},{"id": 324, "name": "https://googleblog.com", "value": "gzip"},{"id": 325, "name": "https://ru.wikipedia.org", "value": "gzip"},{"id": 326, "name": "https://yadi.sk", "value": "gzip"},{"id": 327, "name": "https://alibaba.com", "value": "gzip"},{"id": 328, "name": "https://google.co.id", "value": "gzip"},{"id": 329, "name": "https://mega.nz", "value": "gzip"},{"id": 330, "name": "https://newsweek.com", "value": "gzip"},{"id": 331, "name": "https://netvibes.com", "value": "gzip"},{"id": 332, "name": "https://quora.com", "value": "gzip"},{"id": 333, "name": "https://google.nl", "value": "gzip"},{"id": 334, "name": "https://economist.com", "value": "gzip"},{"id": 335, "name": "https://zendesk.com", "value": "gzip"},{"id": 336, "name": "https://google.ca", "value": "gzip"},{"id": 337, "name": "https://utexas.edu", "value": "gzip"},{"id": 338, "name": "https://boston.com", "value": "gzip"},{"id": 339, "name": "https://plos.org", "value": "gzip"},{"id": 340, "name": "https://sina.com.cn", "value": "gzip"},{"id": 341, "name": "https://iso.org", "value": "gzip"},{"id": 342, "name": "https://corriere.it", "value": "gzip"},{"id": 343, "name": "https://chron.com", "value": "gzip"},{"id": 344, "name": "https://airbnb.com", "value": "gzip"},{"id": 345, "name": "https://trello.com", "value": "gzip"},{"id": 346, "name": "https://eonline.com", "value": "gzip"},{"id": 347, "name": "https://fb.me", "value": "gzip"},{"id": 348, "name": "https://arxiv.org", "value": "gzip"},{"id": 349, "name": "https://thoughtco.com", "value": "gzip"},{"id": 350, "name": "https://billboard.com", "value": "gzip"},{"id": 351, "name": "https://ask.fm", "value": "gzip"},{"id": 352, "name": "https://ucoz.ru", "value": "gzip"},{"id": 353, "name": "https://orange.fr", "value": "gzip"},{"id": 354, "name": "https://narod.ru", "value": "gzip"},{"id": 355, "name": "https://e-monsite.com", "value": "gzip"},{"id": 356, "name": "https://venturebeat.com", "value": "gzip"},{"id": 357, "name": "https://daum.net", "value": "gzip"},{"id": 358, "name": "https://skype.com", "value": "deflate"},{"id": 359, "name": "https://vkontakte.ru", "value": "gzip"},{"id": 360, "name": "https://soratemplates.com", "value": "gzip"},{"id": 361, "name": "https://groups.yahoo.com", "value": "gzip"},{"id": 362, "name": "https://evernote.com", "value": "gzip"},{"id": 363, "name": "https://thefreedictionary.com", "value": "gzip"},{"id": 364, "name": "https://nicovideo.jp", "value": "gzip"},{"id": 365, "name": "https://history.com", "value": "gzip"},{"id": 366, "name": "https://ap.org", "value": "gzip"},{"id": 367, "name": "https://prnewswire.com", "value": "gzip"},{"id": 368, "name": "https://ebay.co.uk", "value": "gzip"},{"id": 369, "name": "https://biblegateway.com", "value": "gzip"},{"id": 370, "name": "https://www.fda.gov", "value": "gzip"},{"id": 371, "name": "https://statista.com", "value": "gzip"},{"id": 372, "name": "https://unicef.org", "value": "gzip"},{"id": 373, "name": "https://cia.gov", "value": "gzip"},{"id": 374, "name": "https://sky.com", "value": "gzip"},{"id": 375, "name": "https://ca.gov", "value": "gzip"},{"id": 376, "name": "https://amzn.to", "value": "gzip"},{"id": 377, "name": "https://answers.yahoo.com", "value": "gzip"},{"id": 378, "name": "https://dictionary.com", "value": "gzip"},{"id": 379, "name": "https://example.com", "value": "gzip"},{"id": 380, "name": "https://broadcom.com", "value": "gzip"},{"id": 381, "name": "https://intel.com", "value": "gzip"},{"id": 382, "name": "https://answers.com", "value": "gzip"},{"id": 383, "name": "https://etsy.com", "value": "gzip"},{"id": 384, "name": "https://tabelog.com", "value": "gzip"},{"id": 385, "name": "https://espn.go.com", "value": "gzip"},{"id": 386, "name": "https://zdnet.com", "value": "gzip"},{"id": 387, "name": "https://ftc.gov", "value": "gzip"},{"id": 388, "name": "https://xing.com", "value": "gzip"},{"id": 389, "name": "https://thedailybeast.com", "value": "gzip"},{"id": 390, "name": "https://inc.com", "value": "gzip"},{"id": 391, "name": "https://trustpilot.com", "value": "gzip"},{"id": 392, "name": "https://cbslocal.com", "value": "gzip"},{"id": 393, "name": "https://newyorker.com", "value": "gzip"},{"id": 394, "name": "https://adweek.com", "value": "gzip"},{"id": 395, "name": "https://pinterest.co.uk", "value": "gzip"},{"id": 396, "name": "https://steamcommunity.com", "value": "gzip"},{"id": 397, "name": "https://about.me", "value": "gzip"},{"id": 398, "name": "https://marketwatch.com", "value": "gzip"},{"id": 399, "name": "https://mixcloud.com", "value": "gzip"},{"id": 400, "name": "https://wiktionary.org", "value": "gzip"},{"id": 401, "name": "https://politico.com", "value": "gzip"},{"id": 402, "name": "https://wiley.com", "value": "gzip"},{"id": 403, "name": "https://usgs.gov", "value": "gzip"},{"id": 404, "name": "https://rottentomatoes.com", "value": "gzip"},{"id": 405, "name": "https://dribbble.com", "value": "gzip"},{"id": 406, "name": "https://sports.yahoo.com", "value": "gzip"},{"id": 407, "name": "https://coursera.org", "value": "gzip"},{"id": 408, "name": "https://amazon.ca", "value": "gzip"},{"id": 409, "name": "https://upenn.edu", "value": "gzip"},{"id": 410, "name": "https://state.gov", "value": "gzip"},{"id": 411, "name": "https://greenpeace.org", "value": "gzip"},{"id": 412, "name": "https://20minutos.es", "value": "gzip"},{"id": 413, "name": "https://mystrikingly.com", "value": "gzip"},{"id": 414, "name": "https://dreamstime.com", "value": "gzip"},{"id": 415, "name": "https://behance.net", "value": "gzip"},{"id": 416, "name": "https://amazon.in", "value": "gzip"},{"id": 417, "name": "https://stripe.com", "value": "gzip"},{"id": 418, "name": "https://scientificamerican.com", "value": "gzip"},{"id": 419, "name": "https://psu.edu", "value": "gzip"},{"id": 420, "name": "https://timeout.com", "value": "gzip"},{"id": 421, "name": "https://house.gov", "value": "gzip"},{"id": 422, "name": "https://softonic.com", "value": "gzip"},{"id": 423, "name": "https://www.skyrock.com", "value": "gzip"},{"id": 424, "name": "https://membership.businesswire.com", "value": "gzip"},{"id": 425, "name": "https://autodesk.com", "value": "gzip"},{"id": 426, "name": "https://entrepreneur.com", "value": "gzip"},{"id": 427, "name": "https://nbcnews.com", "value": "gzip"},{"id": 428, "name": "https://nba.com", "value": "gzip"},{"id": 429, "name": "https://oreilly.com", "value": "gzip"},{"id": 430, "name": "https://mayoclinic.org", "value": "gzip"},{"id": 431, "name": "https://pastebin.com", "value": "gzip"},{"id": 432, "name": "https://rediff.com", "value": "gzip"},{"id": 433, "name": "https://techradar.com", "value": "gzip"},{"id": 434, "name": "https://arstechnica.com", "value": "gzip"},{"id": 435, "name": "https://sputniknews.com", "value": "gzip"},{"id": 436, "name": "https://gitlab.com", "value": "gzip"},{"id": 437, "name": "https://sylabs.io", "value": "gzip"},{"id": 438, "name": "https://www.observe.ai", "value": "gzip"},{"id": 439, "name": "https://www.instacart.com", "value": "gzip"},{"id": 440, "name": "https://www.pizzahut.com", "value": "gzip"},{"id": 441, "name": "https://www.dominos.com/en/", "value": "gzip"},{"id": 442, "name": "https://www.mcdonalds.com/us/", "value": "gzip"},{"id": 443, "name": "https://www.wendys.com", "value": "gzip"},{"id": 444, "name": "https://www.nike.com", "value": "gzip"},{"id": 445, "name": "https://www.lyft.com", "value": "gzip"},{"id": 446, "name": "https://www.glassdoor.com", "value": "gzip"},{"id": 447, "name": "https://zoom.us", "value": "gzip"},{"id": 448, "name": "https://www.salesforce.com", "value": "gzip"},{"id": 449, "name": "https://www.hellosign.com", "value": "gzip"},{"id": 450, "name": "https://www.docusign.com", "value": "gzip"},{"id": 451, "name": "https://www.ultimatesoftware.com", "value": "gzip"},{"id": 452, "name": "https://www.fastly.com", "value": "gzip"},{"id": 453, "name": "https://www.sap.com", "value": "gzip"},{"id": 454, "name": "https://www.intuit.com", "value": "gzip"},{"id": 455, "name": "https://www.vmware.com", "value": "gzip"},{"id": 456, "name": "https://www.docker.com", "value": "gzip"},{"id": 457, "name": "https://www.redhat.com", "value": "gzip"},{"id": 458, "name": "https://readthedocs.org", "value": "gzip"},{"id": 459, "name": "https://www.rust-lang.org", "value": "gzip"},{"id": 460, "name": "https://www.discourse.org", "value": "gzip"},{"id": 461, "name": "https://us-rse.org", "value": "gzip"}],
+    lookup: {  "1": "https://www.google.com", "2": "https://youtube.com", "3": "https://apple.com", "4": "https://docs.google.com", "5": "https://www.blogger.com", "6": "https://microsoft.com", "7": "https://support.google.com", "8": "https://play.google.com", "9": "https://adobe.com", "10": "https://plus.google.com", "11": "https://wordpress.org", "12": "https://cloudflare.com", "13": "https://linkedin.com", "14": "https://maps.google.com", "15": "https://en.wikipedia.org", "16": "https://vimeo.com", "17": "https://sites.google.com", "18": "https://accounts.google.com", "19": "https://europa.eu", "20": "https://youtu.be", "21": "https://drive.google.com", "22": "https://istockphoto.com", "23": "https://github.com", "24": "https://amazon.com", "25": "https://vk.com", "26": "https://facebook.com", "27": "https://medium.com", "28": "https://bbc.co.uk", "29": "https://es.wikipedia.org", "30": "https://cnn.com", "31": "https://live.com", "32": "https://nytimes.com", "33": "https://jimdofree.com", "34": "https://google.fr", "35": "https://theguardian.com", "36": "https://who.int", "37": "https://google.co.uk", "38": "https://dropbox.com", "39": "https://policies.google.com", "40": "https://bbc.com", "41": "https://nih.gov", "42": "https://whatsapp.com", "43": "https://msn.com", "44": "https://reuters.com", "45": "https://pt.wikipedia.org", "46": "https://fr.wikipedia.org", "47": "https://uol.com.br", "48": "https://myspace.com", "49": "https://feedburner.com", "50": "https://slideshare.net", "51": "https://paypal.com", "52": "https://creativecommons.org", "53": "https://google.es", "54": "https://dailymotion.com", "55": "https://t.me", "56": "https://news.google.com", "57": "https://wikimedia.org", "58": "https://developers.google.com", "59": "https://imdb.com", "60": "https://forbes.com", "61": "https://mail.ru", "62": "https://washingtonpost.com", "63": "https://photos.google.com", "64": "https://google.de", "65": "https://w3.org", "66": "https://www.yahoo.com", "67": "https://aliexpress.com", "68": "https://google.com.br", "69": "https://google.co.jp", "70": "https://mail.google.com", "71": "https://networkadvertising.org", "72": "https://hugedomains.com", "73": "https://www.bluehost.com", "74": "https://tinyurl.com", "75": "https://cpanel.com", "76": "https://businessinsider.com", "77": "https://news.yahoo.com", "78": "https://aol.com", "79": "https://ft.com", "80": "https://wikia.com", "81": "https://techcrunch.com", "82": "https://office.com", "83": "https://cpanel.net", "84": "https://issuu.com", "85": "https://ebay.com", "86": "https://google.ru", "87": "https://nypost.com", "88": "https://huffingtonpost.com", "89": "https://dailymail.co.uk", "90": "https://wsj.com", "91": "https://wired.com", "92": "https://amazon.de", "93": "https://tools.google.com", "94": "https://abril.com.br", "95": "https://plesk.com", "96": "https://ok.ru", "97": "https://amazon.co.jp", "98": "https://bloomberg.com", "99": "https://steampowered.com", "100": "https://independent.co.uk", "101": "https://code.google.com", "102": "https://draft.blogger.com", "103": "https://picasaweb.google.com", "104": "https://themeforest.net", "105": "https://archive.org", "106": "https://samsung.com", "107": "https://harvard.edu", "108": "https://indiatimes.com", "109": "https://books.google.com", "110": "https://twitter.com", "111": "https://ipv4.google.com", "112": "https://latimes.com", "113": "https://mirror.co.uk", "114": "https://get.google.com", "115": "https://telegraph.co.uk", "116": "https://pinterest.com", "117": "https://files.wordpress.com", "118": "https://elpais.com", "119": "https://mediafire.com", "120": "https://abcnews.go.com", "121": "https://usatoday.com", "122": "https://foxnews.com", "123": "https://change.org", "124": "https://marketingplatform.google.com", "125": "https://myaccount.google.com", "126": "https://scribd.com", "127": "https://translate.google.com", "128": "https://picasa.google.com", "129": "https://terra.com.br", "130": "https://hatena.ne.jp", "131": "https://bing.com", "132": "https://google.it", "133": "https://opera.com", "134": "https://fandom.com", "135": "https://amazon.co.uk", "136": "https://booking.com", "137": "https://youronlinechoices.com", "138": "https://telegram.me", "139": "https://lefigaro.fr", "140": "https://www.gov.uk", "141": "https://cdc.gov", "142": "https://cnet.com", "143": "https://thesun.co.uk", "144": "https://de.wikipedia.org", "145": "https://gravatar.com", "146": "https://un.org", "147": "https://goo.gl", "148": "https://android.com", "149": "https://search.google.com", "150": "https://time.com", "151": "https://amazon.it", "152": "https://asahi.com", "153": "https://it.wikipedia.org", "154": "https://bandcamp.com", "155": "https://sciencedaily.com", "156": "https://e-recht24.de", "157": "https://sedo.com", "158": "https://berkeley.edu", "159": "https://walmart.com", "160": "https://www.noaa.gov", "161": "https://m.wikipedia.org", "162": "https://blackberry.com", "163": "https://icann.org", "164": "https://google.pl", "165": "https://dell.com", "166": "https://soundcloud.com", "167": "https://depositfiles.com", "168": "https://sciencemag.org", "169": "https://pbs.org", "170": "https://www.weebly.com", "171": "https://xbox.com", "172": "https://wp.com", "173": "https://vox.com", "174": "https://ign.com", "175": "https://stackoverflow.com", "176": "https://theatlantic.com", "177": "https://yandex.ru", "178": "https://ox.ac.uk", "179": "https://fortune.com", "180": "https://foursquare.com", "181": "https://www.worldbank.org/", "182": "https://goodreads.com", "183": "https://gmail.com", "184": "https://huffpost.com", "185": "https://lemonde.fr", "186": "https://abc.net.au", "187": "https://thetimes.co.uk", "188": "https://spotify.com", "189": "https://digg.com", "190": "https://parallels.com", "191": "https://imageshack.us", "192": "https://cbc.ca", "193": "https://photobucket.com", "194": "https://whitehouse.gov", "195": "https://ndtv.com", "196": "https://dw.com", "197": "https://amazon.es", "198": "https://ietf.org", "199": "https://bt.com", "200": "https://nginx.com", "201": "https://iubenda.com", "202": "https://channel4.com", "203": "https://yale.edu", "204": "https://marriott.com", "205": "https://express.co.uk", "206": "https://ja.wikipedia.org", "207": "https://qq.com", "208": "https://tes.com", "209": "https://www.ikea.com", "210": "https://smh.com.au", "211": "https://hollywoodreporter.com", "212": "https://biglobe.ne.jp", "213": "https://www.wikipedia.org", "214": "https://google.co.in", "215": "https://ea.com", "216": "https://en.unesco.org", "217": "https://namecheap.com", "218": "https://surveymonkey.com", "219": "https://cisco.com", "220": "https://www.chicagotribune.com", "221": "https://www.cambridge.org", "222": "https://nikkei.com", "223": "https://id.wikipedia.org", "224": "https://sfgate.com", "225": "https://naver.jp", "226": "https://detik.com", "227": "https://addtoany.com", "228": "https://target.com", "229": "https://metro.co.uk", "230": "https://ovh.co.uk", "231": "https://amazon.fr", "232": "https://yelp.com", "233": "https://000webhost.com", "234": "https://umich.edu", "235": "https://psychologytoday.com", "236": "https://academia.edu", "237": "https://espn.com", "238": "https://theglobeandmail.com", "239": "https://adssettings.google.com", "240": "https://engadget.com", "241": "https://cornell.edu", "242": "https://www.khanacademy.org", "243": "https://gofundme.com", "244": "https://buzzfeed.com", "245": "https://www.wix.com", "246": "https://cbsnews.com", "247": "https://britannica.com", "248": "https://washington.edu", "249": "https://rtve.es", "250": "https://fastcompany.com", "251": "https://gnu.org", "252": "https://abc.es", "253": "https://gooyaabitemplates.com", "254": "https://sciencedirect.com", "255": "https://apache.org", "256": "https://ria.ru", "257": "https://nationalgeographic.com", "258": "https://doubleclick.net", "259": "https://guardian.co.uk", "260": "https://yahoo.co.jp", "261": "https://shutterstock.com", "262": "https://rt.com", "263": "https://mit.edu", "264": "https://t.co", "265": "https://nature.com", "266": "https://scoop.it", "267": "https://spiegel.de", "268": "https://cnbc.com", "269": "https://nginx.org", "270": "https://dan.com", "271": "https://www.nydailynews.com/", "272": "https://godaddy.com", "273": "https://twitch.tv", "274": "https://goo.ne.jp", "275": "https://news.com.au", "276": "https://rambler.ru", "277": "https://stanford.edu", "278": "https://bloglovin.com", "279": "https://wikihow.com", "280": "https://instagram.com", "281": "https://eventbrite.com", "282": "https://princeton.edu", "283": "https://researchgate.net", "284": "https://sendspace.com", "285": "https://nvidia.com", "286": "https://disney.com", "287": "https://disqus.com", "288": "https://urbandictionary.com", "289": "https://welt.de", "290": "https://google.com.tw", "291": "https://addthis.com", "292": "https://vice.com", "293": "https://ted.com", "294": "https://sapo.pt", "295": "https://fifa.com", "296": "https://hm.com", "297": "https://pl.wikipedia.org", "298": "https://tripadvisor.com", "299": "https://npr.org", "300": "https://playstation.com", "301": "https://oracle.com", "302": "https://finance.yahoo.com", "303": "https://weibo.com", "304": "https://kickstarter.com", "305": "https://www.elmundo.es", "306": "https://theverge.com", "307": "https://netflix.com", "308": "https://naver.com", "309": "https://mashable.com", "310": "https://ovh.com", "311": "https://groups.google.com", "312": "https://my.yahoo.com", "313": "https://nokia.com", "314": "https://standard.co.uk", "315": "https://gizmodo.com", "316": "https://shopify.com", "317": "https://deezer.com", "318": "https://variety.com", "319": "https://instructables.com", "320": "https://mysql.com", "321": "https://ibm.com", "322": "https://box.com", "323": "https://imageshack.com", "324": "https://googleblog.com", "325": "https://ru.wikipedia.org", "326": "https://yadi.sk", "327": "https://alibaba.com", "328": "https://google.co.id", "329": "https://mega.nz", "330": "https://newsweek.com", "331": "https://netvibes.com", "332": "https://quora.com", "333": "https://google.nl", "334": "https://economist.com", "335": "https://zendesk.com", "336": "https://google.ca", "337": "https://utexas.edu", "338": "https://boston.com", "339": "https://plos.org", "340": "https://sina.com.cn", "341": "https://iso.org", "342": "https://corriere.it", "343": "https://chron.com", "344": "https://airbnb.com", "345": "https://trello.com", "346": "https://eonline.com", "347": "https://fb.me", "348": "https://arxiv.org", "349": "https://thoughtco.com", "350": "https://billboard.com", "351": "https://ask.fm", "352": "https://ucoz.ru", "353": "https://orange.fr", "354": "https://narod.ru", "355": "https://e-monsite.com", "356": "https://venturebeat.com", "357": "https://daum.net", "358": "https://skype.com", "359": "https://vkontakte.ru", "360": "https://soratemplates.com", "361": "https://groups.yahoo.com", "362": "https://evernote.com", "363": "https://thefreedictionary.com", "364": "https://nicovideo.jp", "365": "https://history.com", "366": "https://ap.org", "367": "https://prnewswire.com", "368": "https://ebay.co.uk", "369": "https://biblegateway.com", "370": "https://www.fda.gov", "371": "https://statista.com", "372": "https://unicef.org", "373": "https://cia.gov", "374": "https://sky.com", "375": "https://ca.gov", "376": "https://amzn.to", "377": "https://answers.yahoo.com", "378": "https://dictionary.com", "379": "https://example.com", "380": "https://broadcom.com", "381": "https://intel.com", "382": "https://answers.com", "383": "https://etsy.com", "384": "https://tabelog.com", "385": "https://espn.go.com", "386": "https://zdnet.com", "387": "https://ftc.gov", "388": "https://xing.com", "389": "https://thedailybeast.com", "390": "https://inc.com", "391": "https://trustpilot.com", "392": "https://cbslocal.com", "393": "https://newyorker.com", "394": "https://adweek.com", "395": "https://pinterest.co.uk", "396": "https://steamcommunity.com", "397": "https://about.me", "398": "https://marketwatch.com", "399": "https://mixcloud.com", "400": "https://wiktionary.org", "401": "https://politico.com", "402": "https://wiley.com", "403": "https://usgs.gov", "404": "https://rottentomatoes.com", "405": "https://dribbble.com", "406": "https://sports.yahoo.com", "407": "https://coursera.org", "408": "https://amazon.ca", "409": "https://upenn.edu", "410": "https://state.gov", "411": "https://greenpeace.org", "412": "https://20minutos.es", "413": "https://mystrikingly.com", "414": "https://dreamstime.com", "415": "https://behance.net", "416": "https://amazon.in", "417": "https://stripe.com", "418": "https://scientificamerican.com", "419": "https://psu.edu", "420": "https://timeout.com", "421": "https://house.gov", "422": "https://softonic.com", "423": "https://www.skyrock.com", "424": "https://membership.businesswire.com", "425": "https://autodesk.com", "426": "https://entrepreneur.com", "427": "https://nbcnews.com", "428": "https://nba.com", "429": "https://oreilly.com", "430": "https://mayoclinic.org", "431": "https://pastebin.com", "432": "https://rediff.com", "433": "https://techradar.com", "434": "https://arstechnica.com", "435": "https://sputniknews.com", "436": "https://gitlab.com", "437": "https://sylabs.io", "438": "https://www.observe.ai", "439": "https://www.instacart.com", "440": "https://www.pizzahut.com", "441": "https://www.dominos.com/en/", "442": "https://www.mcdonalds.com/us/", "443": "https://www.wendys.com", "444": "https://www.nike.com", "445": "https://www.lyft.com", "446": "https://www.glassdoor.com", "447": "https://zoom.us", "448": "https://www.salesforce.com", "449": "https://www.hellosign.com", "450": "https://www.docusign.com", "451": "https://www.ultimatesoftware.com", "452": "https://www.fastly.com", "453": "https://www.sap.com", "454": "https://www.intuit.com", "455": "https://www.vmware.com", "456": "https://www.docker.com", "457": "https://www.redhat.com", "458": "https://readthedocs.org", "459": "https://www.rust-lang.org", "460": "https://www.discourse.org", "461": "https://us-rse.org" },
+    sort: 'id',
+    sortDir:'asc',
+    page: 0,
+    pageSize: 25
+  }),
+  methods: {
+    viewRow: function(event) {
+        var rowId = $(event.target).closest('tr').find('td:first').text()
+        var site = this.lookup[rowId].replace(/(^\w+:|^)\/\//, '');
+        document.location = "/site/" + site
+    },
+    sortBy: function(s) {
+      if (s === this.sort) {
+        this.sortDir = (this.sortDir === 'asc') ? 'desc' : 'asc';
+      } else {
+        this.sortDir = 'asc';
+      }
+      this.sort = s;
+    },
+    isActiveSort: function(s) { 
+      return this.sort === s; 
+    },
+    hasPage: function(dir) {
+      if (dir === -1 && (this.page > 0)) return true;
+      if (dir ===  1 && (((this.page+1)*this.pageSize) < this.rows.length)) return true;
+      return false;
+    },
+    prevPage: function() {
+      if (this.hasPage(-1)) this.page--;
+    },
+    nextPage: function() {
+      if (this.hasPage(1)) this.page++;
+    }
+  },
+  computed: {
+    sortedRows: function() {
+      return this.rows.sort((a, b) => {
+        let dir = (this.sortDir === 'asc') ? 1 : -1;
+        if (a[this.sort] < b[this.sort]) {
+          return -1 * dir;
+        } else if (a[this.sort] > b[this.sort]) {
+          return  1 * dir;
+        } else {
+          return 0;
+        }
+      }).filter((row, idx) => {
+        let s = this.page*this.pageSize;
+        let e = (this.page+1)*this.pageSize;
+        return (idx >= s && idx < e);
+        });
+    },
+    pageSizeModel: {
+      get() {
+        return this.pageSize;
+      },
+      set(v) {
+        this.pageSize = v;
+        this.page = 0;
+      }
+    }
+  },
+  filters: {
+    capitalize: function (v) {
+      if (!v) return ''
+      v = v.toString()
+      return v.charAt(0).toUpperCase() + v.slice(1)
+    }
+  }
+}).$mount('#app');
+</script>
+</body>
+</html>

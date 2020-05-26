@@ -1,0 +1,2459 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>HTML Header Counts</title>
+    <script src='static/Chart.min.js'></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"> 
+    <style>
+      body{ font-family: 'Bebas Neue', cursive;}
+    </style>
+  </head>
+  <body>
+
+    <h1>HTML Header Counts</h1>
+    <p id="caption">What response  do we see across 500 sites?</p>
+    <canvas id="myChart" width="800px" height="5000px"></canvas>
+
+    <script>
+      Chart.defaults.global.responsive = true;
+      Chart.defaults.global.maintainAspectRatio = true;
+
+      var chartData = {
+        labels : [
+                   "content-type",
+                  
+                   "date",
+                  
+                   "content-encoding",
+                  
+                   "cache-control",
+                  
+                   "connection",
+                  
+                   "server",
+                  
+                   "vary",
+                  
+                   "x-frame-options",
+                  
+                   "set-cookie",
+                  
+                   "strict-transport-security",
+                  
+                   "transfer-encoding",
+                  
+                   "expires",
+                  
+                   "x-content-type-options",
+                  
+                   "content-length",
+                  
+                   "x-xss-protection",
+                  
+                   "accept-ranges",
+                  
+                   "age",
+                  
+                   "x-cache",
+                  
+                   "content-security-policy",
+                  
+                   "etag",
+                  
+                   "last-modified",
+                  
+                   "via",
+                  
+                   "pragma",
+                  
+                   "x-cache-hits",
+                  
+                   "x-served-by",
+                  
+                   "content-language",
+                  
+                   "link",
+                  
+                   "p3p",
+                  
+                   "alt-svc",
+                  
+                   "x-timer",
+                  
+                   "x-ua-compatible",
+                  
+                   "x-powered-by",
+                  
+                   "expect-ct",
+                  
+                   "referrer-policy",
+                  
+                   "x-amz-cf-pop",
+                  
+                   "x-amz-cf-id",
+                  
+                   "server-timing",
+                  
+                   "access-control-allow-origin",
+                  
+                   "cf-ray",
+                  
+                   "cf-cache-status",
+                  
+                   "cf-request-id",
+                  
+                   "keep-alive",
+                  
+                   "x-akamai-transformed",
+                  
+                   "x-request-id",
+                  
+                   "content-security-policy-report-only",
+                  
+                   "x-download-options",
+                  
+                   "x-cache-status",
+                  
+                   "x-drupal-cache",
+                  
+                   "x-generator",
+                  
+                   "x-client-ip",
+                  
+                   "x-runtime",
+                  
+                   "x-envoy-upstream-service-time",
+                  
+                   "x-varnish",
+                  
+                   "x-amz-rid",
+                  
+                   "x-permitted-cross-domain-policies",
+                  
+                   "accept-ch",
+                  
+                   "accept-ch-lifetime",
+                  
+                   "access-control-allow-credentials",
+                  
+                   "x-dns-prefetch-control",
+                  
+                   "x-auto-login",
+                  
+                   "access-control-allow-methods",
+                  
+                   "x-backend",
+                  
+                   "status",
+                  
+                   "x-hacker",
+                  
+                   "access-control-expose-headers",
+                  
+                   "x-cacheable",
+                  
+                   "x-drupal-dynamic-cache",
+                  
+                   "report-to",
+                  
+                   "x-host",
+                  
+                   "host-header",
+                  
+                   "x-rq",
+                  
+                   "x-ac",
+                  
+                   "x-proxy-cache",
+                  
+                   "access-control-allow-headers",
+                  
+                   "x-msedge-ref",
+                  
+                   "nel",
+                  
+                   "x-ah-environment",
+                  
+                   "x-response-time",
+                  
+                   "x-edgeconnect-midmile-rtt",
+                  
+                   "x-edgeconnect-origin-mex-latency",
+                  
+                   "x-cloud-trace-context",
+                  
+                   "timing-allow-origin",
+                  
+                   "x-pantheon-styx-hostname",
+                  
+                   "x-styx-req-id",
+                  
+                   "x-vcap-request-id",
+                  
+                   "x-content-security-policy",
+                  
+                   "x-varnish-cache",
+                  
+                   "feature-policy",
+                  
+                   "x-cdn",
+                  
+                   "x-age",
+                  
+                   "x-oneagent-js-injection",
+                  
+                   "access-control-max-age",
+                  
+                   "request-context",
+                  
+                   "x-backend-server",
+                  
+                   "x-github-request-id",
+                  
+                   "edge-control",
+                  
+                   "x-fb-debug",
+                  
+                   "request-id",
+                  
+                   "x-country-code",
+                  
+                   "x-region",
+                  
+                   "x-edgeconnect-cache-status",
+                  
+                   "x-nananana",
+                  
+                   "x-ua-device",
+                  
+                   "x-ruxit-js-agent",
+                  
+                   "x-server",
+                  
+                   "surrogate-control",
+                  
+                   "x-activity-id",
+                  
+                   "ms-cv",
+                  
+                   "x-appversion",
+                  
+                   "x-az",
+                  
+                   "x-nc",
+                  
+                   "x-li-fabric",
+                  
+                   "x-li-pop",
+                  
+                   "x-li-proto",
+                  
+                   "x-li-uuid",
+                  
+                   "x-clacks-overhead",
+                  
+                   "x-frontend",
+                  
+                   "x-cache-action",
+                  
+                   "x-cache-age",
+                  
+                   "req-svc-chain",
+                  
+                   "x-gu-edition",
+                  
+                   "x-fb-trip-id",
+                  
+                   "x-request-uuid",
+                  
+                   "x-device",
+                  
+                   "pb-rid",
+                  
+                   "pb-pid",
+                  
+                   "content-location",
+                  
+                   "tcn",
+                  
+                   "x-application-context",
+                  
+                   "x-amz-id-2",
+                  
+                   "x-amz-request-id",
+                  
+                   "warning",
+                  
+                   "x-datacenter",
+                  
+                   "rlogid",
+                  
+                   "x-ec-lua",
+                  
+                   "x-hp-webp",
+                  
+                   "x-jurisdiction",
+                  
+                   "x-access",
+                  
+                   "x-developers",
+                  
+                   "x-id",
+                  
+                   "x-section",
+                  
+                   "x-type",
+                  
+                   "x-esi",
+                  
+                   "verso",
+                  
+                   "pagetype",
+                  
+                   "ntcoent-length",
+                  
+                   "x-connection-hash",
+                  
+                   "x-pinterest-direct",
+                  
+                   "pinterest-generated-by",
+                  
+                   "pinterest-version",
+                  
+                   "x-pinterest-rid",
+                  
+                   "x-node",
+                  
+                   "x-recruiting",
+                  
+                   "x-tx-id",
+                  
+                   "x-nu-aka-acs-version",
+                  
+                   "x-varnish-hits",
+                  
+                   "x-varnish-ip",
+                  
+                   "x-varnish-port",
+                  
+                   "x-url",
+                  
+                   "x-content-security-policy-report-only",
+                  
+                   "x-webkit-csp",
+                  
+                   "x-gen-mode",
+                  
+                   "x-block-status",
+                  
+                   "user-cache-control",
+                  
+                   "x-hnp-log",
+                  
+                   "x-toujours-debout-location",
+                  
+                   "x-toujours-debout-branch",
+                  
+                   "x-iplb-instance",
+                  
+                   "x-cdn-pop",
+                  
+                   "x-cdn-pop-ip",
+                  
+                   "x-b3-sampled",
+                  
+                   "x-correlation-id",
+                  
+                   "x-end-user-visit-id",
+                  
+                   "x-end-user-visitor-id",
+                  
+                   "x-b3-traceid",
+                  
+                   "x-cache-grace",
+                  
+                   "datacenter",
+                  
+                   "serverid",
+                  
+                   "surrogate-key",
+                  
+                   "x-via-cdn",
+                  
+                   "x-iinfo",
+                  
+                   "x-trace",
+                  
+                   "x-guploader-uploadid",
+                  
+                   "x-goog-generation",
+                  
+                   "x-goog-metageneration",
+                  
+                   "x-goog-stored-content-encoding",
+                  
+                   "x-goog-stored-content-length",
+                  
+                   "x-goog-meta-goog-reserved-file-mtime",
+                  
+                   "x-goog-hash",
+                  
+                   "x-goog-storage-class",
+                  
+                   "x-fastly-request-id",
+                  
+                   "x-cluster-name",
+                  
+                   "ms-operation-id",
+                  
+                   "tls_version",
+                  
+                   "x-rtag",
+                  
+                   "x-adobe-content",
+                  
+                   "x-adobe-loc",
+                  
+                   "x-adobe-source",
+                  
+                   "x-olaf",
+                  
+                   "x-vserver",
+                  
+                   "x-vimeo-dc",
+                  
+                   "x-proxy-build",
+                  
+                   "x-timing-wait",
+                  
+                   "giproxy-languageonlypath",
+                  
+                   "giproxy-truncatedpath",
+                  
+                   "selected-fe",
+                  
+                   "sepia-upstream",
+                  
+                   "medium-fulfilled-by",
+                  
+                   "x-bbc-edge-cache-status",
+                  
+                   "x-bbc-origin-response-status",
+                  
+                   "x-servedbyhost",
+                  
+                   "x-calculatedfetarget",
+                  
+                   "x-backendhttpstatus",
+                  
+                   "x-feproxyinfo",
+                  
+                   "x-calculatedbetarget",
+                  
+                   "x-rum-validated",
+                  
+                   "x-besku",
+                  
+                   "x-backend-begin",
+                  
+                   "x-backend-end",
+                  
+                   "x-diaginfo",
+                  
+                   "x-beserver",
+                  
+                   "x-proxy-routingcorrectness",
+                  
+                   "x-proxy-backendserverstatus",
+                  
+                   "x-feserver",
+                  
+                   "x-nyt-data-last-modified",
+                  
+                   "x-pagetype",
+                  
+                   "x-vi-compatibility",
+                  
+                   "x-nyt-route",
+                  
+                   "x-origin-time",
+                  
+                   "x-gdpr",
+                  
+                   "x-api-version",
+                  
+                   "x-aspnet-version",
+                  
+                   "dropbox-streaming",
+                  
+                   "x-dropbox-request-id",
+                  
+                   "x-pal-host",
+                  
+                   "x-lb-nocache",
+                  
+                   "x-fastly-cache-status",
+                  
+                   "x-aspnetmvc-version",
+                  
+                   "browser-expires",
+                  
+                   "last-updatedl",
+                  
+                   "x-trackingid",
+                  
+                   "x-fruc-version",
+                  
+                   "x-ss-make-cacheable",
+                  
+                   "x-bench-route",
+                  
+                   "paypal-debug-id",
+                  
+                   "dc",
+                  
+                   "x-dm-backnode",
+                  
+                   "x-dm-lb-ip",
+                  
+                   "x-dm-lb-name",
+                  
+                   "x-dm-backnode-response-time",
+                  
+                   "backend",
+                  
+                   "x-yourttl",
+                  
+                   "x-cicero-cache",
+                  
+                   "x-fastly-backend",
+                  
+                   "x-fastlyttl",
+                  
+                   "x-postal-code",
+                  
+                   "x-etime",
+                  
+                   "yakult_utab",
+                  
+                   "eagleeye-traceid",
+                  
+                   "x-eig-tracking-id",
+                  
+                   "x-amz-replication-status",
+                  
+                   "x-amz-meta-md5_hash",
+                  
+                   "x-amz-version-id",
+                  
+                   "ec-policy-id",
+                  
+                   "x-storage",
+                  
+                   "x-graced",
+                  
+                   "x-mol-georesp",
+                  
+                   "x-rs-time",
+                  
+                   "x-rs-ops",
+                  
+                   "restarts",
+                  
+                   "x-rs-ben",
+                  
+                   "x-format",
+                  
+                   "apple-news-services-host",
+                  
+                   "apple-news-services-request-url",
+                  
+                   "apple-news-services-parsed-url",
+                  
+                   "apple-news-services-handled",
+                  
+                   "rendered-blocks",
+                  
+                   "x-sct",
+                  
+                   "fetchedall",
+                  
+                   "x-be",
+                  
+                   "expiry",
+                  
+                   "x-processesi",
+                  
+                   "x-removedcookies",
+                  
+                   "trailer",
+                  
+                   "x-secret",
+                  
+                   "x-gannett-site-version",
+                  
+                   "cf-railgun",
+                  
+                   "x-cache-enabled",
+                  
+                   "x-mt-cache",
+                  
+                   "x-http-reason",
+                  
+                   "x-xact-montador-time",
+                  
+                   "x-cache-profile",
+                  
+                   "x-xact-uuid",
+                  
+                   "x-original-ua",
+                  
+                   "x-montador-cache-control",
+                  
+                   "x-edge-cache-status",
+                  
+                   "x-php-backend",
+                  
+                   "x-cache-hit",
+                  
+                   "x-via",
+                  
+                   "fandom.f2.datacenter",
+                  
+                   "x-premium",
+                  
+                   "edge-cache-tag-truncated",
+                  
+                   "x-real-age",
+                  
+                   "x-shard-entry",
+                  
+                   "x-shard-target",
+                  
+                   "x-left-ttl",
+                  
+                   "fastly-backend-name",
+                  
+                   "srv",
+                  
+                   "x-amz-meta-cache-control",
+                  
+                   "x-litespeed-cache",
+                  
+                   "x-sedo-request-id",
+                  
+                   "wm_qos.correlation_id",
+                  
+                   "x-tb",
+                  
+                   "x-tb-optimization-total-bytes-saved",
+                  
+                   "origin-ex",
+                  
+                   "origin-cc",
+                  
+                   "x-arrserver",
+                  
+                   "x-akamai-erpolicy",
+                  
+                   "x-akamai-erruleid",
+                  
+                   "x-pants",
+                  
+                   "x-cache-fs-status",
+                  
+                   "x-pbs-fwsrvname",
+                  
+                   "x-w-dc",
+                  
+                   "x-requestid",
+                  
+                   "x-hash",
+                  
+                   "x-route-name",
+                  
+                   "x-flags",
+                  
+                   "x-aspnet-duration-ms",
+                  
+                   "x-request-guid",
+                  
+                   "x-is-crawler",
+                  
+                   "x-providence-cookie",
+                  
+                   "x-page-view",
+                  
+                   "x-has-esi",
+                  
+                   "x-is-gdpr",
+                  
+                   "x-jwt-state",
+                  
+                   "x-yandex-sdch-disable",
+                  
+                   "x-rate-limit-key",
+                  
+                   "x-ex",
+                  
+                   "x-dispatcher",
+                  
+                   "x-vhost",
+                  
+                   "x-protected-by",
+                  
+                   "application",
+                  
+                   "branch",
+                  
+                   "build",
+                  
+                   "environment",
+                  
+                   "product",
+                  
+                   "x-cache-detail",
+                  
+                   "x-join-the-band",
+                  
+                   "x-origin-server",
+                  
+                   "upgrade",
+                  
+                   "x-gateway-request-id",
+                  
+                   "x-pingback",
+                  
+                   "x-gateway-cache-key",
+                  
+                   "x-gateway-cache-status",
+                  
+                   "x-gateway-skip-cache",
+                  
+                   "x-rack-cache",
+                  
+                   "x-page-speed",
+                  
+                   "x-service-id",
+                  
+                   "x-dynatrace",
+                  
+                   "retry-after",
+                  
+                   "x-tracer",
+                  
+                   "uber-trace-id",
+                  
+                   "x-varnish-grace",
+                  
+                   "x-debug-cookies",
+                  
+                   "x-debug-cookies2",
+                  
+                   "x-debug-log",
+                  
+                   "x-nx-host",
+                  
+                   "x-ldnr-is-en-us",
+                  
+                   "x-ldnr-root-hl-set",
+                  
+                   "x-l-path",
+                  
+                   "x-environment-context",
+                  
+                   "sm-request-id",
+                  
+                   "x-webkit-csp-report-only",
+                  
+                   "cdchost",
+                  
+                   "x-test-debug",
+                  
+                   "x-served-from",
+                  
+                   "nikkei-app-version",
+                  
+                   "accepted-nikkei-flags",
+                  
+                   "x-fastcgi-cache",
+                  
+                   "x-experiment-tracking",
+                  
+                   "channel",
+                  
+                   "clientgeo",
+                  
+                   "clientip",
+                  
+                   "x-zipkin-id",
+                  
+                   "x-routing-service",
+                  
+                   "x-mode",
+                  
+                   "x-proxied",
+                  
+                   "x-varnish-backend",
+                  
+                   "x-nginx",
+                  
+                   "x-accelerating",
+                  
+                   "arc-version",
+                  
+                   "x-origin-cache",
+                  
+                   "x-aol-hn",
+                  
+                   "x-accel-buffering",
+                  
+                   "x-wix-request-id",
+                  
+                   "x-seen-by",
+                  
+                   "core-api-cache-key",
+                  
+                   "x-edge-forwarded-proto",
+                  
+                   "x-tserver",
+                  
+                   "x-wserver",
+                  
+                   "x-els-platform",
+                  
+                   "x-router",
+                  
+                   "x-sdfe-corr-id",
+                  
+                   "x-end-user-ip",
+                  
+                   "x-end-user-request-locale",
+                  
+                   "x-request-host",
+                  
+                   "x-sapi-cluster",
+                  
+                   "x-site-version",
+                  
+                   "x-sstk-cluster",
+                  
+                   "x-4vcta",
+                  
+                   "x-cnection",
+                  
+                   "x-b3-parentspanid",
+                  
+                   "x-b3-spanid",
+                  
+                   "x-dump-request-bodies",
+                  
+                   "x-forwarded-host",
+                  
+                   "x-sn-servicetimems",
+                  
+                   "x-cdn-origin",
+                  
+                   "x-aicache-os",
+                  
+                   "x-arc",
+                  
+                   "is-https",
+                  
+                   "x-arrrg1",
+                  
+                   "x-app-version",
+                  
+                   "x-dbg-geo",
+                  
+                   "x-dbg-cset",
+                  
+                   "x-dbg-ckey",
+                  
+                   "x-redis-cache",
+                  
+                   "x-back",
+                  
+                   "x-cache-group",
+                  
+                   "bl-cache-status",
+                  
+                   "bl-cdn-provider",
+                  
+                   "x-c",
+                  
+                   "x-aed",
+                  
+                   "x-varnish-ttl",
+                  
+                   "x-rg-pi",
+                  
+                   "nvidia_language",
+                  
+                   "nvidia_region",
+                  
+                   "x-origin",
+                  
+                   "x-grace",
+                  
+                   "x-nearside-cache",
+                  
+                   "x-nearside-cache-hits",
+                  
+                   "cache-tag",
+                  
+                   "x-geoip-country-code",
+                  
+                   "x-geoip-region-code",
+                  
+                   "x-ncache",
+                  
+                   "device_type",
+                  
+                   "x-oracle-dms-ecid",
+                  
+                   "custom_cache_rule_location",
+                  
+                   "x-oracle-apmcs-request-id",
+                  
+                   "x-oracle-dms-rid",
+                  
+                   "custom_akamai_autopurge",
+                  
+                   "host_service",
+                  
+                   "x-akam-sw-version",
+                  
+                   "actual-object-ttl",
+                  
+                   "pramga",
+                  
+                   "dpool_header",
+                  
+                   "lb_header",
+                  
+                   "surrogated-key",
+                  
+                   "x-netflix.nfstatus",
+                  
+                   "x-netflix.proxy.execution-time",
+                  
+                   "x-originating-url",
+                  
+                   "x-robots-tag",
+                  
+                   "x-akamai-mashable-country",
+                  
+                   "x-kinja",
+                  
+                   "x-kinja-revision",
+                  
+                   "x-kinja-server",
+                  
+                   "x-kinja-build",
+                  
+                   "x-googlenews-bot",
+                  
+                   "x-kinja-server-push",
+                  
+                   "x-cdn-fetch",
+                  
+                   "x-exp-id",
+                  
+                   "x-exp-variant",
+                  
+                   "x-use-magma",
+                  
+                   "x-org",
+                  
+                   "kp-eealive",
+                  
+                   "x-qloud-router",
+                  
+                   "resin-trace",
+                  
+                   "eagleid",
+                  
+                   "object-status",
+                  
+                   "edge-type",
+                  
+                   "x-b",
+                  
+                   "x-forwarded-for",
+                  
+                   "x-geoip",
+                  
+                   "x-city",
+                  
+                   "x-isp",
+                  
+                   "x-debug",
+                  
+                   "x-men",
+                  
+                   "x-slb",
+                  
+                   "x-q-stat",
+                  
+                   "x-journey",
+                  
+                   "fastly-ssl",
+                  
+                   "x-ttl",
+                  
+                   "x-kinsta-cache",
+                  
+                   "x-via-ssl",
+                  
+                   "edge-copy-time",
+                  
+                   "x-via-edge",
+                  
+                   "x-rcs-cachezone",
+                  
+                   "x-unique-id",
+                  
+                   "x-server-name",
+                  
+                   "x-trello-version",
+                  
+                   "x-trello-environment",
+                  
+                   "x-abt-application-version",
+                  
+                   "x-ems-server",
+                  
+                   "x-ua-device-type",
+                  
+                   "x-app-server",
+                  
+                   "x-niconico-authflag",
+                  
+                   "x-niconico-sid",
+                  
+                   "aetn-watch-platform",
+                  
+                   "aetn-web-platform",
+                  
+                   "aetn_backend",
+                  
+                   "aka-device",
+                  
+                   "aetn-device",
+                  
+                   "aetn-city",
+                  
+                   "aetn-continent-code",
+                  
+                   "aetn-country-code",
+                  
+                   "aetn-country-name",
+                  
+                   "aetn-postal-code",
+                  
+                   "aetn-area-code",
+                  
+                   "aetn-state-code",
+                  
+                   "aetn-latitude",
+                  
+                   "aetn-longitude",
+                  
+                   "aetn-eu",
+                  
+                   "id",
+                  
+                   "session",
+                  
+                   "x-azure-ref",
+                  
+                   "is-eu",
+                  
+                   "platform",
+                  
+                   "adler-geo",
+                  
+                   "x-variation",
+                  
+                   "bc_locale",
+                  
+                   "x-fastly-backend-reqs",
+                  
+                   "x-logjam-request-id",
+                  
+                   "x-logjam-request-action",
+                  
+                   "x-tdb-cache-scope",
+                  
+                   "x-tdb-deployment",
+                  
+                   "x-tdb-host",
+                  
+                   "x-tdb-revision",
+                  
+                   "geoip-city",
+                  
+                   "geoip-countryname",
+                  
+                   "geoip-latitude",
+                  
+                   "geoip-postalcode",
+                  
+                   "x-group",
+                  
+                   "x-paywall",
+                  
+                   "ev_entitlements_status",
+                  
+                   "ev_entitlements_decoded",
+                  
+                   "cf-debug",
+                  
+                   "x-cluster-id",
+                  
+                   "x-coursera-render-mode",
+                  
+                   "x-coursera-render-version",
+                  
+                   "x-coursera-request-id",
+                  
+                   "x-coursera-trace-id-hex",
+                  
+                   "served-by",
+                  
+                   "ezp-is_archive",
+                  
+                   "x-trace-id",
+                  
+                   "x-location",
+                  
+                   "x-uncacheable",
+                  
+                   "x-psu-host",
+                  
+                   "x-psu-grace",
+                  
+                   "x-psu-backend",
+                  
+                   "x-rendered-as",
+                  
+                   "x-detected-as",
+                  
+                   "x-page-id",
+                  
+                   "x-is-bot",
+                  
+                   "x-version",
+                  
+                   "x-skycache",
+                  
+                   "edge-cache-tag",
+                  
+                   "x-hs-cache-config",
+                  
+                   "x-hs-content-id",
+                  
+                   "x-hs-hub-id",
+                  
+                   "x-debug-ua-device",
+                  
+                   "x-debug-country-code",
+                  
+                   "x-debug-edition",
+                  
+                   "x-debug-language",
+                  
+                   "x-cdn-compress",
+                  
+                   "x-ftr-abtest",
+                  
+                   "x-ftr-abtest-id",
+                  
+                   "x-ftr-abtest-groups",
+                  
+                   "x-ftr-abtest-group",
+                  
+                   "x-ftr-request-id",
+                  
+                   "xkey",
+                  
+                   "x-ftr-cache-status",
+                  
+                   "x-ftr-expires",
+                  
+                   "x-country-code-real",
+                  
+                   "x-ftr-realm",
+                  
+                   "x-ftr-dc",
+                  
+                   "x-ftr-balancer",
+                  
+                   "x-ftr-backend",
+                  
+                   "x-ftr-backend-server",
+                  
+                   "x-jobs",
+                  
+                   "set-edgescape-cookie",
+                  
+                   "x-commit-sha",
+                  
+                   "x-build-number",
+                  
+                   "x-branch-name",
+                  
+                   "accept-charset",
+                  
+                   "x-zm-trackingid",
+                  
+                   "x-mod-pagespeed",
+                  
+                   "x-staticresourcesversion",
+                  
+                   "dc-pool-id",
+                  
+                   "x-redhat-debug",
+                  ],
+        datasets : [{
+            label: 'Header Counts',
+            fill: true,
+            lineTension: 0.1,
+            backgroundColor: "rgba(75,192,192,0.4)",
+            borderColor: "rgba(75,192,192,1)",
+            borderCapStyle: 'butt',
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: 'miter',
+            pointBorderColor: "rgba(75,192,192,1)",
+            pointBackgroundColor: "#fff",
+            pointBorderWidth: 1,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: "rgba(75,192,192,1)",
+            pointHoverBorderColor: "rgba(220,220,220,1)",
+            pointHoverBorderWidth: 2,
+            pointRadius: 1,
+            pointHitRadius: 10,
+            data : [
+                      480,
+                    
+                      479,
+                    
+                      461,
+                    
+                      398,
+                    
+                      392,
+                    
+                      384,
+                    
+                      382,
+                    
+                      285,
+                    
+                      285,
+                    
+                      266,
+                    
+                      259,
+                    
+                      239,
+                    
+                      234,
+                    
+                      220,
+                    
+                      217,
+                    
+                      178,
+                    
+                      147,
+                    
+                      144,
+                    
+                      142,
+                    
+                      141,
+                    
+                      130,
+                    
+                      130,
+                    
+                      116,
+                    
+                      80,
+                    
+                      74,
+                    
+                      73,
+                    
+                      68,
+                    
+                      67,
+                    
+                      66,
+                    
+                      64,
+                    
+                      61,
+                    
+                      55,
+                    
+                      52,
+                    
+                      49,
+                    
+                      42,
+                    
+                      42,
+                    
+                      41,
+                    
+                      39,
+                    
+                      37,
+                    
+                      37,
+                    
+                      37,
+                    
+                      34,
+                    
+                      32,
+                    
+                      32,
+                    
+                      31,
+                    
+                      21,
+                    
+                      19,
+                    
+                      19,
+                    
+                      15,
+                    
+                      14,
+                    
+                      14,
+                    
+                      14,
+                    
+                      14,
+                    
+                      12,
+                    
+                      11,
+                    
+                      11,
+                    
+                      10,
+                    
+                      9,
+                    
+                      9,
+                    
+                      8,
+                    
+                      8,
+                    
+                      8,
+                    
+                      8,
+                    
+                      8,
+                    
+                      7,
+                    
+                      7,
+                    
+                      7,
+                    
+                      6,
+                    
+                      6,
+                    
+                      6,
+                    
+                      6,
+                    
+                      6,
+                    
+                      6,
+                    
+                      6,
+                    
+                      5,
+                    
+                      5,
+                    
+                      5,
+                    
+                      5,
+                    
+                      5,
+                    
+                      5,
+                    
+                      5,
+                    
+                      5,
+                    
+                      5,
+                    
+                      5,
+                    
+                      5,
+                    
+                      5,
+                    
+                      4,
+                    
+                      4,
+                    
+                      4,
+                    
+                      4,
+                    
+                      4,
+                    
+                      4,
+                    
+                      4,
+                    
+                      3,
+                    
+                      3,
+                    
+                      3,
+                    
+                      3,
+                    
+                      3,
+                    
+                      3,
+                    
+                      3,
+                    
+                      3,
+                    
+                      3,
+                    
+                      3,
+                    
+                      3,
+                    
+                      3,
+                    
+                      3,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      2,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    
+                      1,
+                    ],
+            spanGaps: false
+        }]
+      }
+
+      // get chart canvas
+      var ctx = document.getElementById("myChart").getContext("2d");
+
+      // create the chart using the chart canvas
+      var myChart = new Chart(ctx, {
+        type: 'horizontalBar',
+        data: chartData
+      });
+
+      // Get index of bar clicked to return label
+      document.getElementById("myChart").onclick = function(e) {
+        var activeElement = myChart.lastActive;
+        var idx = activeElement[0]._index
+        var label = myChart.chart.config.data.labels[idx]
+        document.location = "/header/" + label
+      };
+    </script>
+
+  </body>
+</html>

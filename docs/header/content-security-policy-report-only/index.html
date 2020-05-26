@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+    <title>HTML Header Counts</title>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css'>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"> 
+    <style>
+/* Colors for badges */
+
+h1 { font-family: 'Bebas Neue', cursive;}
+
+.badge-red {
+  background-color: #d54625;
+}
+
+.badge-green {
+  background-color: #35bd4a;
+}
+
+.badge-blue {
+  background-color: #357ebd;
+}
+
+.table-sortable > thead > tr > th {
+  cursor: pointer;
+}
+.table-sortable > thead > tr > th[data-sorting="disabled"] {
+  cursor: default;
+}
+.table-sortable > thead > tr > th[data-sorting="disabled"]:hover,
+.table-sortable > thead > tr > th[data-sorting="disabled"]:active {
+  background: inherit;
+}
+.table-sortable > thead > tr > th:hover,
+.table-sortable > thead > tr > th:active {
+  background: #F5F5F5;
+}
+.table-sortable > tbody > tr > td mark,
+.table-sortable > tbody > tr > td .mark {
+  padding-left: 0;
+  padding-right: 0;
+}
+    </style>
+
+</head>
+<body>
+<div class='container-fluid'>
+  <div class='row'>
+    <div class='col-sm-12'>
+      <br>
+      <div class='form-horizontal'>
+        <div class='form-group has-feedback'>
+          <div class='col-sm-12'>
+            <input class='form-control table-sortable-search' placeholder='Search...' type='search'>
+            <span class='glyphicon glyphicon-remove form-control-feedback search-cancel-button'></span>
+          </div>
+        </div>
+      </div>
+      <br>
+      <div class='panel panel-default'>
+        <div class='table-responsive' id="app">
+
+  <h1 style="margin-left:5px">Sites for <b>CONTENT-SECURITY-POLICY-REPORT-ONLY</b> ⭐️</h1>
+  <hr>
+
+  <label>Rows per page</label>
+  <select v-model="pageSizeModel">
+    <option value="3">3</option>
+    <option value="5">5</option>
+    <option value="10">10</option>
+    <option value="25">25</option>
+  </select>
+    
+  <table class="table table-sortable">
+    <thead>
+      <tr>
+        <th :class="{ sorted: sort === 'id' }" @click="sortBy('id')">
+          Id
+        </th>
+        <th :class="{ sorted: sort === 'name' }" @click="sortBy('name')">
+          Name
+        </th>
+        <th :class="{ sorted: sort === 'value' }" @click="sortBy('value')" >
+          Value
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="row in sortedRows">
+        <td>{{ row.id }}</td>
+        <td>{{ row.name  }}</td>
+        <td>{{ row.value }}</td>
+        <td data-id="{{ row.id }}">
+          <div class='btn-group btn-group-xs'>
+            <button v-on:click="viewRow" class="btn btn-default" title="View">
+              <span class="glyphicon glyphicon-eye-open"></span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <div class="controls">
+    <button class="btn btn-sm" :disabled="!hasPage(-1)" @click="prevPage">←</button> 
+    <button class="btn btn-sm" :disabled="!hasPage(1)"  @click="nextPage">→</button>
+    <span style="float:right; margin-right:30px; margin-top:20px" class="badge badge-primary"><span class="glyphicon glyphicon-heart"></span> vsoch</span>
+
+  </div>
+  <hr>
+</div>
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+  <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js'></script>
+  <script>
+// Handle socket to send /receive messages from server without refresh
+$(document).ready(function(){
+
+});
+
+// tables.js
+function preg_quote( str ) {
+  // http://kevin.vanzonneveld.net
+  // +   original by: booeyOH
+  // +   improved by: Ates Goral (http://magnetiq.com)
+  // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  // +   bugfixed by: Onno Marsman
+  // *     example 1: preg_quote("$40");
+  // *     returns 1: '\$40'
+  // *     example 2: preg_quote("*RRRING* Hello?");
+  // *     returns 2: '\*RRRING\* Hello\?'
+  // *     example 3: preg_quote("\\.+*?[^]$(){}=!<>|:");
+  // *     returns 3: '\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:'
+  return (str+'').replace(/([\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:])/g, "\\$1");
+}
+
+function highlight(data, search){
+  return data.replace(new RegExp( "(" + preg_quote( search ) + ")" , 'gi' ), "<mark>$1</mark>" );
+}
+
+// Table
+    
+function Table($table,$input){
+
+    $table.find("th").each(function($key, el){
+        if ($(el).attr("data-sorting")!="disabled"){
+            $("<span/>").attr("class","fa").attr("row-id",$key+1).appendTo(el);
+    }}).click(function(){
+        var asc=true;
+        if ($(this).find("span.fa").attr("class")=="fa"||$(this).find("span.fa").attr("class")=="fa fa-caret-up fa-fw"){
+            $table.find("th[data-sorting!=disabled] span.fa").attr("class","fa");
+            $(this).find("span.fa").attr("class","fa fa-caret-down fa-fw");
+            asc=true;
+        }
+        else if ($(this).find("span.fa").attr("class")=="fa fa-caret-down fa-fw"){
+            $table.find("th[data-sorting!=disabled] span.fa").attr("class","fa");
+            $(this).find("span.fa").attr("class","fa fa-caret-up fa-fw");
+            asc=false
+        }
+        value=$.map($table.find("td:nth-child("+($(this).find("span.fa").attr("row-id"))+")"),function(el){
+            return {text:$(el).text().trim(),row:$(el).parent()};
+        });
+
+        value.sort(function(x, y){ 
+            if (asc){
+                if (x.text < y.text) {
+                    return -1;
+                }
+                if (x.text > y.text) {
+                    return 1;
+                }
+            } else {
+                if (x.text < y.text) {
+                    return 1;
+                }
+                if (x.text > y.text) {
+                    return -1;
+                }
+            }
+            return 0;
+        });
+        $table.find("tr:gt(0)").remove();
+        $.each(value,function(key,value){
+            $(value.row).appendTo($table);
+        });
+    });
+    $table.find("th:first").click();
+    $input.on("keyup change",function(){
+        var newText=$(this).val();
+        $table.find("span.text-wrap").each(function(key,value){
+            $(value).html($(value).text());
+            $(value).contents().unwrap();
+        });        
+        if (newText.trim()!=""){    
+            $table.find("tr:gt(0)").hide();                        
+            var textNode=$table.find("tr:gt(0) *")
+              .contents()
+              .filter(function() {
+                return this.nodeType === 3; //Node.TEXT_NODE
+              }).each(function(key,value){
+                    var nodeText=value.data;
+                    if (nodeText.toLowerCase().indexOf(newText.toLowerCase())!=-1){
+                        $(value).closest("tr").show();
+                        if ($(value).parent().attr("class")!="text-wrap")
+                            $(value).wrap("<span class='text-wrap'></span>");
+                        $(value).parent().html(highlight(nodeText ,newText));
+                    }
+                
+              });;
+              
+              }else{
+                $table.find("tr").show();
+              }
+    });
+    
+}
+
+$(function(){
+    Table($(".table-sortable"),$(".table-sortable-search"));
+});
+
+// Search
+
+$('input[type="search"]').keyup(function () {
+  var t = $(this);
+  t.next('span').toggle(Boolean(t.val()));
+});
+
+$('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val()).click(function () {
+  $(this).prev('input').val('').focus();
+  $(this).hide();
+});
+
+const app = new Vue({
+  data: () => ({
+    rows: [{"id": 1, "name": "https://support.google.com", "value": "object-src 'none';base-uri 'self';script-src 'nonce-KV6O9I9HAhtt+e9rmCd5' 'unsafe-inline' 'unsafe-eval' 'strict-dynamic' https: http: 'report-sample';report-uri https://csp.withgoogle.com/csp/scfe"},{"id": 2, "name": "https://linkedin.com", "value": "default-src 'none'; connect-src 'self' static.licdn.com static-exp1.licdn.com static-exp2.licdn.com static-exp3.licdn.com; script-src https://platform.linkedin.com/js/analytics.js https://platform-akam.linkedin.com/js/analytics.js https://platform-ecst.linkedin.com/js/analytics.js https://platform-azur.linkedin.com/js/analytics.js static.licdn.com static-exp1.licdn.com static-exp2.licdn.com static-exp3.licdn.com; img-src static.licdn.com static-exp1.licdn.com static-exp2.licdn.com static-exp3.licdn.com media.licdn.com media-exp1.licdn.com media-exp2.licdn.com media-exp3.licdn.com; style-src 'unsafe-inline' static.licdn.com static-exp1.licdn.com static-exp2.licdn.com static-exp3.licdn.com; report-uri https://www.linkedin.com/platform-telemetry/csp?f=g"},{"id": 3, "name": "https://vimeo.com", "value": "default-src https: data: blob: wss: 'unsafe-inline' 'unsafe-eval'; report-uri /_csp"},{"id": 4, "name": "https://drive.google.com", "value": "script-src 'nonce-k9AIv_l90YwEc78hcaWZng' 'strict-dynamic' 'unsafe-eval' 'unsafe-inline' http: https:; object-src 'none'; report-uri https://csp.withgoogle.com/csp/webmaster/www_google; base-uri 'none'"},{"id": 5, "name": "https://dailymotion.com", "value": "default-src https: blob: wss: data: android-webview-video-poster: android-webview: chrome-extension: safari-extension: 'unsafe-eval' 'unsafe-inline'; report-uri https://www.dailymotion.com/content_security_policy_report_uri"},{"id": 6, "name": "https://mail.ru", "value": "default-src *.adlooxtracking.com *.adsafeprotected.com *.doubleverify.com *.imgsmail.ru *.mail.ru *.moatads.com *.mradx.net *.serving-sys.com an.yandex.ru cdn.consentmanager.mgr.consensu.org consentmanager.mgr.consensu.org jstracer.yandex.ru mail.ru mc.yandex.ru mc.yandex.uz mc.yandex.fr mc.yandex.md mc.yandex.ua mc.yandex.by mc.yandex.kz strm.yandex.ru yandex.ru yandex.st yastat.net yastatic.net; script-src *.adlooxtracking.com *.adsafeprotected.com *.doubleclick.net *.doubleverify.com *.dvtps.com *.googleadservices.com *.googlesyndication.com *.googletagservices.com *.imgsmail.ru *.mail.ru *.moatads.com *.mradx.net *.odnoklassniki.ru *.serving-sys.com an.yandex.ru cdn.consentmanager.mgr.consensu.org consentmanager.mgr.consensu.org mail.ru mc.yandex.ru mc.yandex.uz mc.yandex.fr mc.yandex.md mc.yandex.ua mc.yandex.by mc.yandex.kz ok.ru vk.com *.vk.com yandex.ru yandex.st yastat.net yastatic.net 'unsafe-eval' 'unsafe-inline'; img-src data: blob: *; media-src *.imgsmail.ru *.mail.ru *.mradx.net *.ok.ru *.strm.yandex.ru *.yandex.net data: mail.ru ok.ru strm.yandex.ru vk.com *.vk.com yandex.ru yandex.st yastat.net yastatic.net; style-src *.imgsmail.ru *.mail.ru *.mradx.net blob: cdn.consentmanager.mgr.consensu.org consentmanager.mgr.consensu.org yandex.st yastat.net yastatic.net 'unsafe-eval' 'unsafe-inline'; font-src *.imgsmail.ru *.mail.ru *.mradx.net an.yandex.ru blob: data: https: yastat.net yastatic.net 'self'; frame-src *.doubleclick.net *.doubleverify.com *.mail.ru *.mradx.net *.ok.ru *.yandex.ru *.yandexadexchange.net awaps.yandex.net mail.ru ok.ru vk.com *.vk.com yandexadexchange.net yastat.net yastatic.net; child-src *.doubleclick.net *.doubleverify.com *.mail.ru *.mradx.net *.ok.ru mail.ru ok.ru vk.com *.vk.com; report-uri https://cspreport.mail.ru/splash?v=17.01.20;"},{"id": 7, "name": "https://photos.google.com", "value": "script-src 'nonce-7R87CBHx_s-xP_jZHYOqKg' 'strict-dynamic' 'unsafe-eval' 'unsafe-inline' http: https:; object-src 'none'; report-uri https://csp.withgoogle.com/csp/static-on-bigtable; base-uri 'none'"},{"id": 8, "name": "https://aliexpress.com", "value": "default-src * 'unsafe-eval' 'unsafe-inline'  data:;report-uri //pointman.alibaba.com/csp?app=ae_default"},{"id": 9, "name": "https://wikia.com", "value": "default-src https: 'self' data: blob:; script-src https: 'self' data: 'unsafe-inline' 'unsafe-eval' blob:; style-src https: 'self' 'unsafe-inline' blob:; report-uri https://services.fandom.com/csp-logger/csp/upstream"},{"id": 10, "name": "https://dailymail.co.uk", "value": "block-all-mixed-content; report-uri https://mol.report-uri.io/r/default/csp/reportOnly"},{"id": 11, "name": "https://tools.google.com", "value": "script-src 'nonce-_pSRLEBZd-aXv3eL1zOiIQ' 'strict-dynamic' 'unsafe-eval' 'unsafe-inline' http: https:; object-src 'none'; report-uri https://csp.withgoogle.com/csp/webmaster/chrome; base-uri 'none'"},{"id": 12, "name": "https://ok.ru", "value": "default-src data: blob: about: 'self' 'unsafe-inline' 'unsafe-eval' https: wss:; report-uri /csp/report?always;"},{"id": 13, "name": "https://telegraph.co.uk", "value": "default-src https: data: blob: android-webview-video-poster: wss: 'unsafe-inline' 'unsafe-eval'; report-uri /csp-reports/;"},{"id": 14, "name": "https://pinterest.com", "value": "frame-src 'self' *.google.com *.pinimg.com *.pinterest.com *.pinterdev.com *.facebook.com player.grabnetworks.com www.kickstarter.com staging.slideshare.com player.anyclip.com verify.vote.org movieclips.com scache.vevo.com *.adyen.com www.voteplz.org player.hulu.com www.crackle.com www.dailymotion.com cache.vevo.com www.slideshare.net crackle.com embed.5min.com embed.ted.com register.vote.org absentee.vote.org www.crunchyroll.com videoplayer.vevo.com w.soundcloud.com embed-ssl.ted.com www.youtube.com player.vimeo.com vine.co scache.vevo.com bid.g.doubleclick.net *.fls.doubleclick.net pinterest-waterloo.s3.amazonaws.com pinlogs.s3.amazonaws.com advertising-delivery-metric-reports.s3.amazonaws.com; report-uri /_/_/csp_report/?reportonly"},{"id": 15, "name": "https://picasa.google.com", "value": "script-src 'nonce-tbG2sAD_glaIgQQc4BnYNw' 'strict-dynamic' 'unsafe-eval' 'unsafe-inline' http: https:; object-src 'none'; report-uri https://csp.withgoogle.com/csp/static-on-bigtable; base-uri 'none'"},{"id": 16, "name": "https://fandom.com", "value": "default-src https: 'self' data: blob:; script-src https: 'self' data: 'unsafe-inline' 'unsafe-eval' blob:; style-src https: 'self' 'unsafe-inline' blob:; report-uri https://services.fandom.com/csp-logger/csp/f2"},{"id": 17, "name": "https://www.gov.uk", "value": "default-src https: 'self' *.publishing.service.gov.uk www.gov.uk *.dev.gov.uk; img-src 'self' data: *.publishing.service.gov.uk www.gov.uk *.dev.gov.uk www.google-analytics.com ssl.google-analytics.com stats.g.doubleclick.net assets.digital.cabinet-office.gov.uk; script-src 'self' *.publishing.service.gov.uk www.gov.uk *.dev.gov.uk www.google-analytics.com ssl.google-analytics.com stats.g.doubleclick.net www.signin.service.gov.uk *.ytimg.com www.youtube.com www.youtube-nocookie.com hmrc-uk.digital.nuance.com 'unsafe-inline'; style-src 'self' *.publishing.service.gov.uk www.gov.uk *.dev.gov.uk 'unsafe-inline'; font-src 'self' *.publishing.service.gov.uk www.gov.uk *.dev.gov.uk data:; connect-src 'self' *.publishing.service.gov.uk www.gov.uk *.dev.gov.uk www.google-analytics.com ssl.google-analytics.com stats.g.doubleclick.net www.tax.service.gov.uk hmrc-uk.digital.nuance.com gov.klick2contact.com www.signin.service.gov.uk; object-src 'none'; frame-src 'self' *.publishing.service.gov.uk www.gov.uk *.dev.gov.uk www.youtube.com www.youtube-nocookie.com; report-uri https://jhpno0hk6b.execute-api.eu-west-2.amazonaws.com/production"},{"id": 18, "name": "https://time.com", "value": "default-src 'self' https: wss: data: blob: none: gsa: 'unsafe-inline' 'unsafe-eval'; report-uri https://csp-endpoint.timeinc.net/"},{"id": 19, "name": "https://smh.com.au", "value": "child-src blob: data: https:; connect-src https: wss:; default-src blob: data: https: 'report-sample' 'unsafe-eval' 'unsafe-inline'; font-src data: https:; form-action https:; frame-src data: https:; img-src blob: data: https:; media-src blob: data: https:; object-src https:; script-src https: 'unsafe-eval' 'unsafe-inline'; style-src https: 'unsafe-inline'; report-uri https://csp.ffx.io/"},{"id": 20, "name": "https://surveymonkey.com", "value": "default-src https: data: blob: 'unsafe-eval' 'unsafe-inline' wss://*.hotjar.com 'self';  frame-ancestors 'self' https://*.zendesk.com https://*.myshopify.com https://teams.microsoft.com https://*.eloqua.com https://*.surveymonkey.com https://*.sharepoint.com https://*.worldpay.com https://*.cardinalcommerce.com;report-uri https://csp.surveymonkey.com/report?e=false&c=prod&ar=true&a=anonweb"},{"id": 21, "name": "https://yelp.com", "value": "report-uri https://www.yelp.com/csp_report_only?id=169258cbebcb9ddf&page=csp_report_frame_directives%2Cfull_site_ssl_csp_report_directives&policy_hash=3275ba4c5b0741fb6e8d1b21e9975e80&site=www&timestamp=1590516066; frame-ancestors 'self' https://*.yelp.com; default-src https:; img-src https: data: https://*.adsrvr.org; script-src https: data: 'unsafe-inline' 'unsafe-eval' blob:; style-src https: 'unsafe-inline' data:; connect-src https:; font-src data: 'self' https://*.yelp.com https://*.yelpcdn.com https://fonts.gstatic.com https://connect.facebook.net https://cdnjs.cloudflare.com https://apis.google.com https://www.google-analytics.com https://use.typekit.net https://player.ooyala.com https://use.fontawesome.com https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com; frame-src https: yelp-webview://* yelp://* data:; child-src https: yelp-webview://* yelp://*; media-src https:; object-src 'self'; worker-src blob: https:; base-uri 'self' https://*.yelpcdn.com https://*.adsrvr.org https://6372968.fls.doubleclick.net; form-action https: 'self'"},{"id": 22, "name": "https://groups.google.com", "value": "script-src 'report-sample' 'nonce-nvmXuuamrAofswCsGioSrQ' 'unsafe-inline' 'strict-dynamic' https: http: 'unsafe-eval';object-src 'none';base-uri 'self';report-uri /cspreport"},{"id": 23, "name": "https://shopify.com", "value": "default-src 'self' https:; child-src 'self' https: data:; connect-src 'self' https: wss:; font-src 'self' https: data:; img-src 'self' https: data:; media-src 'self' https: data:; object-src 'self' https:; script-src 'self' https: 'unsafe-inline' 'unsafe-eval'; style-src 'self' https: 'unsafe-inline'; report-uri /csp-report?source%5Baction%5D=index&source%5Bapp%5D=Brochure&source%5Bcontroller%5D=home&source%5Bdomain%5D=www.shopify.com&source%5Bsection%5D=brochure&source%5Buuid%5D=a80a905978d88c7e65c732ae6441be2e"},{"id": 24, "name": "https://deezer.com", "value": "upgrade-insecure-requests ; report-uri /csp-report, block-all-mixed-content ; report-uri /csp-report"},{"id": 25, "name": "https://variety.com", "value": "default-src data: 'unsafe-inline' 'unsafe-eval' https: blob: http://*.files.wordpress.com wss://variety.com; report-uri https://pmcuri.report-uri.com/r/d/csp/reportOnly"},{"id": 26, "name": "https://skype.com", "value": "default-src 'self';base-uri 'self' https://*.microsoft.com https://*.skype.com;script-src 'unsafe-inline' 'unsafe-eval' 'self' data: blob: https://*.azure.net https://*.s-microsoft.com https://*.ytimg.com https://www.youtube.com https://*.microsoft.com https://*.skypeassets.com https://*.clicktale.net https://*.wx-int.trafficmanager.net https://*.wx-int.skype.com https://*.skype.com https://statics-uhf-eus.akamaized.net https://statics-uhf-neu.akamaized.net https://statics-uhf-wus.akamaized.net https://statics-uhf-eas.akamaized.net https://*.msecnd.net https://connect.facebook.net/;style-src 'unsafe-inline' 'unsafe-eval' 'self' data: https://*.skype.com https://*.skypeassets.com https://*.microsoft.com https://*.s-microsoft.com https://statics-uhf-eus.akamaized.net https://statics-uhf-neu.akamaized.net https://statics-uhf-wus.akamaized.net https://statics-uhf-eas.akamaized.net https://*.msecnd.net;img-src 'self' data: blob: https://docs.botframework.com https://bot-framework.azureedge.net https://*.skype.com https://*.skypeassets.com https://c.microsoft.com https://*.clicktale.net https://*.microsoft.com https://img-prod-cms-rt-microsoft-com.akamaized.net https://www.facebook.com https://*.msecnd.net https://ad.doubleclick.net https://adservice.google.com;font-src data: https://*.skypeassets.com https://*.s-microsoft.com https://*.microsoft.com https://assets.onestore.ms https://*.skype.com https://fonts.gstatic.com;media-src 'self' data: blob: https://*.skypeassets.com https://*.skype.com;connect-src https://*.skype.com https://*.clicktale.net https://*.microsoft.com https://*.live.com https://*.skypeassets.com wss://*.trouter.skype.com https://web.vortex.data.microsoft.com https://prod-video-cms-rt-microsoft-com.akamaized.net https://eus-streaming-video-rt-microsoft-com.akamaized.net https://wus-streaming-video-rt-microsoft-com.akamaized.net;object-src 'none';frame-ancestors 'none';frame-src 'self' https://*.microsoft.com https://*.skype.com https://*.live.com https://www.youtube.com;form-action https://login.skype.com;report-uri https://edge.skype.com/r/c;"},{"id": 27, "name": "https://etsy.com", "value": "frame-ancestors 'self'; report-uri /beacon/csp.php"},{"id": 28, "name": "https://pinterest.co.uk", "value": "frame-src 'self' *.google.com *.pinimg.com *.pinterest.com *.pinterdev.com *.facebook.com player.grabnetworks.com www.kickstarter.com staging.slideshare.com player.anyclip.com verify.vote.org movieclips.com scache.vevo.com *.adyen.com www.voteplz.org player.hulu.com www.crackle.com www.dailymotion.com cache.vevo.com www.slideshare.net crackle.com embed.5min.com embed.ted.com register.vote.org absentee.vote.org www.crunchyroll.com videoplayer.vevo.com w.soundcloud.com embed-ssl.ted.com www.youtube.com player.vimeo.com vine.co scache.vevo.com bid.g.doubleclick.net *.fls.doubleclick.net pinterest-waterloo.s3.amazonaws.com pinlogs.s3.amazonaws.com advertising-delivery-metric-reports.s3.amazonaws.com; report-uri /_/_/csp_report/?reportonly"},{"id": 29, "name": "https://sports.yahoo.com", "value": "style-src https://*.btrll.com https://cdn.cmp.advertising.com https://*.oath.com https://*.yimg.com https://*.yahoo.com 'self' 'unsafe-inline' data: blob:; script-src https://*.btrll.com https://cdn.cmp.advertising.com https://*.oath.com https://*.yahoo.com https://*.yimg.com 'self' 'unsafe-inline' 'unsafe-eval' https://platform.twitter.com https://*.btrll.com data: blob:; frame-ancestors https://*.techcrunch.com https://*.huffingtonpost.com https://*.aol.com https://*.yahoo.com; sandbox allow-forms allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-presentation; report-uri https://csp.yahoo.com/beacon/csp?src=ats&site=sports&region=US&lang=en-US&device=desktop&yrid=8f0pp8dfcqncs&partner=;"},{"id": 30, "name": "https://behance.net", "value": "connect-src *;frame-src *;img-src https: data: blob: about: safari-extension: safari-resource: chrome-extension: http://*.rackcdn.com http://*.tumblr.com http://huaban.com;worker-src blob:;script-src https: 'unsafe-eval' 'unsafe-inline'; report-uri /log/csp"},{"id": 31, "name": "https://readthedocs.org", "value": "block-all-mixed-content; object-src 'none'; frame-ancestors 'none'; report-uri https://sentry.io/api/148442/security/?sentry_key=48196e632bb14305ad3fe47c6570e363"}],
+    lookup: {  "1": "https://support.google.com", "2": "https://linkedin.com", "3": "https://vimeo.com", "4": "https://drive.google.com", "5": "https://dailymotion.com", "6": "https://mail.ru", "7": "https://photos.google.com", "8": "https://aliexpress.com", "9": "https://wikia.com", "10": "https://dailymail.co.uk", "11": "https://tools.google.com", "12": "https://ok.ru", "13": "https://telegraph.co.uk", "14": "https://pinterest.com", "15": "https://picasa.google.com", "16": "https://fandom.com", "17": "https://www.gov.uk", "18": "https://time.com", "19": "https://smh.com.au", "20": "https://surveymonkey.com", "21": "https://yelp.com", "22": "https://groups.google.com", "23": "https://shopify.com", "24": "https://deezer.com", "25": "https://variety.com", "26": "https://skype.com", "27": "https://etsy.com", "28": "https://pinterest.co.uk", "29": "https://sports.yahoo.com", "30": "https://behance.net", "31": "https://readthedocs.org" },
+    sort: 'id',
+    sortDir:'asc',
+    page: 0,
+    pageSize: 25
+  }),
+  methods: {
+    viewRow: function(event) {
+        var rowId = $(event.target).closest('tr').find('td:first').text()
+        var site = this.lookup[rowId].replace(/(^\w+:|^)\/\//, '');
+        document.location = "/site/" + site
+    },
+    sortBy: function(s) {
+      if (s === this.sort) {
+        this.sortDir = (this.sortDir === 'asc') ? 'desc' : 'asc';
+      } else {
+        this.sortDir = 'asc';
+      }
+      this.sort = s;
+    },
+    isActiveSort: function(s) { 
+      return this.sort === s; 
+    },
+    hasPage: function(dir) {
+      if (dir === -1 && (this.page > 0)) return true;
+      if (dir ===  1 && (((this.page+1)*this.pageSize) < this.rows.length)) return true;
+      return false;
+    },
+    prevPage: function() {
+      if (this.hasPage(-1)) this.page--;
+    },
+    nextPage: function() {
+      if (this.hasPage(1)) this.page++;
+    }
+  },
+  computed: {
+    sortedRows: function() {
+      return this.rows.sort((a, b) => {
+        let dir = (this.sortDir === 'asc') ? 1 : -1;
+        if (a[this.sort] < b[this.sort]) {
+          return -1 * dir;
+        } else if (a[this.sort] > b[this.sort]) {
+          return  1 * dir;
+        } else {
+          return 0;
+        }
+      }).filter((row, idx) => {
+        let s = this.page*this.pageSize;
+        let e = (this.page+1)*this.pageSize;
+        return (idx >= s && idx < e);
+        });
+    },
+    pageSizeModel: {
+      get() {
+        return this.pageSize;
+      },
+      set(v) {
+        this.pageSize = v;
+        this.page = 0;
+      }
+    }
+  },
+  filters: {
+    capitalize: function (v) {
+      if (!v) return ''
+      v = v.toString()
+      return v.charAt(0).toUpperCase() + v.slice(1)
+    }
+  }
+}).$mount('#app');
+</script>
+</body>
+</html>

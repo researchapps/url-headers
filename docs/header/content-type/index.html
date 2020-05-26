@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+    <title>HTML Header Counts</title>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css'>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"> 
+    <style>
+/* Colors for badges */
+
+h1 { font-family: 'Bebas Neue', cursive;}
+
+.badge-red {
+  background-color: #d54625;
+}
+
+.badge-green {
+  background-color: #35bd4a;
+}
+
+.badge-blue {
+  background-color: #357ebd;
+}
+
+.table-sortable > thead > tr > th {
+  cursor: pointer;
+}
+.table-sortable > thead > tr > th[data-sorting="disabled"] {
+  cursor: default;
+}
+.table-sortable > thead > tr > th[data-sorting="disabled"]:hover,
+.table-sortable > thead > tr > th[data-sorting="disabled"]:active {
+  background: inherit;
+}
+.table-sortable > thead > tr > th:hover,
+.table-sortable > thead > tr > th:active {
+  background: #F5F5F5;
+}
+.table-sortable > tbody > tr > td mark,
+.table-sortable > tbody > tr > td .mark {
+  padding-left: 0;
+  padding-right: 0;
+}
+    </style>
+
+</head>
+<body>
+<div class='container-fluid'>
+  <div class='row'>
+    <div class='col-sm-12'>
+      <br>
+      <div class='form-horizontal'>
+        <div class='form-group has-feedback'>
+          <div class='col-sm-12'>
+            <input class='form-control table-sortable-search' placeholder='Search...' type='search'>
+            <span class='glyphicon glyphicon-remove form-control-feedback search-cancel-button'></span>
+          </div>
+        </div>
+      </div>
+      <br>
+      <div class='panel panel-default'>
+        <div class='table-responsive' id="app">
+
+  <h1 style="margin-left:5px">Sites for <b>CONTENT-TYPE</b> ⭐️</h1>
+  <hr>
+
+  <label>Rows per page</label>
+  <select v-model="pageSizeModel">
+    <option value="3">3</option>
+    <option value="5">5</option>
+    <option value="10">10</option>
+    <option value="25">25</option>
+  </select>
+    
+  <table class="table table-sortable">
+    <thead>
+      <tr>
+        <th :class="{ sorted: sort === 'id' }" @click="sortBy('id')">
+          Id
+        </th>
+        <th :class="{ sorted: sort === 'name' }" @click="sortBy('name')">
+          Name
+        </th>
+        <th :class="{ sorted: sort === 'value' }" @click="sortBy('value')" >
+          Value
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="row in sortedRows">
+        <td>{{ row.id }}</td>
+        <td>{{ row.name  }}</td>
+        <td>{{ row.value }}</td>
+        <td data-id="{{ row.id }}">
+          <div class='btn-group btn-group-xs'>
+            <button v-on:click="viewRow" class="btn btn-default" title="View">
+              <span class="glyphicon glyphicon-eye-open"></span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <div class="controls">
+    <button class="btn btn-sm" :disabled="!hasPage(-1)" @click="prevPage">←</button> 
+    <button class="btn btn-sm" :disabled="!hasPage(1)"  @click="nextPage">→</button>
+    <span style="float:right; margin-right:30px; margin-top:20px" class="badge badge-primary"><span class="glyphicon glyphicon-heart"></span> vsoch</span>
+
+  </div>
+  <hr>
+</div>
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+  <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js'></script>
+  <script>
+// Handle socket to send /receive messages from server without refresh
+$(document).ready(function(){
+
+});
+
+// tables.js
+function preg_quote( str ) {
+  // http://kevin.vanzonneveld.net
+  // +   original by: booeyOH
+  // +   improved by: Ates Goral (http://magnetiq.com)
+  // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  // +   bugfixed by: Onno Marsman
+  // *     example 1: preg_quote("$40");
+  // *     returns 1: '\$40'
+  // *     example 2: preg_quote("*RRRING* Hello?");
+  // *     returns 2: '\*RRRING\* Hello\?'
+  // *     example 3: preg_quote("\\.+*?[^]$(){}=!<>|:");
+  // *     returns 3: '\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:'
+  return (str+'').replace(/([\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:])/g, "\\$1");
+}
+
+function highlight(data, search){
+  return data.replace(new RegExp( "(" + preg_quote( search ) + ")" , 'gi' ), "<mark>$1</mark>" );
+}
+
+// Table
+    
+function Table($table,$input){
+
+    $table.find("th").each(function($key, el){
+        if ($(el).attr("data-sorting")!="disabled"){
+            $("<span/>").attr("class","fa").attr("row-id",$key+1).appendTo(el);
+    }}).click(function(){
+        var asc=true;
+        if ($(this).find("span.fa").attr("class")=="fa"||$(this).find("span.fa").attr("class")=="fa fa-caret-up fa-fw"){
+            $table.find("th[data-sorting!=disabled] span.fa").attr("class","fa");
+            $(this).find("span.fa").attr("class","fa fa-caret-down fa-fw");
+            asc=true;
+        }
+        else if ($(this).find("span.fa").attr("class")=="fa fa-caret-down fa-fw"){
+            $table.find("th[data-sorting!=disabled] span.fa").attr("class","fa");
+            $(this).find("span.fa").attr("class","fa fa-caret-up fa-fw");
+            asc=false
+        }
+        value=$.map($table.find("td:nth-child("+($(this).find("span.fa").attr("row-id"))+")"),function(el){
+            return {text:$(el).text().trim(),row:$(el).parent()};
+        });
+
+        value.sort(function(x, y){ 
+            if (asc){
+                if (x.text < y.text) {
+                    return -1;
+                }
+                if (x.text > y.text) {
+                    return 1;
+                }
+            } else {
+                if (x.text < y.text) {
+                    return 1;
+                }
+                if (x.text > y.text) {
+                    return -1;
+                }
+            }
+            return 0;
+        });
+        $table.find("tr:gt(0)").remove();
+        $.each(value,function(key,value){
+            $(value.row).appendTo($table);
+        });
+    });
+    $table.find("th:first").click();
+    $input.on("keyup change",function(){
+        var newText=$(this).val();
+        $table.find("span.text-wrap").each(function(key,value){
+            $(value).html($(value).text());
+            $(value).contents().unwrap();
+        });        
+        if (newText.trim()!=""){    
+            $table.find("tr:gt(0)").hide();                        
+            var textNode=$table.find("tr:gt(0) *")
+              .contents()
+              .filter(function() {
+                return this.nodeType === 3; //Node.TEXT_NODE
+              }).each(function(key,value){
+                    var nodeText=value.data;
+                    if (nodeText.toLowerCase().indexOf(newText.toLowerCase())!=-1){
+                        $(value).closest("tr").show();
+                        if ($(value).parent().attr("class")!="text-wrap")
+                            $(value).wrap("<span class='text-wrap'></span>");
+                        $(value).parent().html(highlight(nodeText ,newText));
+                    }
+                
+              });;
+              
+              }else{
+                $table.find("tr").show();
+              }
+    });
+    
+}
+
+$(function(){
+    Table($(".table-sortable"),$(".table-sortable-search"));
+});
+
+// Search
+
+$('input[type="search"]').keyup(function () {
+  var t = $(this);
+  t.next('span').toggle(Boolean(t.val()));
+});
+
+$('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val()).click(function () {
+  $(this).prev('input').val('').focus();
+  $(this).hide();
+});
+
+const app = new Vue({
+  data: () => ({
+    rows: [{"id": 1, "name": "https://www.google.com", "value": "text/html; charset=UTF-8"},{"id": 2, "name": "https://youtube.com", "value": "text/html; charset=utf-8"},{"id": 3, "name": "https://apple.com", "value": "text/html; charset=UTF-8"},{"id": 4, "name": "https://docs.google.com", "value": "text/html; charset=utf-8"},{"id": 5, "name": "https://www.blogger.com", "value": "text/html"},{"id": 6, "name": "https://microsoft.com", "value": "text/html; charset=utf-8"},{"id": 7, "name": "https://support.google.com", "value": "text/html; charset=UTF-8"},{"id": 8, "name": "https://play.google.com", "value": "text/html; charset=utf-8"},{"id": 9, "name": "https://adobe.com", "value": "text/html; charset=UTF-8"},{"id": 10, "name": "https://plus.google.com", "value": "text/html; charset=utf-8"},{"id": 11, "name": "https://wordpress.org", "value": "text/html; charset=utf-8"},{"id": 12, "name": "https://cloudflare.com", "value": "text/html; charset=utf-8"},{"id": 13, "name": "https://linkedin.com", "value": "text/html; charset=utf-8"},{"id": 14, "name": "https://maps.google.com", "value": "text/html; charset=UTF-8"},{"id": 15, "name": "https://en.wikipedia.org", "value": "text/html; charset=UTF-8"},{"id": 16, "name": "https://vimeo.com", "value": "text/html; charset=UTF-8"},{"id": 17, "name": "https://mozilla.org", "value": "text/html; charset=utf-8"},{"id": 18, "name": "https://sites.google.com", "value": "text/html; charset=utf-8"},{"id": 19, "name": "https://accounts.google.com", "value": "text/html; charset=utf-8"},{"id": 20, "name": "https://europa.eu", "value": "text/html"},{"id": 21, "name": "https://youtu.be", "value": "text/html; charset=utf-8"},{"id": 22, "name": "https://drive.google.com", "value": "text/html"},{"id": 23, "name": "https://istockphoto.com", "value": "text/html; charset=utf-8"},{"id": 24, "name": "https://github.com", "value": "text/html; charset=utf-8"},{"id": 25, "name": "https://amazon.com", "value": "text/html"},{"id": 26, "name": "https://vk.com", "value": "text/html; charset=windows-1251"},{"id": 27, "name": "https://facebook.com", "value": "text/html; charset='utf-8'"},{"id": 28, "name": "https://medium.com", "value": "text/html; charset=utf-8"},{"id": 29, "name": "https://bbc.co.uk", "value": "text/html; charset=utf-8"},{"id": 30, "name": "https://es.wikipedia.org", "value": "text/html; charset=UTF-8"},{"id": 31, "name": "https://cnn.com", "value": "text/html; charset=utf-8"},{"id": 32, "name": "https://live.com", "value": "text/html; charset=utf-8"},{"id": 33, "name": "https://nytimes.com", "value": "text/html; charset=utf-8"},{"id": 34, "name": "https://jimdofree.com", "value": "text/html; charset=UTF-8"},{"id": 35, "name": "https://google.fr", "value": "text/html; charset=UTF-8"},{"id": 36, "name": "https://theguardian.com", "value": "text/html; charset=utf-8"},{"id": 37, "name": "https://who.int", "value": "text/html; charset=utf-8"},{"id": 38, "name": "https://google.co.uk", "value": "text/html; charset=UTF-8"},{"id": 39, "name": "https://dropbox.com", "value": "text/html; charset=utf-8"},{"id": 40, "name": "https://policies.google.com", "value": "text/html; charset=utf-8"},{"id": 41, "name": "https://bbc.com", "value": "text/html"},{"id": 42, "name": "https://nih.gov", "value": "text/html; charset=utf-8"},{"id": 43, "name": "https://whatsapp.com", "value": "text/html; charset='utf-8'"},{"id": 44, "name": "https://msn.com", "value": "text/html; charset=utf-8"},{"id": 45, "name": "https://reuters.com", "value": "text/html;charset=UTF-8"},{"id": 46, "name": "https://pt.wikipedia.org", "value": "text/html; charset=UTF-8"},{"id": 47, "name": "https://fr.wikipedia.org", "value": "text/html; charset=UTF-8"},{"id": 48, "name": "https://uol.com.br", "value": "text/html;charset=UTF-8"},{"id": 49, "name": "https://myspace.com", "value": "text/html; charset=utf-8"},{"id": 50, "name": "https://feedburner.com", "value": "text/html; charset=utf-8"},{"id": 51, "name": "https://slideshare.net", "value": "text/html; charset=utf-8"},{"id": 52, "name": "https://paypal.com", "value": "text/html; charset=utf-8"},{"id": 53, "name": "https://line.me", "value": "text/html; charset=UTF-8"},{"id": 54, "name": "https://creativecommons.org", "value": "text/html; charset=UTF-8"},{"id": 55, "name": "https://google.es", "value": "text/html; charset=UTF-8"},{"id": 56, "name": "https://dailymotion.com", "value": "text/html; charset=utf-8"},{"id": 57, "name": "https://t.me", "value": "text/html; charset=utf-8"},{"id": 58, "name": "https://news.google.com", "value": "text/html; charset=utf-8"},{"id": 59, "name": "https://wikimedia.org", "value": "text/html"},{"id": 60, "name": "https://developers.google.com", "value": "text/html; charset=utf-8"},{"id": 61, "name": "https://imdb.com", "value": "text/plain;charset=UTF-8"},{"id": 62, "name": "https://forbes.com", "value": "text/html; charset=utf-8"},{"id": 63, "name": "https://mail.ru", "value": "text/html; charset=utf-8"},{"id": 64, "name": "https://washingtonpost.com", "value": "text/html;charset=UTF-8"},{"id": 65, "name": "https://photos.google.com", "value": "text/html"},{"id": 66, "name": "https://google.de", "value": "text/html; charset=UTF-8"},{"id": 67, "name": "https://w3.org", "value": "text/html; charset=utf-8"},{"id": 68, "name": "https://www.yahoo.com", "value": "text/html; charset=UTF-8"},{"id": 69, "name": "https://aliexpress.com", "value": "text/html;charset=UTF-8"},{"id": 70, "name": "https://google.com.br", "value": "text/html; charset=UTF-8"},{"id": 71, "name": "https://google.co.jp", "value": "text/html; charset=UTF-8"},{"id": 72, "name": "https://mail.google.com", "value": "text/html; charset=utf-8"},{"id": 73, "name": "https://networkadvertising.org", "value": "text/html; charset=utf-8"},{"id": 74, "name": "https://hugedomains.com", "value": "text/html; charset=utf-8"},{"id": 75, "name": "https://www.bluehost.com", "value": "text/html; charset=UTF-8"},{"id": 76, "name": "https://tinyurl.com", "value": "text/html; charset=UTF-8"},{"id": 77, "name": "https://cpanel.com", "value": "text/html"},{"id": 78, "name": "https://businessinsider.com", "value": "text/html; charset=utf-8"},{"id": 79, "name": "https://www.nasa.gov", "value": "text/html"},{"id": 80, "name": "https://news.yahoo.com", "value": "text/html; charset=utf-8"},{"id": 81, "name": "https://aol.com", "value": "text/html; charset=utf-8"},{"id": 82, "name": "https://ft.com", "value": "text/html; charset=utf-8"},{"id": 83, "name": "https://wikia.com", "value": "text/html; charset=UTF-8"},{"id": 84, "name": "https://techcrunch.com", "value": "text/html; charset=UTF-8"},{"id": 85, "name": "https://office.com", "value": "text/html; charset=utf-8"},{"id": 86, "name": "https://cpanel.net", "value": "text/html"},{"id": 87, "name": "https://issuu.com", "value": "text/html; charset=utf-8"},{"id": 88, "name": "https://ebay.com", "value": "text/html;charset=utf-8"},{"id": 89, "name": "https://google.ru", "value": "text/html; charset=UTF-8"},{"id": 90, "name": "https://nypost.com", "value": "text/html; charset=UTF-8"},{"id": 91, "name": "https://huffingtonpost.com", "value": "text/html; charset=utf-8"},{"id": 92, "name": "https://dailymail.co.uk", "value": "text/html;charset=UTF-8"},{"id": 93, "name": "https://wsj.com", "value": "text/html; charset=utf-8"},{"id": 94, "name": "https://bit.ly", "value": "text/html; charset=utf-8"},{"id": 95, "name": "https://wired.com", "value": "text/html; charset=utf-8"},{"id": 96, "name": "https://amazon.de", "value": "text/html;charset=UTF-8"},{"id": 97, "name": "https://tools.google.com", "value": "text/html"},{"id": 98, "name": "https://abril.com.br", "value": "text/html; charset=UTF-8"},{"id": 99, "name": "https://plesk.com", "value": "text/html; charset=UTF-8"},{"id": 100, "name": "https://ok.ru", "value": "text/html;charset=UTF-8"},{"id": 101, "name": "https://amazon.co.jp", "value": "text/html;charset=UTF-8"},{"id": 102, "name": "https://bloomberg.com", "value": "text/html; charset=utf-8"},{"id": 103, "name": "https://steampowered.com", "value": "text/html; charset=UTF-8"},{"id": 104, "name": "https://independent.co.uk", "value": "text/html; charset=utf-8"},{"id": 105, "name": "https://code.google.com", "value": "text/html"},{"id": 106, "name": "https://draft.blogger.com", "value": "text/html"},{"id": 107, "name": "https://picasaweb.google.com", "value": "text/html; charset=utf-8"},{"id": 108, "name": "https://themeforest.net", "value": "text/html; charset=utf-8"},{"id": 109, "name": "https://archive.org", "value": "text/html; charset=UTF-8"},{"id": 110, "name": "https://samsung.com", "value": "text/html; charset=UTF-8"},{"id": 111, "name": "https://harvard.edu", "value": "text/html; charset=utf-8"},{"id": 112, "name": "https://indiatimes.com", "value": "text/html; charset=utf-8"},{"id": 113, "name": "https://books.google.com", "value": "text/html; charset=UTF-8"},{"id": 114, "name": "https://twitter.com", "value": "text/html; charset=utf-8"},{"id": 115, "name": "https://ipv4.google.com", "value": "text/html; charset=UTF-8"},{"id": 116, "name": "https://latimes.com", "value": "text/html;charset=UTF-8"},{"id": 117, "name": "https://mirror.co.uk", "value": "text/html;charset=UTF-8"},{"id": 118, "name": "https://get.google.com", "value": "text/html; charset=UTF-8"},{"id": 119, "name": "https://telegraph.co.uk", "value": "text/html; charset=UTF-8"},{"id": 120, "name": "https://pinterest.com", "value": "text/html; charset=utf-8"},{"id": 121, "name": "https://files.wordpress.com", "value": "text/html; charset=utf-8"},{"id": 122, "name": "https://elpais.com", "value": "text/html; charset=utf-8"},{"id": 123, "name": "https://mediafire.com", "value": "text/html; charset=UTF-8"},{"id": 124, "name": "https://abcnews.go.com", "value": "text/html;charset=UTF-8"},{"id": 125, "name": "https://usatoday.com", "value": "text/html; charset=utf-8"},{"id": 126, "name": "https://foxnews.com", "value": "text/html; charset=UTF-8"},{"id": 127, "name": "https://change.org", "value": "text/html; charset=utf-8"},{"id": 128, "name": "https://aboutads.info", "value": "text/html; charset=utf-8"},{"id": 129, "name": "https://marketingplatform.google.com", "value": "text/html"},{"id": 130, "name": "https://myaccount.google.com", "value": "text/html; charset=utf-8"},{"id": 131, "name": "https://scribd.com", "value": "text/html; charset=utf-8"},{"id": 132, "name": "https://translate.google.com", "value": "text/html; charset=UTF-8"},{"id": 133, "name": "https://picasa.google.com", "value": "text/html"},{"id": 134, "name": "https://terra.com.br", "value": "text/html; charset=utf-8"},{"id": 135, "name": "https://hatena.ne.jp", "value": "text/html; charset=utf-8"},{"id": 136, "name": "https://bing.com", "value": "text/html; charset=utf-8"},{"id": 137, "name": "https://buydomains.com", "value": "text/html; charset=UTF-8"},{"id": 138, "name": "https://google.it", "value": "text/html; charset=UTF-8"},{"id": 139, "name": "https://opera.com", "value": "text/html; charset=utf-8"},{"id": 140, "name": "https://fandom.com", "value": "text/html; charset=UTF-8"},{"id": 141, "name": "https://amazon.co.uk", "value": "text/html;charset=UTF-8"},{"id": 142, "name": "https://booking.com", "value": "text/html; charset=UTF-8"},{"id": 143, "name": "https://youronlinechoices.com", "value": "text/html; charset=UTF-8"},{"id": 144, "name": "https://telegram.me", "value": "text/html; charset=utf-8"},{"id": 145, "name": "https://lefigaro.fr", "value": "text/html; charset=utf-8"},{"id": 146, "name": "https://www.gov.uk", "value": "text/html; charset=utf-8"},{"id": 147, "name": "https://cdc.gov", "value": "text/html"},{"id": 148, "name": "https://cnet.com", "value": "text/html; charset=UTF-8"},{"id": 149, "name": "https://thesun.co.uk", "value": "text/html; charset=UTF-8"},{"id": 150, "name": "https://de.wikipedia.org", "value": "text/html; charset=UTF-8"},{"id": 151, "name": "https://gravatar.com", "value": "text/html; charset=utf-8"},{"id": 152, "name": "https://un.org", "value": "text/html; charset=UTF-8"},{"id": 153, "name": "https://goo.gl", "value": "text/html; charset=UTF-8"},{"id": 154, "name": "https://android.com", "value": "text/html"},{"id": 155, "name": "https://search.google.com", "value": "text/html; charset=UTF-8"},{"id": 156, "name": "https://time.com", "value": "text/html; charset=utf-8"},{"id": 157, "name": "https://rakuten.co.jp", "value": "text/html"},{"id": 158, "name": "https://a8.net", "value": "text/html; charset=UTF-8"},{"id": 159, "name": "https://amazon.it", "value": "text/html;charset=UTF-8"},{"id": 160, "name": "https://asahi.com", "value": "text/html"},{"id": 161, "name": "https://it.wikipedia.org", "value": "text/html; charset=UTF-8"},{"id": 162, "name": "https://bandcamp.com", "value": "text/html; charset=UTF-8"},{"id": 163, "name": "https://sciencedaily.com", "value": "text/html"},{"id": 164, "name": "https://e-recht24.de", "value": "text/html; charset=utf-8"},{"id": 165, "name": "https://sedo.com", "value": "text/html; charset=utf-8"},{"id": 166, "name": "https://berkeley.edu", "value": "text/html; charset=UTF-8"},{"id": 167, "name": "https://walmart.com", "value": "text/html; charset=utf-8"},{"id": 168, "name": "https://www.noaa.gov", "value": "text/html; charset=utf-8"},{"id": 169, "name": "https://m.wikipedia.org", "value": "text/html"},{"id": 170, "name": "https://blackberry.com", "value": "text/html;charset=utf-8"},{"id": 171, "name": "https://icann.org", "value": "text/html; charset=utf-8"},{"id": 172, "name": "https://google.pl", "value": "text/html; charset=UTF-8"},{"id": 173, "name": "https://dell.com", "value": "text/html; charset=utf-8"},{"id": 174, "name": "https://soundcloud.com", "value": "text/html"},{"id": 175, "name": "https://depositfiles.com", "value": "text/html; charset=UTF-8"},{"id": 176, "name": "https://sciencemag.org", "value": "text/html; charset=utf-8"},{"id": 177, "name": "https://pbs.org", "value": "text/html; charset=utf-8"},{"id": 178, "name": "https://www.weebly.com", "value": "text/html; charset=UTF-8"},{"id": 179, "name": "https://xbox.com", "value": "text/html; charset=utf-8"},{"id": 180, "name": "https://wp.com", "value": "text/html; charset=utf-8"},{"id": 181, "name": "https://vox.com", "value": "text/html; charset=utf-8"},{"id": 182, "name": "https://ign.com", "value": "text/html; charset=utf-8"},{"id": 183, "name": "https://stackoverflow.com", "value": "text/html; charset=utf-8"},{"id": 184, "name": "https://theatlantic.com", "value": "text/html; charset=utf-8"},{"id": 185, "name": "https://yandex.ru", "value": "text/html; charset=UTF-8"},{"id": 186, "name": "https://ox.ac.uk", "value": "text/html; charset=utf-8"},{"id": 187, "name": "https://fortune.com", "value": "text/html; charset=utf-8"},{"id": 188, "name": "https://foursquare.com", "value": "text/html; charset=utf-8"},{"id": 189, "name": "https://www.worldbank.org/", "value": "text/html; charset=UTF-8"},{"id": 190, "name": "https://goodreads.com", "value": "text/html; charset=utf-8"},{"id": 191, "name": "https://gmail.com", "value": "text/html; charset=utf-8"},{"id": 192, "name": "https://huffpost.com", "value": "text/html; charset=utf-8"},{"id": 193, "name": "https://lemonde.fr", "value": "text/html; charset=UTF-8"},{"id": 194, "name": "https://abc.net.au", "value": "text/html; charset=utf-8"},{"id": 195, "name": "https://thetimes.co.uk", "value": "text/html; charset=utf-8"},{"id": 196, "name": "https://spotify.com", "value": "text/html; charset=UTF-8"},{"id": 197, "name": "https://digg.com", "value": "text/html; charset=utf-8"},{"id": 198, "name": "https://parallels.com", "value": "text/html; charset=utf-8"},{"id": 199, "name": "https://imageshack.us", "value": "text/html"},{"id": 200, "name": "https://cbc.ca", "value": "text/html; charset=utf-8"},{"id": 201, "name": "https://photobucket.com", "value": "text/html; charset=utf-8"},{"id": 202, "name": "https://whitehouse.gov", "value": "text/html; charset=UTF-8"},{"id": 203, "name": "https://ndtv.com", "value": "text/html"},{"id": 204, "name": "https://dw.com", "value": "text/html;charset=UTF-8"},{"id": 205, "name": "https://amazon.es", "value": "text/html;charset=UTF-8"},{"id": 206, "name": "https://ietf.org", "value": "text/html; charset=utf-8"},{"id": 207, "name": "https://bt.com", "value": "text/html;charset=utf-8"},{"id": 208, "name": "https://nginx.com", "value": "text/html; charset=UTF-8"},{"id": 209, "name": "https://iubenda.com", "value": "text/html; charset=utf-8"},{"id": 210, "name": "https://channel4.com", "value": "text/html; charset=utf-8"},{"id": 211, "name": "https://yale.edu", "value": "text/html; charset=utf-8"},{"id": 212, "name": "https://hp.com", "value": "text/html; charset=UTF-8"},{"id": 213, "name": "https://marriott.com", "value": "text/html; charset=utf-8"},{"id": 214, "name": "https://express.co.uk", "value": "text/html; charset=UTF-8"},{"id": 215, "name": "https://ja.wikipedia.org", "value": "text/html; charset=UTF-8"},{"id": 216, "name": "https://qq.com", "value": "text/html; charset=GB2312"},{"id": 217, "name": "https://tes.com", "value": "text/html"},{"id": 218, "name": "https://www.ikea.com", "value": "text/html"},{"id": 219, "name": "https://smh.com.au", "value": "text/html; charset=utf-8"},{"id": 220, "name": "https://hollywoodreporter.com", "value": "text/html; charset=UTF-8"},{"id": 221, "name": "https://biglobe.ne.jp", "value": "text/html"},{"id": 222, "name": "https://www.wikipedia.org", "value": "text/html"},{"id": 223, "name": "https://google.co.in", "value": "text/html; charset=UTF-8"},{"id": 224, "name": "https://ea.com", "value": "text/html; charset=UTF-8"},{"id": 225, "name": "https://en.unesco.org", "value": "text/html; charset=utf-8"},{"id": 226, "name": "https://namecheap.com", "value": "text/html; charset=UTF-8"},{"id": 227, "name": "https://surveymonkey.com", "value": "text/html; charset=UTF-8"},{"id": 228, "name": "https://cisco.com", "value": "text/html"},{"id": 229, "name": "https://www.chicagotribune.com", "value": "text/html;charset=UTF-8"},{"id": 230, "name": "https://www.cambridge.org", "value": "text/html; charset=UTF-8"},{"id": 231, "name": "https://nikkei.com", "value": "text/html; charset=utf-8"},{"id": 232, "name": "https://id.wikipedia.org", "value": "text/html; charset=UTF-8"},{"id": 233, "name": "https://sfgate.com", "value": "text/html; charset=UTF-8"},{"id": 234, "name": "https://naver.jp", "value": "text/html; charset=utf-8"},{"id": 235, "name": "https://detik.com", "value": "text/html"},{"id": 236, "name": "https://addtoany.com", "value": "text/html; charset=utf-8"},{"id": 237, "name": "https://target.com", "value": "text/html; charset=utf-8"},{"id": 238, "name": "https://metro.co.uk", "value": "text/html; charset=UTF-8"},{"id": 239, "name": "https://ovh.co.uk", "value": "text/html"},{"id": 240, "name": "https://amazon.fr", "value": "text/html;charset=UTF-8"},{"id": 241, "name": "https://yelp.com", "value": "text/html; charset=UTF-8"},{"id": 242, "name": "https://000webhost.com", "value": "text/html; charset=UTF-8"},{"id": 243, "name": "https://umich.edu", "value": "text/html; charset=utf-8"},{"id": 244, "name": "https://psychologytoday.com", "value": "text/html; charset=utf-8"},{"id": 245, "name": "https://academia.edu", "value": "text/html; charset=utf-8"},{"id": 246, "name": "https://espn.com", "value": "text/html;charset=UTF-8"},{"id": 247, "name": "https://theglobeandmail.com", "value": "text/html;charset=UTF-8"},{"id": 248, "name": "https://adssettings.google.com", "value": "text/html; charset=utf-8"},{"id": 249, "name": "https://engadget.com", "value": "text/html; charset=UTF-8"},{"id": 250, "name": "https://cornell.edu", "value": "text/html"},{"id": 251, "name": "https://www.khanacademy.org", "value": "text/html; charset=utf-8"},{"id": 252, "name": "https://gofundme.com", "value": "text/html; charset=UTF-8"},{"id": 253, "name": "https://buzzfeed.com", "value": "text/html; charset=utf-8"},{"id": 254, "name": "https://www.wix.com", "value": "text/html;charset=utf-8"},{"id": 255, "name": "https://cbsnews.com", "value": "text/html; charset=UTF-8"},{"id": 256, "name": "https://britannica.com", "value": "text/html;charset=UTF-8"},{"id": 257, "name": "https://washington.edu", "value": "text/html"},{"id": 258, "name": "https://rtve.es", "value": "text/html; charset=ISO-8859-1"},{"id": 259, "name": "https://fastcompany.com", "value": "text/html; charset=utf-8"},{"id": 260, "name": "https://gnu.org", "value": "text/html"},{"id": 261, "name": "https://abc.es", "value": "text/html; charset=UTF-8"},{"id": 262, "name": "https://gooyaabitemplates.com", "value": "text/html; charset=utf-8"},{"id": 263, "name": "https://sciencedirect.com", "value": "text/html; charset=utf-8"},{"id": 264, "name": "https://apache.org", "value": "text/html"},{"id": 265, "name": "https://ria.ru", "value": "text/html; charset=utf-8"},{"id": 266, "name": "https://nationalgeographic.com", "value": "text/html"},{"id": 267, "name": "https://doubleclick.net", "value": "text/html"},{"id": 268, "name": "https://guardian.co.uk", "value": "text/html; charset=utf-8"},{"id": 269, "name": "https://yahoo.co.jp", "value": "text/html; charset=UTF-8"},{"id": 270, "name": "https://shutterstock.com", "value": "text/html; charset=utf-8"},{"id": 271, "name": "https://rt.com", "value": "text/html; charset=UTF-8"},{"id": 272, "name": "https://mit.edu", "value": "text/html"},{"id": 273, "name": "https://t.co", "value": "text/html; charset=utf-8"},{"id": 274, "name": "https://nature.com", "value": "text/html; charset='UTF-8'"},{"id": 275, "name": "https://scoop.it", "value": "text/html;charset=UTF-8"},{"id": 276, "name": "https://spiegel.de", "value": "text/html; charset=utf-8"},{"id": 277, "name": "https://cnbc.com", "value": "text/html; charset=utf-8"},{"id": 278, "name": "https://nginx.org", "value": "text/html; charset=utf-8"},{"id": 279, "name": "https://dan.com", "value": "text/html; charset=utf-8"},{"id": 280, "name": "https://www.nydailynews.com/", "value": "text/html;charset=UTF-8"},{"id": 281, "name": "https://godaddy.com", "value": "text/html; charset=utf-8"},{"id": 282, "name": "https://twitch.tv", "value": "text/html"},{"id": 283, "name": "https://goo.ne.jp", "value": "text/html; charset=UTF-8"},{"id": 284, "name": "https://news.com.au", "value": "text/html; charset=UTF-8"},{"id": 285, "name": "https://rambler.ru", "value": "text/html; charset=utf-8"},{"id": 286, "name": "https://stanford.edu", "value": "text/html; charset=UTF-8"},{"id": 287, "name": "https://bloglovin.com", "value": "text/html; charset=UTF-8"},{"id": 288, "name": "https://wikihow.com", "value": "text/html; charset=UTF-8"},{"id": 289, "name": "https://instagram.com", "value": "text/html; charset=utf-8"},{"id": 290, "name": "https://eventbrite.com", "value": "text/html"},{"id": 291, "name": "https://princeton.edu", "value": "text/html; charset=UTF-8"},{"id": 292, "name": "https://researchgate.net", "value": "text/html; charset=utf-8"},{"id": 293, "name": "https://sendspace.com", "value": "text/html; charset=UTF-8"},{"id": 294, "name": "https://nvidia.com", "value": "text/html; charset=UTF-8"},{"id": 295, "name": "https://disney.com", "value": "text/html;charset=utf-8"},{"id": 296, "name": "https://disqus.com", "value": "text/html; charset=utf-8"},{"id": 297, "name": "https://loc.gov", "value": "text/html; charset=UTF-8"},{"id": 298, "name": "https://urbandictionary.com", "value": "text/html; charset=utf-8"},{"id": 299, "name": "https://welt.de", "value": "text/html; charset=utf-8"},{"id": 300, "name": "https://google.com.tw", "value": "text/html; charset=UTF-8"},{"id": 301, "name": "https://addthis.com", "value": "text/html"},{"id": 302, "name": "https://vice.com", "value": "text/html; charset=utf-8"},{"id": 303, "name": "https://ted.com", "value": "text/html; charset=utf-8"},{"id": 304, "name": "https://4shared.com", "value": "text/html;charset=UTF-8"},{"id": 305, "name": "https://sapo.pt", "value": "text/html; charset=UTF-8"},{"id": 306, "name": "https://fifa.com", "value": "text/html; charset=UTF-8"},{"id": 307, "name": "https://hm.com", "value": "text/html;charset=utf-8"},{"id": 308, "name": "https://pl.wikipedia.org", "value": "text/html; charset=UTF-8"},{"id": 309, "name": "https://tripadvisor.com", "value": "text/html;charset=UTF-8"},{"id": 310, "name": "https://npr.org", "value": "text/html"},{"id": 311, "name": "https://playstation.com", "value": "text/html; charset=UTF-8"},{"id": 312, "name": "https://oracle.com", "value": "text/html; charset=UTF-8"},{"id": 313, "name": "https://finance.yahoo.com", "value": "text/html; charset=utf-8"},{"id": 314, "name": "https://weibo.com", "value": "text/html; charset=utf-8"},{"id": 315, "name": "https://kickstarter.com", "value": "text/html; charset=utf-8"},{"id": 316, "name": "https://www.elmundo.es", "value": "text/html; charset=iso-8859-15"},{"id": 317, "name": "https://theverge.com", "value": "text/html; charset=utf-8"},{"id": 318, "name": "https://about.com", "value": "text/html; charset=UTF-8"},{"id": 319, "name": "https://netflix.com", "value": "text/html; charset=utf-8"},{"id": 320, "name": "https://naver.com", "value": "text/html; charset=UTF-8"},{"id": 321, "name": "https://mashable.com", "value": "text/html; charset=utf-8"},{"id": 322, "name": "https://ovh.com", "value": "text/html"},{"id": 323, "name": "https://groups.google.com", "value": "text/html; charset=utf-8"},{"id": 324, "name": "https://my.yahoo.com", "value": "text/html; charset=UTF-8"},{"id": 325, "name": "https://nokia.com", "value": "text/html; charset=UTF-8"},{"id": 326, "name": "https://standard.co.uk", "value": "text/html; charset=utf-8"},{"id": 327, "name": "https://gizmodo.com", "value": "text/html; charset=utf-8"},{"id": 328, "name": "https://shopify.com", "value": "text/html; charset=utf-8"},{"id": 329, "name": "https://columbia.edu", "value": "text/html; charset=UTF-8"},{"id": 330, "name": "https://deezer.com", "value": "text/html; charset=utf-8"},{"id": 331, "name": "https://variety.com", "value": "text/html; charset=UTF-8"},{"id": 332, "name": "https://instructables.com", "value": "text/html; charset=utf-8"},{"id": 333, "name": "https://mysql.com", "value": "text/html; charset=UTF-8"},{"id": 334, "name": "https://ibm.com", "value": "text/html"},{"id": 335, "name": "https://box.com", "value": "text/html; charset=utf-8"},{"id": 336, "name": "https://imageshack.com", "value": "text/html"},{"id": 337, "name": "https://googleblog.com", "value": "text/html; charset=utf-8"},{"id": 338, "name": "https://ru.wikipedia.org", "value": "text/html; charset=UTF-8"},{"id": 339, "name": "https://www.over-blog.com", "value": "text/html; charset=UTF-8"},{"id": 340, "name": "https://yadi.sk", "value": "text/html; charset=utf-8"},{"id": 341, "name": "https://alibaba.com", "value": "text/html;charset=UTF-8"},{"id": 342, "name": "https://google.co.id", "value": "text/html; charset=UTF-8"},{"id": 343, "name": "https://mega.nz", "value": "text/html"},{"id": 344, "name": "https://newsweek.com", "value": "text/html; charset=UTF-8"},{"id": 345, "name": "https://netvibes.com", "value": "text/html; charset=utf-8"},{"id": 346, "name": "https://quora.com", "value": "text/html; charset=utf-8"},{"id": 347, "name": "https://google.nl", "value": "text/html; charset=UTF-8"},{"id": 348, "name": "https://economist.com", "value": "text/html; charset=utf-8"},{"id": 349, "name": "https://zendesk.com", "value": "text/html"},{"id": 350, "name": "https://google.ca", "value": "text/html; charset=UTF-8"},{"id": 351, "name": "https://utexas.edu", "value": "text/html; charset=utf-8"},{"id": 352, "name": "https://boston.com", "value": "text/html; charset=UTF-8"},{"id": 353, "name": "https://plos.org", "value": "text/html; charset=UTF-8"},{"id": 354, "name": "https://sina.com.cn", "value": "text/html"},{"id": 355, "name": "https://iso.org", "value": "text/html;charset=UTF-8"},{"id": 356, "name": "https://corriere.it", "value": "text/html; charset=ISO-8859-1"},{"id": 357, "name": "https://chron.com", "value": "text/html; charset=UTF-8"},{"id": 358, "name": "https://airbnb.com", "value": "text/html; charset=utf-8"},{"id": 359, "name": "https://trello.com", "value": "text/html; charset=utf-8"},{"id": 360, "name": "https://eonline.com", "value": "text/html;charset=UTF-8"},{"id": 361, "name": "https://fb.me", "value": "text/html; charset='utf-8'"},{"id": 362, "name": "https://arxiv.org", "value": "text/html; charset=utf-8"},{"id": 363, "name": "https://thoughtco.com", "value": "text/html; charset=UTF-8"},{"id": 364, "name": "https://billboard.com", "value": "text/html; charset=UTF-8"},{"id": 365, "name": "https://ask.fm", "value": "text/html; charset=utf-8"},{"id": 366, "name": "https://ucoz.ru", "value": "text/html; charset=UTF-8"},{"id": 367, "name": "https://orange.fr", "value": "text/html; charset=UTF-8"},{"id": 368, "name": "https://narod.ru", "value": "text/html; charset=UTF-8"},{"id": 369, "name": "https://e-monsite.com", "value": "text/html; charset=UTF-8"},{"id": 370, "name": "https://venturebeat.com", "value": "text/html; charset=UTF-8"},{"id": 371, "name": "https://daum.net", "value": "text/html;charset=UTF-8"},{"id": 372, "name": "https://skype.com", "value": "text/html; charset=utf-8"},{"id": 373, "name": "https://vkontakte.ru", "value": "text/html; charset=windows-1251"},{"id": 374, "name": "https://soratemplates.com", "value": "text/html; charset=UTF-8"},{"id": 375, "name": "https://groups.yahoo.com", "value": "text/html; charset=UTF-8"},{"id": 376, "name": "https://evernote.com", "value": "text/html; charset=utf-8"},{"id": 377, "name": "https://thefreedictionary.com", "value": "text/html; charset=utf-8"},{"id": 378, "name": "https://nicovideo.jp", "value": "text/html; charset=UTF-8"},{"id": 379, "name": "https://history.com", "value": "text/html; charset=utf-8"},{"id": 380, "name": "https://ap.org", "value": "text/html;charset=UTF-8"},{"id": 381, "name": "https://imgur.com", "value": "text/html"},{"id": 382, "name": "https://prnewswire.com", "value": "text/html; charset=UTF-8"},{"id": 383, "name": "https://ebay.co.uk", "value": "text/html;charset=utf-8"},{"id": 384, "name": "https://biblegateway.com", "value": "text/html; charset=UTF-8"},{"id": 385, "name": "https://www.fda.gov", "value": "text/html; charset=UTF-8"},{"id": 386, "name": "https://statista.com", "value": "text/html; charset=UTF-8"},{"id": 387, "name": "https://unicef.org", "value": "text/html; charset=UTF-8"},{"id": 388, "name": "https://cia.gov", "value": "text/html"},{"id": 389, "name": "https://sky.com", "value": "text/html; charset=utf-8"},{"id": 390, "name": "https://ca.gov", "value": "text/html"},{"id": 391, "name": "https://amzn.to", "value": "text/html"},{"id": 392, "name": "https://answers.yahoo.com", "value": "text/html; charset=UTF-8"},{"id": 393, "name": "https://dictionary.com", "value": "text/html; charset=utf-8"},{"id": 394, "name": "https://example.com", "value": "text/html; charset=UTF-8"},{"id": 395, "name": "https://broadcom.com", "value": "text/html; charset=utf-8"},{"id": 396, "name": "https://intel.com", "value": "text/html"},{"id": 397, "name": "https://answers.com", "value": "text/html; charset=UTF-8"},{"id": 398, "name": "https://etsy.com", "value": "text/html; charset=UTF-8"},{"id": 399, "name": "https://tabelog.com", "value": "text/html; charset=utf-8"},{"id": 400, "name": "https://espn.go.com", "value": "text/html;charset=UTF-8"},{"id": 401, "name": "https://offset.com", "value": "text/html; charset=utf-8"},{"id": 402, "name": "https://zdnet.com", "value": "text/html; charset=UTF-8"},{"id": 403, "name": "https://ftc.gov", "value": "text/html; charset=utf-8"},{"id": 404, "name": "https://xing.com", "value": "text/html; charset=utf-8"},{"id": 405, "name": "https://thedailybeast.com", "value": "text/html; charset=utf-8"},{"id": 406, "name": "https://inc.com", "value": "text/html; charset=utf-8"},{"id": 407, "name": "https://trustpilot.com", "value": "text/html; charset=utf-8"},{"id": 408, "name": "https://cbslocal.com", "value": "text/html; charset=UTF-8"},{"id": 409, "name": "https://newyorker.com", "value": "text/html; charset=utf-8"},{"id": 410, "name": "https://adweek.com", "value": "text/html; charset=UTF-8"},{"id": 411, "name": "https://pinterest.co.uk", "value": "text/html; charset=utf-8"},{"id": 412, "name": "https://steamcommunity.com", "value": "text/html; charset=UTF-8"},{"id": 413, "name": "https://about.me", "value": "text/html; charset=utf-8"},{"id": 414, "name": "https://marketwatch.com", "value": "text/html; charset=utf-8"},{"id": 415, "name": "https://mixcloud.com", "value": "text/html; charset=utf-8"},{"id": 416, "name": "https://wiktionary.org", "value": "text/html"},{"id": 417, "name": "https://politico.com", "value": "text/html;charset=UTF-8"},{"id": 418, "name": "https://wiley.com", "value": "text/html;charset=UTF-8"},{"id": 419, "name": "https://usgs.gov", "value": "text/html; charset=utf-8"},{"id": 420, "name": "https://rottentomatoes.com", "value": "text/html; charset=utf-8"},{"id": 421, "name": "https://dribbble.com", "value": "text/html; charset=utf-8"},{"id": 422, "name": "https://sports.yahoo.com", "value": "text/html; charset=utf-8"},{"id": 423, "name": "https://coursera.org", "value": "text/html"},{"id": 424, "name": "https://amazon.ca", "value": "text/html"},{"id": 425, "name": "https://upenn.edu", "value": "text/html; charset=utf-8"},{"id": 426, "name": "https://csmonitor.com", "value": "text/html; charset=utf-8"},{"id": 427, "name": "https://state.gov", "value": "text/html; charset=UTF-8"},{"id": 428, "name": "https://greenpeace.org", "value": "text/html; charset=UTF-8"},{"id": 429, "name": "https://20minutos.es", "value": "text/html; charset=UTF-8"},{"id": 430, "name": "https://mystrikingly.com", "value": "text/html; charset=utf-8"},{"id": 431, "name": "https://dreamstime.com", "value": "text/html; charset=UTF-8"},{"id": 432, "name": "https://mozilla.com", "value": "text/html; charset=utf-8"},{"id": 433, "name": "https://behance.net", "value": "text/html; charset=UTF-8"},{"id": 434, "name": "https://amazon.in", "value": "text/html;charset=UTF-8"},{"id": 435, "name": "https://stripe.com", "value": "text/html;charset=utf-8"},{"id": 436, "name": "https://scientificamerican.com", "value": "text/html; charset=utf-8"},{"id": 437, "name": "https://psu.edu", "value": "text/html; charset=utf-8"},{"id": 438, "name": "https://timeout.com", "value": "text/html; charset=UTF-8"},{"id": 439, "name": "https://house.gov", "value": "text/html; charset=UTF-8"},{"id": 440, "name": "https://softonic.com", "value": "text/html; charset=utf-8"},{"id": 441, "name": "https://www.skyrock.com", "value": "text/html"},{"id": 442, "name": "https://membership.businesswire.com", "value": "text/html;charset=utf-8"},{"id": 443, "name": "https://autodesk.com", "value": "text/html; charset=utf-8"},{"id": 444, "name": "https://chinadaily.com.cn", "value": "text/html"},{"id": 445, "name": "https://entrepreneur.com", "value": "text/html; charset=UTF-8"},{"id": 446, "name": "https://nbcnews.com", "value": "text/html; charset=utf-8"},{"id": 447, "name": "https://nba.com", "value": "text/html; charset=UTF-8"},{"id": 448, "name": "https://oreilly.com", "value": "text/html"},{"id": 449, "name": "https://mayoclinic.org", "value": "text/html; charset=utf-8"},{"id": 450, "name": "https://pastebin.com", "value": "text/html; charset=utf-8"},{"id": 451, "name": "https://rediff.com", "value": "text/html"},{"id": 452, "name": "https://techradar.com", "value": "text/html; charset=UTF-8"},{"id": 453, "name": "https://arstechnica.com", "value": "text/html; charset=UTF-8"},{"id": 454, "name": "https://sputniknews.com", "value": "text/html; charset=utf-8"},{"id": 455, "name": "https://gitlab.com", "value": "text/html"},{"id": 456, "name": "https://sylabs.io", "value": "text/html; charset=utf-8"},{"id": 457, "name": "https://www.observe.ai", "value": "text/html"},{"id": 458, "name": "https://www.instacart.com", "value": "text/html; charset=utf-8"},{"id": 459, "name": "https://www.pizzahut.com", "value": "text/html; charset=UTF-8"},{"id": 460, "name": "https://www.dominos.com/en/", "value": "text/html; charset=utf-8"},{"id": 461, "name": "https://www.mcdonalds.com/us/", "value": "text/html; charset=utf-8"},{"id": 462, "name": "https://www.wendys.com", "value": "text/html; charset=UTF-8"},{"id": 463, "name": "https://www.nike.com", "value": "text/html; charset=utf-8"},{"id": 464, "name": "https://www.lyft.com", "value": "text/html; charset=utf-8"},{"id": 465, "name": "https://www.glassdoor.com", "value": "text/html;charset=UTF-8"},{"id": 466, "name": "https://zoom.us", "value": "text/html;charset=utf-8"},{"id": 467, "name": "https://www.salesforce.com", "value": "text/html"},{"id": 468, "name": "https://www.hellosign.com", "value": "text/html"},{"id": 469, "name": "https://www.docusign.com", "value": "text/html; charset=UTF-8"},{"id": 470, "name": "https://www.ultimatesoftware.com", "value": "text/html; charset=utf-8"},{"id": 471, "name": "https://www.fastly.com", "value": "text/html"},{"id": 472, "name": "https://www.sap.com", "value": "text/html"},{"id": 473, "name": "https://www.intuit.com", "value": "text/html; charset=UTF-8"},{"id": 474, "name": "https://www.vmware.com", "value": "text/html; charset=UTF-8"},{"id": 475, "name": "https://www.docker.com", "value": "text/html; charset=UTF-8"},{"id": 476, "name": "https://www.redhat.com", "value": "text/html; charset=utf-8"},{"id": 477, "name": "https://readthedocs.org", "value": "text/html; charset=utf-8"},{"id": 478, "name": "https://www.rust-lang.org", "value": "text/html; charset=utf-8"},{"id": 479, "name": "https://www.discourse.org", "value": "text/html"},{"id": 480, "name": "https://us-rse.org", "value": "text/html; charset=utf-8"}],
+    lookup: {  "1": "https://www.google.com", "2": "https://youtube.com", "3": "https://apple.com", "4": "https://docs.google.com", "5": "https://www.blogger.com", "6": "https://microsoft.com", "7": "https://support.google.com", "8": "https://play.google.com", "9": "https://adobe.com", "10": "https://plus.google.com", "11": "https://wordpress.org", "12": "https://cloudflare.com", "13": "https://linkedin.com", "14": "https://maps.google.com", "15": "https://en.wikipedia.org", "16": "https://vimeo.com", "17": "https://mozilla.org", "18": "https://sites.google.com", "19": "https://accounts.google.com", "20": "https://europa.eu", "21": "https://youtu.be", "22": "https://drive.google.com", "23": "https://istockphoto.com", "24": "https://github.com", "25": "https://amazon.com", "26": "https://vk.com", "27": "https://facebook.com", "28": "https://medium.com", "29": "https://bbc.co.uk", "30": "https://es.wikipedia.org", "31": "https://cnn.com", "32": "https://live.com", "33": "https://nytimes.com", "34": "https://jimdofree.com", "35": "https://google.fr", "36": "https://theguardian.com", "37": "https://who.int", "38": "https://google.co.uk", "39": "https://dropbox.com", "40": "https://policies.google.com", "41": "https://bbc.com", "42": "https://nih.gov", "43": "https://whatsapp.com", "44": "https://msn.com", "45": "https://reuters.com", "46": "https://pt.wikipedia.org", "47": "https://fr.wikipedia.org", "48": "https://uol.com.br", "49": "https://myspace.com", "50": "https://feedburner.com", "51": "https://slideshare.net", "52": "https://paypal.com", "53": "https://line.me", "54": "https://creativecommons.org", "55": "https://google.es", "56": "https://dailymotion.com", "57": "https://t.me", "58": "https://news.google.com", "59": "https://wikimedia.org", "60": "https://developers.google.com", "61": "https://imdb.com", "62": "https://forbes.com", "63": "https://mail.ru", "64": "https://washingtonpost.com", "65": "https://photos.google.com", "66": "https://google.de", "67": "https://w3.org", "68": "https://www.yahoo.com", "69": "https://aliexpress.com", "70": "https://google.com.br", "71": "https://google.co.jp", "72": "https://mail.google.com", "73": "https://networkadvertising.org", "74": "https://hugedomains.com", "75": "https://www.bluehost.com", "76": "https://tinyurl.com", "77": "https://cpanel.com", "78": "https://businessinsider.com", "79": "https://www.nasa.gov", "80": "https://news.yahoo.com", "81": "https://aol.com", "82": "https://ft.com", "83": "https://wikia.com", "84": "https://techcrunch.com", "85": "https://office.com", "86": "https://cpanel.net", "87": "https://issuu.com", "88": "https://ebay.com", "89": "https://google.ru", "90": "https://nypost.com", "91": "https://huffingtonpost.com", "92": "https://dailymail.co.uk", "93": "https://wsj.com", "94": "https://bit.ly", "95": "https://wired.com", "96": "https://amazon.de", "97": "https://tools.google.com", "98": "https://abril.com.br", "99": "https://plesk.com", "100": "https://ok.ru", "101": "https://amazon.co.jp", "102": "https://bloomberg.com", "103": "https://steampowered.com", "104": "https://independent.co.uk", "105": "https://code.google.com", "106": "https://draft.blogger.com", "107": "https://picasaweb.google.com", "108": "https://themeforest.net", "109": "https://archive.org", "110": "https://samsung.com", "111": "https://harvard.edu", "112": "https://indiatimes.com", "113": "https://books.google.com", "114": "https://twitter.com", "115": "https://ipv4.google.com", "116": "https://latimes.com", "117": "https://mirror.co.uk", "118": "https://get.google.com", "119": "https://telegraph.co.uk", "120": "https://pinterest.com", "121": "https://files.wordpress.com", "122": "https://elpais.com", "123": "https://mediafire.com", "124": "https://abcnews.go.com", "125": "https://usatoday.com", "126": "https://foxnews.com", "127": "https://change.org", "128": "https://aboutads.info", "129": "https://marketingplatform.google.com", "130": "https://myaccount.google.com", "131": "https://scribd.com", "132": "https://translate.google.com", "133": "https://picasa.google.com", "134": "https://terra.com.br", "135": "https://hatena.ne.jp", "136": "https://bing.com", "137": "https://buydomains.com", "138": "https://google.it", "139": "https://opera.com", "140": "https://fandom.com", "141": "https://amazon.co.uk", "142": "https://booking.com", "143": "https://youronlinechoices.com", "144": "https://telegram.me", "145": "https://lefigaro.fr", "146": "https://www.gov.uk", "147": "https://cdc.gov", "148": "https://cnet.com", "149": "https://thesun.co.uk", "150": "https://de.wikipedia.org", "151": "https://gravatar.com", "152": "https://un.org", "153": "https://goo.gl", "154": "https://android.com", "155": "https://search.google.com", "156": "https://time.com", "157": "https://rakuten.co.jp", "158": "https://a8.net", "159": "https://amazon.it", "160": "https://asahi.com", "161": "https://it.wikipedia.org", "162": "https://bandcamp.com", "163": "https://sciencedaily.com", "164": "https://e-recht24.de", "165": "https://sedo.com", "166": "https://berkeley.edu", "167": "https://walmart.com", "168": "https://www.noaa.gov", "169": "https://m.wikipedia.org", "170": "https://blackberry.com", "171": "https://icann.org", "172": "https://google.pl", "173": "https://dell.com", "174": "https://soundcloud.com", "175": "https://depositfiles.com", "176": "https://sciencemag.org", "177": "https://pbs.org", "178": "https://www.weebly.com", "179": "https://xbox.com", "180": "https://wp.com", "181": "https://vox.com", "182": "https://ign.com", "183": "https://stackoverflow.com", "184": "https://theatlantic.com", "185": "https://yandex.ru", "186": "https://ox.ac.uk", "187": "https://fortune.com", "188": "https://foursquare.com", "189": "https://www.worldbank.org/", "190": "https://goodreads.com", "191": "https://gmail.com", "192": "https://huffpost.com", "193": "https://lemonde.fr", "194": "https://abc.net.au", "195": "https://thetimes.co.uk", "196": "https://spotify.com", "197": "https://digg.com", "198": "https://parallels.com", "199": "https://imageshack.us", "200": "https://cbc.ca", "201": "https://photobucket.com", "202": "https://whitehouse.gov", "203": "https://ndtv.com", "204": "https://dw.com", "205": "https://amazon.es", "206": "https://ietf.org", "207": "https://bt.com", "208": "https://nginx.com", "209": "https://iubenda.com", "210": "https://channel4.com", "211": "https://yale.edu", "212": "https://hp.com", "213": "https://marriott.com", "214": "https://express.co.uk", "215": "https://ja.wikipedia.org", "216": "https://qq.com", "217": "https://tes.com", "218": "https://www.ikea.com", "219": "https://smh.com.au", "220": "https://hollywoodreporter.com", "221": "https://biglobe.ne.jp", "222": "https://www.wikipedia.org", "223": "https://google.co.in", "224": "https://ea.com", "225": "https://en.unesco.org", "226": "https://namecheap.com", "227": "https://surveymonkey.com", "228": "https://cisco.com", "229": "https://www.chicagotribune.com", "230": "https://www.cambridge.org", "231": "https://nikkei.com", "232": "https://id.wikipedia.org", "233": "https://sfgate.com", "234": "https://naver.jp", "235": "https://detik.com", "236": "https://addtoany.com", "237": "https://target.com", "238": "https://metro.co.uk", "239": "https://ovh.co.uk", "240": "https://amazon.fr", "241": "https://yelp.com", "242": "https://000webhost.com", "243": "https://umich.edu", "244": "https://psychologytoday.com", "245": "https://academia.edu", "246": "https://espn.com", "247": "https://theglobeandmail.com", "248": "https://adssettings.google.com", "249": "https://engadget.com", "250": "https://cornell.edu", "251": "https://www.khanacademy.org", "252": "https://gofundme.com", "253": "https://buzzfeed.com", "254": "https://www.wix.com", "255": "https://cbsnews.com", "256": "https://britannica.com", "257": "https://washington.edu", "258": "https://rtve.es", "259": "https://fastcompany.com", "260": "https://gnu.org", "261": "https://abc.es", "262": "https://gooyaabitemplates.com", "263": "https://sciencedirect.com", "264": "https://apache.org", "265": "https://ria.ru", "266": "https://nationalgeographic.com", "267": "https://doubleclick.net", "268": "https://guardian.co.uk", "269": "https://yahoo.co.jp", "270": "https://shutterstock.com", "271": "https://rt.com", "272": "https://mit.edu", "273": "https://t.co", "274": "https://nature.com", "275": "https://scoop.it", "276": "https://spiegel.de", "277": "https://cnbc.com", "278": "https://nginx.org", "279": "https://dan.com", "280": "https://www.nydailynews.com/", "281": "https://godaddy.com", "282": "https://twitch.tv", "283": "https://goo.ne.jp", "284": "https://news.com.au", "285": "https://rambler.ru", "286": "https://stanford.edu", "287": "https://bloglovin.com", "288": "https://wikihow.com", "289": "https://instagram.com", "290": "https://eventbrite.com", "291": "https://princeton.edu", "292": "https://researchgate.net", "293": "https://sendspace.com", "294": "https://nvidia.com", "295": "https://disney.com", "296": "https://disqus.com", "297": "https://loc.gov", "298": "https://urbandictionary.com", "299": "https://welt.de", "300": "https://google.com.tw", "301": "https://addthis.com", "302": "https://vice.com", "303": "https://ted.com", "304": "https://4shared.com", "305": "https://sapo.pt", "306": "https://fifa.com", "307": "https://hm.com", "308": "https://pl.wikipedia.org", "309": "https://tripadvisor.com", "310": "https://npr.org", "311": "https://playstation.com", "312": "https://oracle.com", "313": "https://finance.yahoo.com", "314": "https://weibo.com", "315": "https://kickstarter.com", "316": "https://www.elmundo.es", "317": "https://theverge.com", "318": "https://about.com", "319": "https://netflix.com", "320": "https://naver.com", "321": "https://mashable.com", "322": "https://ovh.com", "323": "https://groups.google.com", "324": "https://my.yahoo.com", "325": "https://nokia.com", "326": "https://standard.co.uk", "327": "https://gizmodo.com", "328": "https://shopify.com", "329": "https://columbia.edu", "330": "https://deezer.com", "331": "https://variety.com", "332": "https://instructables.com", "333": "https://mysql.com", "334": "https://ibm.com", "335": "https://box.com", "336": "https://imageshack.com", "337": "https://googleblog.com", "338": "https://ru.wikipedia.org", "339": "https://www.over-blog.com", "340": "https://yadi.sk", "341": "https://alibaba.com", "342": "https://google.co.id", "343": "https://mega.nz", "344": "https://newsweek.com", "345": "https://netvibes.com", "346": "https://quora.com", "347": "https://google.nl", "348": "https://economist.com", "349": "https://zendesk.com", "350": "https://google.ca", "351": "https://utexas.edu", "352": "https://boston.com", "353": "https://plos.org", "354": "https://sina.com.cn", "355": "https://iso.org", "356": "https://corriere.it", "357": "https://chron.com", "358": "https://airbnb.com", "359": "https://trello.com", "360": "https://eonline.com", "361": "https://fb.me", "362": "https://arxiv.org", "363": "https://thoughtco.com", "364": "https://billboard.com", "365": "https://ask.fm", "366": "https://ucoz.ru", "367": "https://orange.fr", "368": "https://narod.ru", "369": "https://e-monsite.com", "370": "https://venturebeat.com", "371": "https://daum.net", "372": "https://skype.com", "373": "https://vkontakte.ru", "374": "https://soratemplates.com", "375": "https://groups.yahoo.com", "376": "https://evernote.com", "377": "https://thefreedictionary.com", "378": "https://nicovideo.jp", "379": "https://history.com", "380": "https://ap.org", "381": "https://imgur.com", "382": "https://prnewswire.com", "383": "https://ebay.co.uk", "384": "https://biblegateway.com", "385": "https://www.fda.gov", "386": "https://statista.com", "387": "https://unicef.org", "388": "https://cia.gov", "389": "https://sky.com", "390": "https://ca.gov", "391": "https://amzn.to", "392": "https://answers.yahoo.com", "393": "https://dictionary.com", "394": "https://example.com", "395": "https://broadcom.com", "396": "https://intel.com", "397": "https://answers.com", "398": "https://etsy.com", "399": "https://tabelog.com", "400": "https://espn.go.com", "401": "https://offset.com", "402": "https://zdnet.com", "403": "https://ftc.gov", "404": "https://xing.com", "405": "https://thedailybeast.com", "406": "https://inc.com", "407": "https://trustpilot.com", "408": "https://cbslocal.com", "409": "https://newyorker.com", "410": "https://adweek.com", "411": "https://pinterest.co.uk", "412": "https://steamcommunity.com", "413": "https://about.me", "414": "https://marketwatch.com", "415": "https://mixcloud.com", "416": "https://wiktionary.org", "417": "https://politico.com", "418": "https://wiley.com", "419": "https://usgs.gov", "420": "https://rottentomatoes.com", "421": "https://dribbble.com", "422": "https://sports.yahoo.com", "423": "https://coursera.org", "424": "https://amazon.ca", "425": "https://upenn.edu", "426": "https://csmonitor.com", "427": "https://state.gov", "428": "https://greenpeace.org", "429": "https://20minutos.es", "430": "https://mystrikingly.com", "431": "https://dreamstime.com", "432": "https://mozilla.com", "433": "https://behance.net", "434": "https://amazon.in", "435": "https://stripe.com", "436": "https://scientificamerican.com", "437": "https://psu.edu", "438": "https://timeout.com", "439": "https://house.gov", "440": "https://softonic.com", "441": "https://www.skyrock.com", "442": "https://membership.businesswire.com", "443": "https://autodesk.com", "444": "https://chinadaily.com.cn", "445": "https://entrepreneur.com", "446": "https://nbcnews.com", "447": "https://nba.com", "448": "https://oreilly.com", "449": "https://mayoclinic.org", "450": "https://pastebin.com", "451": "https://rediff.com", "452": "https://techradar.com", "453": "https://arstechnica.com", "454": "https://sputniknews.com", "455": "https://gitlab.com", "456": "https://sylabs.io", "457": "https://www.observe.ai", "458": "https://www.instacart.com", "459": "https://www.pizzahut.com", "460": "https://www.dominos.com/en/", "461": "https://www.mcdonalds.com/us/", "462": "https://www.wendys.com", "463": "https://www.nike.com", "464": "https://www.lyft.com", "465": "https://www.glassdoor.com", "466": "https://zoom.us", "467": "https://www.salesforce.com", "468": "https://www.hellosign.com", "469": "https://www.docusign.com", "470": "https://www.ultimatesoftware.com", "471": "https://www.fastly.com", "472": "https://www.sap.com", "473": "https://www.intuit.com", "474": "https://www.vmware.com", "475": "https://www.docker.com", "476": "https://www.redhat.com", "477": "https://readthedocs.org", "478": "https://www.rust-lang.org", "479": "https://www.discourse.org", "480": "https://us-rse.org" },
+    sort: 'id',
+    sortDir:'asc',
+    page: 0,
+    pageSize: 25
+  }),
+  methods: {
+    viewRow: function(event) {
+        var rowId = $(event.target).closest('tr').find('td:first').text()
+        var site = this.lookup[rowId].replace(/(^\w+:|^)\/\//, '');
+        document.location = "/site/" + site
+    },
+    sortBy: function(s) {
+      if (s === this.sort) {
+        this.sortDir = (this.sortDir === 'asc') ? 'desc' : 'asc';
+      } else {
+        this.sortDir = 'asc';
+      }
+      this.sort = s;
+    },
+    isActiveSort: function(s) { 
+      return this.sort === s; 
+    },
+    hasPage: function(dir) {
+      if (dir === -1 && (this.page > 0)) return true;
+      if (dir ===  1 && (((this.page+1)*this.pageSize) < this.rows.length)) return true;
+      return false;
+    },
+    prevPage: function() {
+      if (this.hasPage(-1)) this.page--;
+    },
+    nextPage: function() {
+      if (this.hasPage(1)) this.page++;
+    }
+  },
+  computed: {
+    sortedRows: function() {
+      return this.rows.sort((a, b) => {
+        let dir = (this.sortDir === 'asc') ? 1 : -1;
+        if (a[this.sort] < b[this.sort]) {
+          return -1 * dir;
+        } else if (a[this.sort] > b[this.sort]) {
+          return  1 * dir;
+        } else {
+          return 0;
+        }
+      }).filter((row, idx) => {
+        let s = this.page*this.pageSize;
+        let e = (this.page+1)*this.pageSize;
+        return (idx >= s && idx < e);
+        });
+    },
+    pageSizeModel: {
+      get() {
+        return this.pageSize;
+      },
+      set(v) {
+        this.pageSize = v;
+        this.page = 0;
+      }
+    }
+  },
+  filters: {
+    capitalize: function (v) {
+      if (!v) return ''
+      v = v.toString()
+      return v.charAt(0).toUpperCase() + v.slice(1)
+    }
+  }
+}).$mount('#app');
+</script>
+</body>
+</html>

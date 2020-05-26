@@ -1,0 +1,16 @@
+name: 'URL Header Comparison Action'
+description: 'A GitHub action to parser url headers and export an interface.'
+author: 'vsoch'
+branding:
+  icon: 'link-2'  
+  color: 'blue'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  entrypoint: '/code/entrypoint.sh'
+  args: []
+inputs:
+  urls:
+    description: >
+      path to text file with list of urls, one per line
+    default: data/urls.txt

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>HTML {% if title %}{{ title }}{% else %}Header{% endif %} Counts</title>
+    <script src='static/Chart.min.js'></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"> 
+    <style>
+      body{ font-family: 'Bebas Neue', cursive;}
+    </style>
+  </head>
+  <body>
+
+    <h1>HTML {% if title %}{{ title }}{% else %}Header{% endif %} Counts</h1>
+    <p id="caption">What response {{ title | lower }} do we see across 500 sites?</p>
+    <canvas id="myChart" width="800px" height="5000px"></canvas>
+
+    <script>
+      Chart.defaults.global.responsive = true;
+      Chart.defaults.global.maintainAspectRatio = true;
+
+      var chartData = {
+        labels : [{% for item in labels %}
+                   "{{ item }}",
+                  {% endfor %}],
+        datasets : [{
+            label: '{{ legend }}',
+            fill: true,
+            lineTension: 0.1,
+            backgroundColor: "rgba(75,192,192,0.4)",
+            borderColor: "rgba(75,192,192,1)",
+            borderCapStyle: 'butt',
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: 'miter',
+            pointBorderColor: "rgba(75,192,192,1)",
+            pointBackgroundColor: "#fff",
+            pointBorderWidth: 1,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: "rgba(75,192,192,1)",
+            pointHoverBorderColor: "rgba(220,220,220,1)",
+            pointHoverBorderWidth: 2,
+            pointRadius: 1,
+            pointHitRadius: 10,
+            data : [{% for item in values %}
+                      {{item}},
+                    {% endfor %}],
+            spanGaps: false
+        }]
+      }
+
+      // get chart canvas
+      var ctx = document.getElementById("myChart").getContext("2d");
+
+      // create the chart using the chart canvas
+      var myChart = new Chart(ctx, {
+        type: 'horizontalBar',
+        data: chartData
+      });
+
+      // Get index of bar clicked to return label
+      document.getElementById("myChart").onclick = function(e) {
+        var activeElement = myChart.lastActive;
+        var idx = activeElement[0]._index
+        var label = myChart.chart.config.data.labels[idx]
+        document.location = "/{% if title %}{{ title | lower}}{% else %}header{% endif %}/" + label
+      };
+    </script>
+
+  </body>
+</html>

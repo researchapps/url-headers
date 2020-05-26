@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+    <title>HTML Header Counts</title>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css'>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"> 
+    <style>
+/* Colors for badges */
+
+h1 { font-family: 'Bebas Neue', cursive;}
+
+.badge-red {
+  background-color: #d54625;
+}
+
+.badge-green {
+  background-color: #35bd4a;
+}
+
+.badge-blue {
+  background-color: #357ebd;
+}
+
+.table-sortable > thead > tr > th {
+  cursor: pointer;
+}
+.table-sortable > thead > tr > th[data-sorting="disabled"] {
+  cursor: default;
+}
+.table-sortable > thead > tr > th[data-sorting="disabled"]:hover,
+.table-sortable > thead > tr > th[data-sorting="disabled"]:active {
+  background: inherit;
+}
+.table-sortable > thead > tr > th:hover,
+.table-sortable > thead > tr > th:active {
+  background: #F5F5F5;
+}
+.table-sortable > tbody > tr > td mark,
+.table-sortable > tbody > tr > td .mark {
+  padding-left: 0;
+  padding-right: 0;
+}
+    </style>
+
+</head>
+<body>
+<div class='container-fluid'>
+  <div class='row'>
+    <div class='col-sm-12'>
+      <br>
+      <div class='form-horizontal'>
+        <div class='form-group has-feedback'>
+          <div class='col-sm-12'>
+            <input class='form-control table-sortable-search' placeholder='Search...' type='search'>
+            <span class='glyphicon glyphicon-remove form-control-feedback search-cancel-button'></span>
+          </div>
+        </div>
+      </div>
+      <br>
+      <div class='panel panel-default'>
+        <div class='table-responsive' id="app">
+
+  <h1 style="margin-left:5px">Sites for <b>LINK</b> ⭐️</h1>
+  <hr>
+
+  <label>Rows per page</label>
+  <select v-model="pageSizeModel">
+    <option value="3">3</option>
+    <option value="5">5</option>
+    <option value="10">10</option>
+    <option value="25">25</option>
+  </select>
+    
+  <table class="table table-sortable">
+    <thead>
+      <tr>
+        <th :class="{ sorted: sort === 'id' }" @click="sortBy('id')">
+          Id
+        </th>
+        <th :class="{ sorted: sort === 'name' }" @click="sortBy('name')">
+          Name
+        </th>
+        <th :class="{ sorted: sort === 'value' }" @click="sortBy('value')" >
+          Value
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="row in sortedRows">
+        <td>{{ row.id }}</td>
+        <td>{{ row.name  }}</td>
+        <td>{{ row.value }}</td>
+        <td data-id="{{ row.id }}">
+          <div class='btn-group btn-group-xs'>
+            <button v-on:click="viewRow" class="btn btn-default" title="View">
+              <span class="glyphicon glyphicon-eye-open"></span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <div class="controls">
+    <button class="btn btn-sm" :disabled="!hasPage(-1)" @click="prevPage">←</button> 
+    <button class="btn btn-sm" :disabled="!hasPage(1)"  @click="nextPage">→</button>
+    <span style="float:right; margin-right:30px; margin-top:20px" class="badge badge-primary"><span class="glyphicon glyphicon-heart"></span> vsoch</span>
+
+  </div>
+  <hr>
+</div>
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+  <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js'></script>
+  <script>
+// Handle socket to send /receive messages from server without refresh
+$(document).ready(function(){
+
+});
+
+// tables.js
+function preg_quote( str ) {
+  // http://kevin.vanzonneveld.net
+  // +   original by: booeyOH
+  // +   improved by: Ates Goral (http://magnetiq.com)
+  // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  // +   bugfixed by: Onno Marsman
+  // *     example 1: preg_quote("$40");
+  // *     returns 1: '\$40'
+  // *     example 2: preg_quote("*RRRING* Hello?");
+  // *     returns 2: '\*RRRING\* Hello\?'
+  // *     example 3: preg_quote("\\.+*?[^]$(){}=!<>|:");
+  // *     returns 3: '\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:'
+  return (str+'').replace(/([\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:])/g, "\\$1");
+}
+
+function highlight(data, search){
+  return data.replace(new RegExp( "(" + preg_quote( search ) + ")" , 'gi' ), "<mark>$1</mark>" );
+}
+
+// Table
+    
+function Table($table,$input){
+
+    $table.find("th").each(function($key, el){
+        if ($(el).attr("data-sorting")!="disabled"){
+            $("<span/>").attr("class","fa").attr("row-id",$key+1).appendTo(el);
+    }}).click(function(){
+        var asc=true;
+        if ($(this).find("span.fa").attr("class")=="fa"||$(this).find("span.fa").attr("class")=="fa fa-caret-up fa-fw"){
+            $table.find("th[data-sorting!=disabled] span.fa").attr("class","fa");
+            $(this).find("span.fa").attr("class","fa fa-caret-down fa-fw");
+            asc=true;
+        }
+        else if ($(this).find("span.fa").attr("class")=="fa fa-caret-down fa-fw"){
+            $table.find("th[data-sorting!=disabled] span.fa").attr("class","fa");
+            $(this).find("span.fa").attr("class","fa fa-caret-up fa-fw");
+            asc=false
+        }
+        value=$.map($table.find("td:nth-child("+($(this).find("span.fa").attr("row-id"))+")"),function(el){
+            return {text:$(el).text().trim(),row:$(el).parent()};
+        });
+
+        value.sort(function(x, y){ 
+            if (asc){
+                if (x.text < y.text) {
+                    return -1;
+                }
+                if (x.text > y.text) {
+                    return 1;
+                }
+            } else {
+                if (x.text < y.text) {
+                    return 1;
+                }
+                if (x.text > y.text) {
+                    return -1;
+                }
+            }
+            return 0;
+        });
+        $table.find("tr:gt(0)").remove();
+        $.each(value,function(key,value){
+            $(value.row).appendTo($table);
+        });
+    });
+    $table.find("th:first").click();
+    $input.on("keyup change",function(){
+        var newText=$(this).val();
+        $table.find("span.text-wrap").each(function(key,value){
+            $(value).html($(value).text());
+            $(value).contents().unwrap();
+        });        
+        if (newText.trim()!=""){    
+            $table.find("tr:gt(0)").hide();                        
+            var textNode=$table.find("tr:gt(0) *")
+              .contents()
+              .filter(function() {
+                return this.nodeType === 3; //Node.TEXT_NODE
+              }).each(function(key,value){
+                    var nodeText=value.data;
+                    if (nodeText.toLowerCase().indexOf(newText.toLowerCase())!=-1){
+                        $(value).closest("tr").show();
+                        if ($(value).parent().attr("class")!="text-wrap")
+                            $(value).wrap("<span class='text-wrap'></span>");
+                        $(value).parent().html(highlight(nodeText ,newText));
+                    }
+                
+              });;
+              
+              }else{
+                $table.find("tr").show();
+              }
+    });
+    
+}
+
+$(function(){
+    Table($(".table-sortable"),$(".table-sortable-search"));
+});
+
+// Search
+
+$('input[type="search"]').keyup(function () {
+  var t = $(this);
+  t.next('span').toggle(Boolean(t.val()));
+});
+
+$('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val()).click(function () {
+  $(this).prev('input').val('').focus();
+  $(this).hide();
+});
+
+const app = new Vue({
+  data: () => ({
+    rows: [{"id": 1, "name": "https://adobe.com", "value": "<https://use.typekit.net/pps7abe.css>;rel=preload;as=style,<https://static.adobelogin.com/imslib/imslib.min.js>;rel=preload;as=script,<https://adobeid-na1.services.adobe.com>;rel=preconnect,<https://ims-na1.adobelogin.com/>;rel=preconnect"},{"id": 2, "name": "https://sites.google.com", "value": "<https://www.google.com/intl/en/work/apps/business/products/sites/>; rel='canonical'"},{"id": 3, "name": "https://theguardian.com", "value": "<https://assets.guim.co.uk/stylesheets/0d697b4c5fe6e36fc70f0e86e0ae163a/facia.garnett.css>; rel=preload; as=style; nopush,<https://assets.guim.co.uk/polyfill.io/v3/polyfill.min.js?rum=0&features=es6,es7,es2017,default-3.6,HTMLPictureElement,IntersectionObserver,IntersectionObserverEntry,fetch&flags=gated&callback=guardianPolyfilled&unknown=polyfill&clearCache=4>; rel=preload; as=script; nopush,<https://assets.guim.co.uk/javascripts/7414de5b1b56555d27fb/graun.standard.js>; rel=preload; as=script; nopush,<https://assets.guim.co.uk/javascripts/41393194b8eecd93c5b7/graun.commercial.js>; rel=preload; as=script; nopush"},{"id": 4, "name": "https://nih.gov", "value": "<https://www.nih.gov/>; rel='canonical',<https://www.nih.gov/>; rel='shortlink'"},{"id": 5, "name": "https://mail.google.com", "value": "<https://www.google.com/gmail/>; rel='canonical'"},{"id": 6, "name": "https://businessinsider.com", "value": "</bi/styles/core.css>; rel=preload; as=style; nopush, </scripts/main.js>; rel=preload; as=script; nopush, </chunks/scripts/utilities.js>; rel=preload; as=script; nopush, </chunks/scripts/vendors.js>; rel=preload; as=script; nopush"},{"id": 7, "name": "https://wikia.com", "value": "<https://www.fandom.com/wp-json/>; rel='https://api.w.org/', <https://www.fandom.com/?p=3211>; rel=shortlink"},{"id": 8, "name": "https://techcrunch.com", "value": "<https://techcrunch.com/wp-json/>; rel='https://api.w.org/'"},{"id": 9, "name": "https://nypost.com", "value": "<https://wp.me/3Q98d>; rel=shortlink"},{"id": 10, "name": "https://huffingtonpost.com", "value": "<https://img.huffingtonpost.com>; rel=preconnect, <https://fonts.gstatic.com>; rel=preconnect, <https://fonts.gstatic.com/s/alfaslabone/v9/6NUQ8FmMKwSEKjnm5-4v-4Jh2dxhe_escmAm9w.woff2>; rel=preload; as=font; crossorigin=anonymous; type=font/woff2, <https://cambria.assets.huffpost.com/fonts/proxima-nova-regular.hash-79c14ea7490af62fc90c4c91a9ebdc4e.woff>; rel=preload; as=font; crossorigin=anonymous; type=font/woff, <https://cambria.assets.huffpost.com/fonts/proxima-nova-bold.hash-c5b5d29cb016c8df27f6fc56fb8d9a84.woff>; rel=preload; as=font; crossorigin=anonymous; type=font/woff, <https://cambria.assets.huffpost.com/fonts/proxima-nova-semibold.hash-f45999e0380f344650ac535a7a00e6a9.woff>; rel=preload; as=font; crossorigin=anonymous; type=font/woff, <https://cambria.assets.huffpost.com/fonts/proxima-nova-condensed-medium.hash-45a1f4fb3bbe799c0b19bbe071ff200b.woff>; rel=preload; as=font; crossorigin=anonymous; type=font/woff, <https://cambria.assets.huffpost.com/fonts/proxima-nova-condensed-bold.hash-9da515d471d508bcdd42a1cfb57bb240.woff>; rel=preload; as=font; crossorigin=anonymous; type=font/woff, <https://cambria.assets.huffpost.com/fonts/proxima-nova-condensed-bold-italic.hash-22dfcf1417067b49e8c1e5304f3e60b5.woff2>; rel=preload; as=font; crossorigin=anonymous; type=font/woff2, <https://cambria.assets.huffpost.com/fonts/proxima-nova-condensed-extrabld.hash-53d46674e35ddb8196de9e7306ac61f9.woff>; rel=preload; as=font; crossorigin=anonymous; type=font/woff, <https://cambria.assets.huffpost.com/fonts/proxima-nova-condensed-extrabold-italic.hash-24b1689c592ff6ef8fb7159cac1e1f44.woff>; rel=preload; as=font; crossorigin=anonymous; type=font/woff, <https://cambria.assets.huffpost.com/news.405fabf8b5b5869cbc7e.js>; rel=preload; as=script, <https://cambria.assets.huffpost.com/news.958296d8f09e659b54af.css>; rel=preload; as=style, <https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700,800,900&display=fallback>; rel=preload; as=style, <https://fonts.googleapis.com/css?family=Alfa+Slab+One&display=fallback>; rel=preload; as=style"},{"id": 11, "name": "https://abril.com.br", "value": "<https://wp.me/PabVRh-pBP>; rel=shortlink"},{"id": 12, "name": "https://plesk.com", "value": "<https://www.plesk.com/wp-json/>; rel='https://api.w.org/', <https://www.plesk.com/>; rel=shortlink"},{"id": 13, "name": "https://independent.co.uk", "value": "<https://cdn.ampproject.org>; rel=preconnect; crossorigin"},{"id": 14, "name": "https://harvard.edu", "value": "</homepage>; rel='canonical',</node/60293>; rel='shortlink'"},{"id": 15, "name": "https://myaccount.google.com", "value": "<https://myaccount.google.com/intro>; rel='alternate'; hreflang='x-default', <https://myaccount.google.com/intro?hl=en-US>; rel='alternate'; hreflang='en-US', <https://myaccount.google.com/intro?hl=af>; rel='alternate'; hreflang='af', <https://myaccount.google.com/intro?hl=am>; rel='alternate'; hreflang='am', <https://myaccount.google.com/intro?hl=ar>; rel='alternate'; hreflang='ar', <https://myaccount.google.com/intro?hl=as>; rel='alternate'; hreflang='as', <https://myaccount.google.com/intro?hl=az>; rel='alternate'; hreflang='az', <https://myaccount.google.com/intro?hl=be>; rel='alternate'; hreflang='be', <https://myaccount.google.com/intro?hl=bg>; rel='alternate'; hreflang='bg', <https://myaccount.google.com/intro?hl=bn>; rel='alternate'; hreflang='bn', <https://myaccount.google.com/intro?hl=bs>; rel='alternate'; hreflang='bs', <https://myaccount.google.com/intro?hl=ca>; rel='alternate'; hreflang='ca', <https://myaccount.google.com/intro?hl=cs>; rel='alternate'; hreflang='cs', <https://myaccount.google.com/intro?hl=cy>; rel='alternate'; hreflang='cy', <https://myaccount.google.com/intro?hl=da>; rel='alternate'; hreflang='da', <https://myaccount.google.com/intro?hl=de>; rel='alternate'; hreflang='de', <https://myaccount.google.com/intro?hl=el>; rel='alternate'; hreflang='el', <https://myaccount.google.com/intro?hl=en-GB>; rel='alternate'; hreflang='en-GB', <https://myaccount.google.com/intro?hl=es-ES>; rel='alternate'; hreflang='es-ES', <https://myaccount.google.com/intro?hl=es-419>; rel='alternate'; hreflang='es-419', <https://myaccount.google.com/intro?hl=et>; rel='alternate'; hreflang='et', <https://myaccount.google.com/intro?hl=eu>; rel='alternate'; hreflang='eu', <https://myaccount.google.com/intro?hl=fa>; rel='alternate'; hreflang='fa', <https://myaccount.google.com/intro?hl=fi>; rel='alternate'; hreflang='fi', <https://myaccount.google.com/intro?hl=fil>; rel='alternate'; hreflang='fil', <https://myaccount.google.com/intro?hl=fr-FR>; rel='alternate'; hreflang='fr-FR', <https://myaccount.google.com/intro?hl=fr-CA>; rel='alternate'; hreflang='fr-CA', <https://myaccount.google.com/intro?hl=ga>; rel='alternate'; hreflang='ga', <https://myaccount.google.com/intro?hl=gl>; rel='alternate'; hreflang='gl', <https://myaccount.google.com/intro?hl=gu>; rel='alternate'; hreflang='gu', <https://myaccount.google.com/intro?hl=hi>; rel='alternate'; hreflang='hi', <https://myaccount.google.com/intro?hl=hr>; rel='alternate'; hreflang='hr', <https://myaccount.google.com/intro?hl=hu>; rel='alternate'; hreflang='hu', <https://myaccount.google.com/intro?hl=hy>; rel='alternate'; hreflang='hy', <https://myaccount.google.com/intro?hl=id>; rel='alternate'; hreflang='id', <https://myaccount.google.com/intro?hl=is>; rel='alternate'; hreflang='is', <https://myaccount.google.com/intro?hl=it>; rel='alternate'; hreflang='it', <https://myaccount.google.com/intro?hl=iw>; rel='alternate'; hreflang='iw', <https://myaccount.google.com/intro?hl=ja>; rel='alternate'; hreflang='ja', <https://myaccount.google.com/intro?hl=ka>; rel='alternate'; hreflang='ka', <https://myaccount.google.com/intro?hl=kk>; rel='alternate'; hreflang='kk', <https://myaccount.google.com/intro?hl=km>; rel='alternate'; hreflang='km', <https://myaccount.google.com/intro?hl=kn>; rel='alternate'; hreflang='kn', <https://myaccount.google.com/intro?hl=ko>; rel='alternate'; hreflang='ko', <https://myaccount.google.com/intro?hl=ky>; rel='alternate'; hreflang='ky', <https://myaccount.google.com/intro?hl=lo>; rel='alternate'; hreflang='lo', <https://myaccount.google.com/intro?hl=lt>; rel='alternate'; hreflang='lt', <https://myaccount.google.com/intro?hl=lv>; rel='alternate'; hreflang='lv', <https://myaccount.google.com/intro?hl=mk>; rel='alternate'; hreflang='mk', <https://myaccount.google.com/intro?hl=ml>; rel='alternate'; hreflang='ml', <https://myaccount.google.com/intro?hl=mn>; rel='alternate'; hreflang='mn', <https://myaccount.google.com/intro?hl=mr>; rel='alternate'; hreflang='mr', <https://myaccount.google.com/intro?hl=ms>; rel='alternate'; hreflang='ms', <https://myaccount.google.com/intro?hl=my>; rel='alternate'; hreflang='my', <https://myaccount.google.com/intro?hl=ne>; rel='alternate'; hreflang='ne', <https://myaccount.google.com/intro?hl=nl>; rel='alternate'; hreflang='nl', <https://myaccount.google.com/intro?hl=no>; rel='alternate'; hreflang='no', <https://myaccount.google.com/intro?hl=or>; rel='alternate'; hreflang='or', <https://myaccount.google.com/intro?hl=pa>; rel='alternate'; hreflang='pa', <https://myaccount.google.com/intro?hl=pl>; rel='alternate'; hreflang='pl', <https://myaccount.google.com/intro?hl=pt-BR>; rel='alternate'; hreflang='pt-BR', <https://myaccount.google.com/intro?hl=pt-PT>; rel='alternate'; hreflang='pt-PT', <https://myaccount.google.com/intro?hl=ro>; rel='alternate'; hreflang='ro', <https://myaccount.google.com/intro?hl=ru>; rel='alternate'; hreflang='ru', <https://myaccount.google.com/intro?hl=si>; rel='alternate'; hreflang='si', <https://myaccount.google.com/intro?hl=sk>; rel='alternate'; hreflang='sk', <https://myaccount.google.com/intro?hl=sl>; rel='alternate'; hreflang='sl', <https://myaccount.google.com/intro?hl=sq>; rel='alternate'; hreflang='sq', <https://myaccount.google.com/intro?hl=sr-Cyrl>; rel='alternate'; hreflang='sr-Cyrl', <https://myaccount.google.com/intro?hl=sr-Latn>; rel='alternate'; hreflang='sr-Latn', <https://myaccount.google.com/intro?hl=sv>; rel='alternate'; hreflang='sv', <https://myaccount.google.com/intro?hl=sw>; rel='alternate'; hreflang='sw', <https://myaccount.google.com/intro?hl=ta>; rel='alternate'; hreflang='ta', <https://myaccount.google.com/intro?hl=te>; rel='alternate'; hreflang='te', <https://myaccount.google.com/intro?hl=th>; rel='alternate'; hreflang='th', <https://myaccount.google.com/intro?hl=tr>; rel='alternate'; hreflang='tr', <https://myaccount.google.com/intro?hl=uk>; rel='alternate'; hreflang='uk', <https://myaccount.google.com/intro?hl=ur>; rel='alternate'; hreflang='ur', <https://myaccount.google.com/intro?hl=uz>; rel='alternate'; hreflang='uz', <https://myaccount.google.com/intro?hl=vi>; rel='alternate'; hreflang='vi', <https://myaccount.google.com/intro?hl=zh-CN>; rel='alternate'; hreflang='zh-CN', <https://myaccount.google.com/intro?hl=zh-HK>; rel='alternate'; hreflang='zh-HK', <https://myaccount.google.com/intro?hl=zh-TW>; rel='alternate'; hreflang='zh-TW', <https://myaccount.google.com/intro?hl=zu>; rel='alternate'; hreflang='zu'"},{"id": 16, "name": "https://booking.com", "value": "<https://r-cf.bstatic.com/static/css/gprof_icons_cloudfront.iq_ltr/b8e06293e20cc811dad000e2f080bc8f3c4e37b1.css>; rel=preload; as=style, <https://q-cf.bstatic.com/static/css/index_cloudfront.iq_ltr/976c29f4ca87115aac5e1d6820baeb33be5435b1.css>; rel=preload; as=style, <https://r-cf.bstatic.com/static/css/main_cloudfront.iq_ltr/3e94f2dc022bc6b16f3e660a4ea9c961085a5e09.css>; rel=preload; as=style, <https://q-cf.bstatic.com/static/css/main_exps_cloudfront.iq_ltr/e4d2d1efc238740418c278f80644fe43add7425c.css>; rel=preload; as=style, <https://r-cf.bstatic.com/static/css/raf_cloudfront.iq_ltr/c4c767468e7f47e694e892557075835a826e3251.css>; rel=preload; as=style, <https://q-cf.bstatic.com/static/css/xp-index-sb_cloudfront.iq_ltr/523637f5ea2a5675678105ee0fc71e0ca1861f6d.css>; rel=preload; as=style"},{"id": 17, "name": "https://www.gov.uk", "value": "<https://assets.publishing.service.gov.uk>; rel=preconnect; crossorigin"},{"id": 18, "name": "https://thesun.co.uk", "value": "<https://www.thesun.co.uk/wp-json/>; rel='https://api.w.org/'"},{"id": 19, "name": "https://a8.net", "value": "<https://www.a8.net/wp-json/>; rel='https://api.w.org/'"},{"id": 20, "name": "https://www.noaa.gov", "value": "<https://www.noaa.gov/>; rel='canonical',<https://www.noaa.gov/>; rel='shortlink'"},{"id": 21, "name": "https://sciencemag.org", "value": "<https://www.sciencemag.org/>; rel='canonical',<https://www.sciencemag.org/>; rel='shortlink'"},{"id": 22, "name": "https://vox.com", "value": "<https://concertads-configs.vox-cdn.com/sbn/vox/config.json>; rel=preload; as=fetch; crossorigin"},{"id": 23, "name": "https://ox.ac.uk", "value": "<http://www.ox.ac.uk/>; rel='canonical',<http://www.ox.ac.uk/>; rel='shortlink'"},{"id": 24, "name": "https://gmail.com", "value": "<https://www.google.com/gmail/>; rel='canonical'"},{"id": 25, "name": "https://huffpost.com", "value": "<https://img.huffingtonpost.com>; rel=preconnect, <https://fonts.gstatic.com>; rel=preconnect, <https://fonts.gstatic.com/s/alfaslabone/v9/6NUQ8FmMKwSEKjnm5-4v-4Jh2dxhe_escmAm9w.woff2>; rel=preload; as=font; crossorigin=anonymous; type=font/woff2, <https://cambria.assets.huffpost.com/fonts/proxima-nova-regular.hash-79c14ea7490af62fc90c4c91a9ebdc4e.woff>; rel=preload; as=font; crossorigin=anonymous; type=font/woff, <https://cambria.assets.huffpost.com/fonts/proxima-nova-bold.hash-c5b5d29cb016c8df27f6fc56fb8d9a84.woff>; rel=preload; as=font; crossorigin=anonymous; type=font/woff, <https://cambria.assets.huffpost.com/fonts/proxima-nova-semibold.hash-f45999e0380f344650ac535a7a00e6a9.woff>; rel=preload; as=font; crossorigin=anonymous; type=font/woff, <https://cambria.assets.huffpost.com/fonts/proxima-nova-condensed-medium.hash-45a1f4fb3bbe799c0b19bbe071ff200b.woff>; rel=preload; as=font; crossorigin=anonymous; type=font/woff, <https://cambria.assets.huffpost.com/fonts/proxima-nova-condensed-bold.hash-9da515d471d508bcdd42a1cfb57bb240.woff>; rel=preload; as=font; crossorigin=anonymous; type=font/woff, <https://cambria.assets.huffpost.com/fonts/proxima-nova-condensed-bold-italic.hash-22dfcf1417067b49e8c1e5304f3e60b5.woff2>; rel=preload; as=font; crossorigin=anonymous; type=font/woff2, <https://cambria.assets.huffpost.com/fonts/proxima-nova-condensed-extrabld.hash-53d46674e35ddb8196de9e7306ac61f9.woff>; rel=preload; as=font; crossorigin=anonymous; type=font/woff, <https://cambria.assets.huffpost.com/fonts/proxima-nova-condensed-extrabold-italic.hash-24b1689c592ff6ef8fb7159cac1e1f44.woff>; rel=preload; as=font; crossorigin=anonymous; type=font/woff, <https://cambria.assets.huffpost.com/news.405fabf8b5b5869cbc7e.js>; rel=preload; as=script, <https://cambria.assets.huffpost.com/news.958296d8f09e659b54af.css>; rel=preload; as=style, <https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700,800,900&display=fallback>; rel=preload; as=style, <https://fonts.googleapis.com/css?family=Alfa+Slab+One&display=fallback>; rel=preload; as=style"},{"id": 26, "name": "https://nginx.com", "value": "<https://www.nginx.com/wp-json/>; rel='https://api.w.org/', <https://www.nginx.com/>; rel=shortlink"},{"id": 27, "name": "https://yale.edu", "value": "<https://www.yale.edu/>; rel='canonical',<https://www.yale.edu/>; rel='shortlink'"},{"id": 28, "name": "https://tes.com", "value": "</cdn/vendor/library/tes-events-sync-4.0.0.min.js>; rel=preload; as=script, </cdn/service-site-assets/d04cd4f/css/base.css>; rel=preload; as=style, </cdn/service-site-assets/d04cd4f/js/common-head-utils.js>; rel=preload; as=script"},{"id": 29, "name": "https://nikkei.com", "value": "</.resources/top/main.rev-93276b46.module.js>;rel=preload;as=script;charset=UTF-8;, </.resources/top/main.rev-e9ceec4f.css>;rel=preload;as=style;charset=UTF-8;, <https://r.nikkei.com/.resources/polyfill/v2/polyfill.min.js?version=3.52.1&features=default,es2015,es2016,es2017,es2018,es2019,IntersectionObserver,fetch,performance.now,MutationObserver>;rel=preload;as=script;charset=UTF-8;"},{"id": 30, "name": "https://metro.co.uk", "value": "<https://metro.co.uk/wp-json/>; rel='https://api.w.org/'"},{"id": 31, "name": "https://psychologytoday.com", "value": "<https://www.psychologytoday.com/us>; rel='canonical',<https://www.psychologytoday.com/us>; rel='shortlink',<https://cdn.psychologytoday.com/sites/all/themes/psychologytoday/img/touch-icons/favicon.ico>; rel='shortcut icon'"},{"id": 32, "name": "https://www.wix.com", "value": "<https://static.parastorage.com/>; rel=preconnect; crossorigin;,<https://fonts.gstatic.com>; rel=preconnect; crossorigin;,<https://static.wixstatic.com/>; rel=preconnect; crossorigin;,<https://siteassets.parastorage.com>; rel=preconnect; crossorigin;,<https://www.wix.com/_api/v2/dynamicmodel>; rel=preload; as=fetch; crossorigin;,"},{"id": 33, "name": "https://cbsnews.com", "value": "</fly/bundles/cbsnewscontent/fonts/PublicoHeadline-Black/PublicoHeadline-Black.woff2>; rel='preload'; as='font'; crossorigin, </fly/bundles/cbsnewscontent/fonts/PublicoText/PublicoText.woff2>; rel='preload'; as='font'; crossorigin, </fly/bundles/cbsnewscontent/fonts/ProximaNova-Regular/ProximaNova-Regular.woff2>; rel='preload'; as='font'; crossorigin, </fly/bundles/cbsnewscontent/fonts/ProximaNova-Bold/ProximaNova-Bold.woff2>; rel='preload'; as='font'; crossorigin, </fly/bundles/cbsnewscontent/fonts/PublicoHeadline-Bold/PublicoHeadline-Bold.woff2>; rel='preload'; as='font'; crossorigin, <https://www.cbsnews.com/fly/bundles/cbsnewscontent/css/responsive.min.css?v=1.261b062272dc8d342da5e60a662c996d1ee1290d>; rel='stylesheet preload'; as='style', <https://cdn.cookielaw.org>; rel='dns-prefetch', <https://geolocation.onetrust.com>; rel='dns-prefetch', <https://cdn.cookielaw.org/scripttemplates/otSDKStub.js>; rel='preload'; as='script', <https://production-cmp.isgprivacy.cbsi.com/dist/optanon.js>; rel='preload'; as='script', <https://www.cbsnews.com/fly/bundles/cbsnewscore/js-build/main.js?v=1.261b062272dc8d342da5e60a662c996d1ee1290d>; rel='preload'; as='script', <https://www.cbsnews.com/fly/bundles/cbsnewscore/js-build/main.responsive.js?v=1.261b062272dc8d342da5e60a662c996d1ee1290d>; rel='preload'; as='script', <https://tealium.cbsnews.com/prod/utag.js?v=202002202146#>; rel='preload'; as='script', <https://vidtech.cbsinteractive.com>; rel='preconnect'"},{"id": 34, "name": "https://guardian.co.uk", "value": "<https://assets.guim.co.uk/stylesheets/0d697b4c5fe6e36fc70f0e86e0ae163a/facia.garnett.css>; rel=preload; as=style; nopush,<https://assets.guim.co.uk/polyfill.io/v3/polyfill.min.js?rum=0&features=es6,es7,es2017,default-3.6,HTMLPictureElement,IntersectionObserver,IntersectionObserverEntry,fetch&flags=gated&callback=guardianPolyfilled&unknown=polyfill&clearCache=4>; rel=preload; as=script; nopush,<https://assets.guim.co.uk/javascripts/7414de5b1b56555d27fb/graun.standard.js>; rel=preload; as=script; nopush,<https://assets.guim.co.uk/javascripts/41393194b8eecd93c5b7/graun.commercial.js>; rel=preload; as=script; nopush"},{"id": 35, "name": "https://stanford.edu", "value": "<https://www.stanford.edu/wp-json/>; rel='https://api.w.org/', <https://www.stanford.edu/>; rel=shortlink"},{"id": 36, "name": "https://princeton.edu", "value": "<https://www.princeton.edu/>; rel='canonical', <https://www.princeton.edu/>; rel='shortlink', <https://www.princeton.edu/node/141>; rel='revision'"},{"id": 37, "name": "https://tripadvisor.com", "value": "<http://media-cdn.tripadvisor.com/media/>;rel='preconnect';crossorigin, <https://static.tacdn.com>;rel='preconnect';crossorigin"},{"id": 38, "name": "https://theverge.com", "value": "<https://concertads-configs.vox-cdn.com/sbn/verge/config.json>; rel=preload; as=fetch; crossorigin"},{"id": 39, "name": "https://about.com", "value": "<https://www.dotdash.com/wp-json/>; rel='https://api.w.org/', <https://www.dotdash.com/>; rel=shortlink"},{"id": 40, "name": "https://deezer.com", "value": "<https://e-cdns-files.dzcdn.net/cache/js/runtime.f16778fe9624c3366282.js>; as='script'; rel='preload'; nopush, <https://e-cdns-files.dzcdn.net/cache/js/legacy.f17168493f33bf9578a8.js>; as='script'; rel='preload'; nopush, <https://e-cdns-files.dzcdn.net/cache/js/app-web.d13004d5ebb411fd5205.js>; as='script'; rel='preload'; nopush, <https://e-cdns-files.dzcdn.net/cache/css/sass_c/app-web.b3b8c489b3d71465b723.css>; as='style'; rel='preload'; nopush"},{"id": 41, "name": "https://variety.com", "value": "<http://on.variety.com/VyoYrr>; rel=shortlink"},{"id": 42, "name": "https://box.com", "value": "</css/vendor/fonts/Lato-Regular.woff>; rel=preload; as=font"},{"id": 43, "name": "https://netvibes.com", "value": "<https://www.netvibes.com/en>; rel='canonical'"},{"id": 44, "name": "https://utexas.edu", "value": "<https://www.utexas.edu>; rel='canonical',<https://www.utexas.edu>; rel='shortlink'"},{"id": 45, "name": "https://boston.com", "value": "<https://www.boston.com/wp-json/>; rel='https://api.w.org/', <https://www.boston.com/>; rel=shortlink"},{"id": 46, "name": "https://plos.org", "value": "<https://plos.org/wp-json/>; rel='https://api.w.org/', <https://plos.org/>; rel=shortlink"},{"id": 47, "name": "https://airbnb.com", "value": "<https://a0.muscache.com/airbnb/static/packages/dls/dls-lite_cereal-d9f6fdb2a0dd4a18c37f8ee01de8ec3d.css>;rel=preload;as=style,<https://a0.muscache.com/airbnb/static/airbnb-dls-web/build/fonts/Airbnb_Cereal-Book-9a1c9cca9bb3d65fefa2aa487617805e.woff2>;rel=preload;as=font;type=font/woff2;crossorigin=crossorigin,<https://a0.muscache.com/airbnb/static/airbnb-dls-web/build/fonts/Airbnb_Cereal-Medium-50fc004b3082375f12ff0cfb67bf8e56.woff2>;rel=preload;as=font;type=font/woff2;crossorigin=crossorigin,<https://a0.muscache.com/airbnb/static/airbnb-dls-web/build/fonts/Airbnb_Cereal-Bold-bdfb98485e7836ba31b456f65cded088.woff2>;rel=preload;as=font;type=font/woff2;crossorigin=crossorigin"},{"id": 48, "name": "https://trello.com", "value": "<https://trello.com/cs>; rel='alternate'; hreflang='cs', <https://trello.com/de>; rel='alternate'; hreflang='de', <https://trello.com/en>; rel='alternate'; hreflang='en', <https://trello.com/en-AU>; rel='alternate'; hreflang='en-AU', <https://trello.com/en-GB>; rel='alternate'; hreflang='en-GB', <https://trello.com/en-US>; rel='alternate'; hreflang='en-US', <https://trello.com/es>; rel='alternate'; hreflang='es', <https://trello.com/fr>; rel='alternate'; hreflang='fr', <https://trello.com/it>; rel='alternate'; hreflang='it', <https://trello.com/hu>; rel='alternate'; hreflang='hu', <https://trello.com/nl>; rel='alternate'; hreflang='nl', <https://trello.com/nb>; rel='alternate'; hreflang='nb', <https://trello.com/pl>; rel='alternate'; hreflang='pl', <https://trello.com/pt-BR>; rel='alternate'; hreflang='pt-BR', <https://trello.com/fi>; rel='alternate'; hreflang='fi', <https://trello.com/sv>; rel='alternate'; hreflang='sv', <https://trello.com/vi>; rel='alternate'; hreflang='vi', <https://trello.com/tr>; rel='alternate'; hreflang='tr', <https://trello.com/ru>; rel='alternate'; hreflang='ru', <https://trello.com/uk>; rel='alternate'; hreflang='uk', <https://trello.com/th>; rel='alternate'; hreflang='th', <https://trello.com/zh-Hans>; rel='alternate'; hreflang='zh-Hans', <https://trello.com/zh-Hant>; rel='alternate'; hreflang='zh-Hant', <https://trello.com/ja>; rel='alternate'; hreflang='ja', <https://trello.com>; rel='alternate'; hreflang='x-default', <https://trello.com>; rel='canonical'"},{"id": 49, "name": "https://thoughtco.com", "value": "<//www.thoughtco.com/static/3.21.0/cache/eNqdVF1yhCAMvlAZD9HXXgIhArOBOIC1vX0jOlW7uHT3Qfjy84WYBLqUZXaqUyl1C4S37qDx0oWTwnlpQIwoFVhCDfFkteRhZIddSX6kACGn7saxv9b12hxhgAhBgbh0lLp8NZMH7WTnFIW0rjWn2WkDvFtwxuZ3K4OBD5cyBIhVZS1IkJ_OsJLCVhFW7KjGSKAWd849sgVBKMLJ38s1LnImqeuR1E0s-ABr7sW6bev6wCuRchLF6nwUapyBouefhzkh5AxRJGfCNN5rqjV7kbaXektvIESaz1KLOVLGpbU7ep4hZpetyC4j_J-8tv1Z1u-Ra5deIF4Nh0HqJfKgS13mXer6hG9-SIbKcj0OZrkk3IgEMir7R2xkPkyISUWAUG7QWWxw-8jJqzj5Ph1xg8XPQpYql-MO-EEJBiKe0G1rRB8jPwLxu0Q_4FYVSmhuWbilk9DgacpaJisG6R2uhy6v8L26_Xd13g_w-l3O.min.css>; rel=preload; as=style; nopush, <//www.thoughtco.com/static/3.21.0/font/Lato-900.woff2>; rel=preload; as=font; type='font/woff2'; crossorigin; nopush, <//www.thoughtco.com/static/3.21.0/font/Lato-900-Italic.woff2>; rel=preload; as=font; type='font/woff2'; crossorigin; nopush, <//www.googletagmanager.com/gtm.js?id=GTM-5P3SZGS>; rel=preload; as=script; nopush, <//www.google-analytics.com/analytics.js>; rel=preload; as=script; nopush, <//www.googletagservices.com/tag/js/gpt.js>; rel=preload; as=script; nopush, <//www.thoughtco.com/static/3.21.0/cache/eNp1kUluwzAMRS9UQXcoUHRbBL6ABtphNdClKAfu6SsHRqAE6k58HD4_pYsYQae_i45kPPg3fZKIthx4N6E-YItXivuMMfZsg-yJdSIPnPGXVTJZIjxKHKWVMmQp2tINuAEKCEW13vP5f-1PBd6LMOZFeyzSg36JKhhR-lENzlkNuac0Tnx-TQNncmWS3lFLMbRkhYmNCy-rWAYTVsJm4rljBobsYCy9Vluq7clleu9DOaQuYj82eJmczG6H5zb-_onLKk9KZgG1IdxGLYuko8ZFdEHJ6e4PmInQIg.min.js>; rel=preload; as=script; nopush; group=top, <//www.thoughtco.com/static/3.21.0/cache/eNqdUkFywyAM_FApf2int17avABjGSuWRYrkOs7rC7FnkknIdNoLEotWrBasqFP01sfxEBlYxTZxhmT3XxOkZQtPdivbi50UCRVBTDMhqZlRe3NTdteN3GkRPIFcsuueIyvtfIpEtRbICokd2Ra6okzWJEH7-EIvYoBgzJAp2rJeK8nbTyiX74Alpr-z31bsY4Vq_MEpHNe1dgzHdZSswRDyIGWaO7DGnLENkGMPGHp97R0HeEdR4Ky3BtaaUD7LM1L0gyn5VVor72IaxTLMQqBZoxEMPB3ukRr5n7T1ASSjw2IG1O0HPl-QGsu1ZyfLNC9I1ESX2qqN7L4xZDCylUNUKr5dshojUGzy3-vBtWenS3hsVijWOzICLvn-ZvuLoG4iEp8A2GT0ZvsDhRVr-w.min.js>; rel=preload; as=script; nopush; group=bottom"},{"id": 50, "name": "https://venturebeat.com", "value": "<https://venturebeat.com/wp-json/>; rel='https://api.w.org/', <https://wp.me/8wLEc>; rel=shortlink"},{"id": 51, "name": "https://skype.com", "value": "<https://secure.skypeassets.com>; rel=preconnect"},{"id": 52, "name": "https://www.fda.gov", "value": "<http://www.fda.gov/>; rel='shortlink', <http://www.fda.gov/>; rel='canonical', <https://www.fda.gov/home>; rel='alternate'; hreflang='en', <https://www.fda.gov/home>; rel='revision'"},{"id": 53, "name": "https://unicef.org", "value": "<https://www.unicef.org/>; rel='shortlink', <https://www.unicef.org/>; rel='canonical', <https://www.unicef.org/>; rel='alternate'; hreflang='en', <https://www.unicef.org/fr/page-daccueil>; rel='alternate'; hreflang='fr', <https://www.unicef.org/es/p%C3%A1gina-de-inicio>; rel='alternate'; hreflang='es', <https://www.unicef.org/ar/%D8%A7%D9%84%D8%B5%D9%81%D8%AD%D8%A9-%D8%A7%D9%84%D8%B1%D8%A6%D9%8A%D8%B3%D8%A9>; rel='alternate'; hreflang='ar', <https://www.unicef.org/zh/%E9%A6%96%E9%A1%B5>; rel='alternate'; hreflang='zh-hans', <https://www.unicef.org/>; rel='revision'"},{"id": 54, "name": "https://answers.com", "value": "</js/manifest.637715a842ca9a238152.js>; rel=preload; as=script,</js/react.c3f58dca1755a3822186.js>; rel=preload; as=script,</js/material.02d13a46e2e5908c403e.js>; rel=preload; as=script,</js/vendor.844f467b65d514c5b89d.js>; rel=preload; as=script"},{"id": 55, "name": "https://cbslocal.com", "value": "<https://cbslocal.com/wp-json/>; rel='https://api.w.org/', <https://cbslocal.com/>; rel=shortlink"},{"id": 56, "name": "https://adweek.com", "value": "<https://www.adweek.com/>; rel=shortlink"},{"id": 57, "name": "https://usgs.gov", "value": "<https://www.usgs.gov/>; rel='canonical',<https://www.usgs.gov/>; rel='shortlink'"},{"id": 58, "name": "https://upenn.edu", "value": "<https://www.upenn.edu/>; rel='canonical',<https://www.upenn.edu/>; rel='shortlink'"},{"id": 59, "name": "https://state.gov", "value": "<https://www.state.gov/wp-json/>; rel='https://api.w.org/', <https://www.state.gov/>; rel=shortlink"},{"id": 60, "name": "https://greenpeace.org", "value": "<https://www.greenpeace.org/usa/wp-json/>; rel='https://api.w.org/', <https://www.greenpeace.org/usa/>; rel=shortlink"},{"id": 61, "name": "https://psu.edu", "value": "<https://www.psu.edu/content/psu-homepage>; rel='canonical',<https://www.psu.edu/node/4998>; rel='shortlink'"},{"id": 62, "name": "https://membership.businesswire.com", "value": "</hs/hsstatic/HubspotToolsMenu/static-1.66/js/index.js>; rel=preload; as=script, </hs-fs/hub/3475422/hub_generated/template_assets/1586208449949/combined-css-d3dafcbaf20d916d2df747549b37c9c8.css>; rel=preload; as=style, </hs/hsstatic/keyboard-accessible-menu-flyouts/static-1.7/bundles/project.js>; rel=preload; as=script, </hs/hsstatic/cos-i18n/static-1.16/bundles/project.js>; rel=preload; as=script, </_hcms/forms/v2.js>; rel=preload; as=script"},{"id": 63, "name": "https://nba.com", "value": "</node/246657>; rel='revision', </node/246657>; rel='shortlink'"},{"id": 64, "name": "https://arstechnica.com", "value": "<https://arstechnica.com/wp-json/>; rel='https://api.w.org/'"},{"id": 65, "name": "https://www.wendys.com", "value": "<https://www.wendys.com/>; rel='shortlink', <https://www.wendys.com/>; rel='canonical', <https://www.wendys.com/home>; rel='alternate'; hreflang='en-us', <https://www.wendys.com/es-US/home>; rel='alternate'; hreflang='es-US', <https://www.wendys.com/en-ca/home>; rel='alternate'; hreflang='en-ca', <https://www.wendys.com/fr-ca/home>; rel='alternate'; hreflang='fr-ca', <https://www.wendys.com/home>; rel='revision'"},{"id": 66, "name": "https://www.docusign.com", "value": "<https://docusign.com/>; rel='canonical', <https://docusign.com/>; rel='shortlink'"},{"id": 67, "name": "https://www.docker.com", "value": "<https://www.docker.com/>; rel='shortlink', <https://www.docker.com/>; rel='canonical', <https://www.docker.com/index.html>; rel='revision'"},{"id": 68, "name": "https://www.redhat.com", "value": "<https://www.redhat.com/profiles/rh/themes/redhatdotcom/img/red-hat-social-share.jpg>; rel='image_src',<https://www.redhat.com/en>; rel='canonical'"}],
+    lookup: {  "1": "https://adobe.com", "2": "https://sites.google.com", "3": "https://theguardian.com", "4": "https://nih.gov", "5": "https://mail.google.com", "6": "https://businessinsider.com", "7": "https://wikia.com", "8": "https://techcrunch.com", "9": "https://nypost.com", "10": "https://huffingtonpost.com", "11": "https://abril.com.br", "12": "https://plesk.com", "13": "https://independent.co.uk", "14": "https://harvard.edu", "15": "https://myaccount.google.com", "16": "https://booking.com", "17": "https://www.gov.uk", "18": "https://thesun.co.uk", "19": "https://a8.net", "20": "https://www.noaa.gov", "21": "https://sciencemag.org", "22": "https://vox.com", "23": "https://ox.ac.uk", "24": "https://gmail.com", "25": "https://huffpost.com", "26": "https://nginx.com", "27": "https://yale.edu", "28": "https://tes.com", "29": "https://nikkei.com", "30": "https://metro.co.uk", "31": "https://psychologytoday.com", "32": "https://www.wix.com", "33": "https://cbsnews.com", "34": "https://guardian.co.uk", "35": "https://stanford.edu", "36": "https://princeton.edu", "37": "https://tripadvisor.com", "38": "https://theverge.com", "39": "https://about.com", "40": "https://deezer.com", "41": "https://variety.com", "42": "https://box.com", "43": "https://netvibes.com", "44": "https://utexas.edu", "45": "https://boston.com", "46": "https://plos.org", "47": "https://airbnb.com", "48": "https://trello.com", "49": "https://thoughtco.com", "50": "https://venturebeat.com", "51": "https://skype.com", "52": "https://www.fda.gov", "53": "https://unicef.org", "54": "https://answers.com", "55": "https://cbslocal.com", "56": "https://adweek.com", "57": "https://usgs.gov", "58": "https://upenn.edu", "59": "https://state.gov", "60": "https://greenpeace.org", "61": "https://psu.edu", "62": "https://membership.businesswire.com", "63": "https://nba.com", "64": "https://arstechnica.com", "65": "https://www.wendys.com", "66": "https://www.docusign.com", "67": "https://www.docker.com", "68": "https://www.redhat.com" },
+    sort: 'id',
+    sortDir:'asc',
+    page: 0,
+    pageSize: 25
+  }),
+  methods: {
+    viewRow: function(event) {
+        var rowId = $(event.target).closest('tr').find('td:first').text()
+        var site = this.lookup[rowId].replace(/(^\w+:|^)\/\//, '');
+        document.location = "/site/" + site
+    },
+    sortBy: function(s) {
+      if (s === this.sort) {
+        this.sortDir = (this.sortDir === 'asc') ? 'desc' : 'asc';
+      } else {
+        this.sortDir = 'asc';
+      }
+      this.sort = s;
+    },
+    isActiveSort: function(s) { 
+      return this.sort === s; 
+    },
+    hasPage: function(dir) {
+      if (dir === -1 && (this.page > 0)) return true;
+      if (dir ===  1 && (((this.page+1)*this.pageSize) < this.rows.length)) return true;
+      return false;
+    },
+    prevPage: function() {
+      if (this.hasPage(-1)) this.page--;
+    },
+    nextPage: function() {
+      if (this.hasPage(1)) this.page++;
+    }
+  },
+  computed: {
+    sortedRows: function() {
+      return this.rows.sort((a, b) => {
+        let dir = (this.sortDir === 'asc') ? 1 : -1;
+        if (a[this.sort] < b[this.sort]) {
+          return -1 * dir;
+        } else if (a[this.sort] > b[this.sort]) {
+          return  1 * dir;
+        } else {
+          return 0;
+        }
+      }).filter((row, idx) => {
+        let s = this.page*this.pageSize;
+        let e = (this.page+1)*this.pageSize;
+        return (idx >= s && idx < e);
+        });
+    },
+    pageSizeModel: {
+      get() {
+        return this.pageSize;
+      },
+      set(v) {
+        this.pageSize = v;
+        this.page = 0;
+      }
+    }
+  },
+  filters: {
+    capitalize: function (v) {
+      if (!v) return ''
+      v = v.toString()
+      return v.charAt(0).toUpperCase() + v.slice(1)
+    }
+  }
+}).$mount('#app');
+</script>
+</body>
+</html>

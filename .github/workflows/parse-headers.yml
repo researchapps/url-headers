@@ -1,0 +1,21 @@
+name: parse-headers
+
+on:
+  pull_request: []
+
+jobs:
+  parsing-headers:
+    name: Parse Headers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Generate Data for Interface
+        uses: ./
+        with:
+          urls: data/urls.txt
+      - name: Upload data as artifact
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: headers-data
+          path: data/*.json

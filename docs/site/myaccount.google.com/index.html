@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+    <title>Site: https://myaccount.google.com</title>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css'>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"> 
+    <style>
+/* Colors for badges */
+
+h1 { font-family: 'Bebas Neue', cursive;}
+
+.badge-red {
+  background-color: #d54625;
+}
+
+.badge-green {
+  background-color: #35bd4a;
+}
+
+.badge-blue {
+  background-color: #357ebd;
+}
+
+.table-sortable > thead > tr > th {
+  cursor: pointer;
+}
+.table-sortable > thead > tr > th[data-sorting="disabled"] {
+  cursor: default;
+}
+.table-sortable > thead > tr > th[data-sorting="disabled"]:hover,
+.table-sortable > thead > tr > th[data-sorting="disabled"]:active {
+  background: inherit;
+}
+.table-sortable > thead > tr > th:hover,
+.table-sortable > thead > tr > th:active {
+  background: #F5F5F5;
+}
+.table-sortable > tbody > tr > td mark,
+.table-sortable > tbody > tr > td .mark {
+  padding-left: 0;
+  padding-right: 0;
+}
+    </style>
+
+</head>
+<body>
+<div class='container-fluid'>
+  <div class='row'>
+    <div class='col-sm-12'>
+      <br>
+      <div class='form-horizontal'>
+        <div class='form-group has-feedback'>
+          <div class='col-sm-12'>
+            <input class='form-control table-sortable-search' placeholder='Search...' type='search'>
+            <span class='glyphicon glyphicon-remove form-control-feedback search-cancel-button'></span>
+          </div>
+        </div>
+      </div>
+      <br>
+      <div class='panel panel-default'>
+        <div class='table-responsive' id="app">
+
+  <h1 style="margin-left:5px">Headers and Cookies for <b>https://myaccount.google.com</b> ⭐️</h1>
+  <hr>
+
+  <label>Rows per page</label>
+  <select v-model="pageSizeModel">
+    <option value="3">3</option>
+    <option value="5">5</option>
+    <option value="10">10</option>
+    <option value="25">25</option>
+  </select>
+    
+  <table class="table table-sortable">
+    <thead>
+      <tr>
+        <th :class="{ sorted: sort === 'id' }" @click="sortBy('id')">
+          Id
+        </th>
+        <th :class="{ sorted: sort === 'name' }" @click="sortBy('name')">
+          Name
+        </th>
+        <th :class="{ sorted: sort === 'value' }" @click="sortBy('value')" >
+          Value
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="row in sortedRows">
+        <td>{{ row.id }}</td>
+        <td>{{ row.name  }}</td>
+        <td>{{ row.value }}</td>
+        <td data-id="{{ row.id }}">
+          <div class='btn-group btn-group-xs'>
+            <button v-on:click="viewRow" class="btn btn-default" title="View">
+              <span class="glyphicon glyphicon-eye-open"></span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <div class="controls">
+    <button class="btn btn-sm" :disabled="!hasPage(-1)" @click="prevPage">←</button> 
+    <button class="btn btn-sm" :disabled="!hasPage(1)"  @click="nextPage">→</button>
+    <span style="float:right; margin-right:30px; margin-top:20px" class="badge badge-primary"><span class="glyphicon glyphicon-heart"></span> vsoch</span>
+
+  </div>
+  <hr>
+</div>
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+  <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js'></script>
+  <script>
+// Handle socket to send /receive messages from server without refresh
+$(document).ready(function(){
+
+});
+
+// tables.js
+function preg_quote( str ) {
+  // http://kevin.vanzonneveld.net
+  // +   original by: booeyOH
+  // +   improved by: Ates Goral (http://magnetiq.com)
+  // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  // +   bugfixed by: Onno Marsman
+  // *     example 1: preg_quote("$40");
+  // *     returns 1: '\$40'
+  // *     example 2: preg_quote("*RRRING* Hello?");
+  // *     returns 2: '\*RRRING\* Hello\?'
+  // *     example 3: preg_quote("\\.+*?[^]$(){}=!<>|:");
+  // *     returns 3: '\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:'
+  return (str+'').replace(/([\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:])/g, "\\$1");
+}
+
+function highlight(data, search){
+  return data.replace(new RegExp( "(" + preg_quote( search ) + ")" , 'gi' ), "<mark>$1</mark>" );
+}
+
+// Table
+    
+function Table($table,$input){
+
+    $table.find("th").each(function($key, el){
+        if ($(el).attr("data-sorting")!="disabled"){
+            $("<span/>").attr("class","fa").attr("row-id",$key+1).appendTo(el);
+    }}).click(function(){
+        var asc=true;
+        if ($(this).find("span.fa").attr("class")=="fa"||$(this).find("span.fa").attr("class")=="fa fa-caret-up fa-fw"){
+            $table.find("th[data-sorting!=disabled] span.fa").attr("class","fa");
+            $(this).find("span.fa").attr("class","fa fa-caret-down fa-fw");
+            asc=true;
+        }
+        else if ($(this).find("span.fa").attr("class")=="fa fa-caret-down fa-fw"){
+            $table.find("th[data-sorting!=disabled] span.fa").attr("class","fa");
+            $(this).find("span.fa").attr("class","fa fa-caret-up fa-fw");
+            asc=false
+        }
+        value=$.map($table.find("td:nth-child("+($(this).find("span.fa").attr("row-id"))+")"),function(el){
+            return {text:$(el).text().trim(),row:$(el).parent()};
+        });
+
+        value.sort(function(x, y){ 
+            if (asc){
+                if (x.text < y.text) {
+                    return -1;
+                }
+                if (x.text > y.text) {
+                    return 1;
+                }
+            } else {
+                if (x.text < y.text) {
+                    return 1;
+                }
+                if (x.text > y.text) {
+                    return -1;
+                }
+            }
+            return 0;
+        });
+        $table.find("tr:gt(0)").remove();
+        $.each(value,function(key,value){
+            $(value.row).appendTo($table);
+        });
+    });
+    $table.find("th:first").click();
+    $input.on("keyup change",function(){
+        var newText=$(this).val();
+        $table.find("span.text-wrap").each(function(key,value){
+            $(value).html($(value).text());
+            $(value).contents().unwrap();
+        });        
+        if (newText.trim()!=""){    
+            $table.find("tr:gt(0)").hide();                        
+            var textNode=$table.find("tr:gt(0) *")
+              .contents()
+              .filter(function() {
+                return this.nodeType === 3; //Node.TEXT_NODE
+              }).each(function(key,value){
+                    var nodeText=value.data;
+                    if (nodeText.toLowerCase().indexOf(newText.toLowerCase())!=-1){
+                        $(value).closest("tr").show();
+                        if ($(value).parent().attr("class")!="text-wrap")
+                            $(value).wrap("<span class='text-wrap'></span>");
+                        $(value).parent().html(highlight(nodeText ,newText));
+                    }
+                
+              });;
+              
+              }else{
+                $table.find("tr").show();
+              }
+    });
+    
+}
+
+$(function(){
+    Table($(".table-sortable"),$(".table-sortable-search"));
+});
+
+// Search
+
+$('input[type="search"]').keyup(function () {
+  var t = $(this);
+  t.next('span').toggle(Boolean(t.val()));
+});
+
+$('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val()).click(function () {
+  $(this).prev('input').val('').focus();
+  $(this).hide();
+});
+
+const app = new Vue({
+  data: () => ({
+    rows: [{"id": 1, "name": "content-type", "value": "text/html; charset=utf-8"},{"id": 2, "name": "x-ua-compatible", "value": "IE=edge"},{"id": 3, "name": "cache-control", "value": "no-cache, no-store, max-age=0, must-revalidate"},{"id": 4, "name": "pragma", "value": "no-cache"},{"id": 5, "name": "expires", "value": "Mon, 01 Jan 1990 00:00:00 GMT"},{"id": 6, "name": "date", "value": "Tue, 26 May 2020 17:56:49 GMT"},{"id": 7, "name": "strict-transport-security", "value": "max-age=31536000"},{"id": 8, "name": "content-security-policy", "value": "script-src 'report-sample' 'nonce-CPCvDL+F+YJ7bl/JpL7Xag' 'unsafe-inline' 'unsafe-eval' 'strict-dynamic' https: http:;object-src 'none';base-uri 'self';report-uri /_/AccountSettingsUi/cspreport;worker-src 'self', script-src 'nonce-CPCvDL+F+YJ7bl/JpL7Xag' 'self' 'unsafe-eval' https://apis.google.com https://ssl.gstatic.com https://www.google.com https://www.gstatic.com https://www.google-analytics.com https://ssl.google-analytics.com/ga.js https://maps.googleapis.com/maps/ https://maps.googleapis.com/maps-api-v3/ https://payments.google.com/payments/v4/js/integrator.js https://www.googleapis.com/appsmarket/v2/installedApps/;report-uri /_/AccountSettingsUi/cspreport"},{"id": 9, "name": "link", "value": "<https://myaccount.google.com/intro>; rel='alternate'; hreflang='x-default', <https://myaccount.google.com/intro?hl=en-US>; rel='alternate'; hreflang='en-US', <https://myaccount.google.com/intro?hl=af>; rel='alternate'; hreflang='af', <https://myaccount.google.com/intro?hl=am>; rel='alternate'; hreflang='am', <https://myaccount.google.com/intro?hl=ar>; rel='alternate'; hreflang='ar', <https://myaccount.google.com/intro?hl=as>; rel='alternate'; hreflang='as', <https://myaccount.google.com/intro?hl=az>; rel='alternate'; hreflang='az', <https://myaccount.google.com/intro?hl=be>; rel='alternate'; hreflang='be', <https://myaccount.google.com/intro?hl=bg>; rel='alternate'; hreflang='bg', <https://myaccount.google.com/intro?hl=bn>; rel='alternate'; hreflang='bn', <https://myaccount.google.com/intro?hl=bs>; rel='alternate'; hreflang='bs', <https://myaccount.google.com/intro?hl=ca>; rel='alternate'; hreflang='ca', <https://myaccount.google.com/intro?hl=cs>; rel='alternate'; hreflang='cs', <https://myaccount.google.com/intro?hl=cy>; rel='alternate'; hreflang='cy', <https://myaccount.google.com/intro?hl=da>; rel='alternate'; hreflang='da', <https://myaccount.google.com/intro?hl=de>; rel='alternate'; hreflang='de', <https://myaccount.google.com/intro?hl=el>; rel='alternate'; hreflang='el', <https://myaccount.google.com/intro?hl=en-GB>; rel='alternate'; hreflang='en-GB', <https://myaccount.google.com/intro?hl=es-ES>; rel='alternate'; hreflang='es-ES', <https://myaccount.google.com/intro?hl=es-419>; rel='alternate'; hreflang='es-419', <https://myaccount.google.com/intro?hl=et>; rel='alternate'; hreflang='et', <https://myaccount.google.com/intro?hl=eu>; rel='alternate'; hreflang='eu', <https://myaccount.google.com/intro?hl=fa>; rel='alternate'; hreflang='fa', <https://myaccount.google.com/intro?hl=fi>; rel='alternate'; hreflang='fi', <https://myaccount.google.com/intro?hl=fil>; rel='alternate'; hreflang='fil', <https://myaccount.google.com/intro?hl=fr-FR>; rel='alternate'; hreflang='fr-FR', <https://myaccount.google.com/intro?hl=fr-CA>; rel='alternate'; hreflang='fr-CA', <https://myaccount.google.com/intro?hl=ga>; rel='alternate'; hreflang='ga', <https://myaccount.google.com/intro?hl=gl>; rel='alternate'; hreflang='gl', <https://myaccount.google.com/intro?hl=gu>; rel='alternate'; hreflang='gu', <https://myaccount.google.com/intro?hl=hi>; rel='alternate'; hreflang='hi', <https://myaccount.google.com/intro?hl=hr>; rel='alternate'; hreflang='hr', <https://myaccount.google.com/intro?hl=hu>; rel='alternate'; hreflang='hu', <https://myaccount.google.com/intro?hl=hy>; rel='alternate'; hreflang='hy', <https://myaccount.google.com/intro?hl=id>; rel='alternate'; hreflang='id', <https://myaccount.google.com/intro?hl=is>; rel='alternate'; hreflang='is', <https://myaccount.google.com/intro?hl=it>; rel='alternate'; hreflang='it', <https://myaccount.google.com/intro?hl=iw>; rel='alternate'; hreflang='iw', <https://myaccount.google.com/intro?hl=ja>; rel='alternate'; hreflang='ja', <https://myaccount.google.com/intro?hl=ka>; rel='alternate'; hreflang='ka', <https://myaccount.google.com/intro?hl=kk>; rel='alternate'; hreflang='kk', <https://myaccount.google.com/intro?hl=km>; rel='alternate'; hreflang='km', <https://myaccount.google.com/intro?hl=kn>; rel='alternate'; hreflang='kn', <https://myaccount.google.com/intro?hl=ko>; rel='alternate'; hreflang='ko', <https://myaccount.google.com/intro?hl=ky>; rel='alternate'; hreflang='ky', <https://myaccount.google.com/intro?hl=lo>; rel='alternate'; hreflang='lo', <https://myaccount.google.com/intro?hl=lt>; rel='alternate'; hreflang='lt', <https://myaccount.google.com/intro?hl=lv>; rel='alternate'; hreflang='lv', <https://myaccount.google.com/intro?hl=mk>; rel='alternate'; hreflang='mk', <https://myaccount.google.com/intro?hl=ml>; rel='alternate'; hreflang='ml', <https://myaccount.google.com/intro?hl=mn>; rel='alternate'; hreflang='mn', <https://myaccount.google.com/intro?hl=mr>; rel='alternate'; hreflang='mr', <https://myaccount.google.com/intro?hl=ms>; rel='alternate'; hreflang='ms', <https://myaccount.google.com/intro?hl=my>; rel='alternate'; hreflang='my', <https://myaccount.google.com/intro?hl=ne>; rel='alternate'; hreflang='ne', <https://myaccount.google.com/intro?hl=nl>; rel='alternate'; hreflang='nl', <https://myaccount.google.com/intro?hl=no>; rel='alternate'; hreflang='no', <https://myaccount.google.com/intro?hl=or>; rel='alternate'; hreflang='or', <https://myaccount.google.com/intro?hl=pa>; rel='alternate'; hreflang='pa', <https://myaccount.google.com/intro?hl=pl>; rel='alternate'; hreflang='pl', <https://myaccount.google.com/intro?hl=pt-BR>; rel='alternate'; hreflang='pt-BR', <https://myaccount.google.com/intro?hl=pt-PT>; rel='alternate'; hreflang='pt-PT', <https://myaccount.google.com/intro?hl=ro>; rel='alternate'; hreflang='ro', <https://myaccount.google.com/intro?hl=ru>; rel='alternate'; hreflang='ru', <https://myaccount.google.com/intro?hl=si>; rel='alternate'; hreflang='si', <https://myaccount.google.com/intro?hl=sk>; rel='alternate'; hreflang='sk', <https://myaccount.google.com/intro?hl=sl>; rel='alternate'; hreflang='sl', <https://myaccount.google.com/intro?hl=sq>; rel='alternate'; hreflang='sq', <https://myaccount.google.com/intro?hl=sr-Cyrl>; rel='alternate'; hreflang='sr-Cyrl', <https://myaccount.google.com/intro?hl=sr-Latn>; rel='alternate'; hreflang='sr-Latn', <https://myaccount.google.com/intro?hl=sv>; rel='alternate'; hreflang='sv', <https://myaccount.google.com/intro?hl=sw>; rel='alternate'; hreflang='sw', <https://myaccount.google.com/intro?hl=ta>; rel='alternate'; hreflang='ta', <https://myaccount.google.com/intro?hl=te>; rel='alternate'; hreflang='te', <https://myaccount.google.com/intro?hl=th>; rel='alternate'; hreflang='th', <https://myaccount.google.com/intro?hl=tr>; rel='alternate'; hreflang='tr', <https://myaccount.google.com/intro?hl=uk>; rel='alternate'; hreflang='uk', <https://myaccount.google.com/intro?hl=ur>; rel='alternate'; hreflang='ur', <https://myaccount.google.com/intro?hl=uz>; rel='alternate'; hreflang='uz', <https://myaccount.google.com/intro?hl=vi>; rel='alternate'; hreflang='vi', <https://myaccount.google.com/intro?hl=zh-CN>; rel='alternate'; hreflang='zh-CN', <https://myaccount.google.com/intro?hl=zh-HK>; rel='alternate'; hreflang='zh-HK', <https://myaccount.google.com/intro?hl=zh-TW>; rel='alternate'; hreflang='zh-TW', <https://myaccount.google.com/intro?hl=zu>; rel='alternate'; hreflang='zu'"},{"id": 10, "name": "content-encoding", "value": "gzip"},{"id": 11, "name": "server", "value": "ESF"},{"id": 12, "name": "x-xss-protection", "value": "0"},{"id": 13, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 14, "name": "x-content-type-options", "value": "nosniff"},{"id": 15, "name": "alt-svc", "value": "h3-27=':443'; ma=2592000,h3-25=':443'; ma=2592000,h3-T050=':443'; ma=2592000,h3-Q050=':443'; ma=2592000,h3-Q049=':443'; ma=2592000,h3-Q048=':443'; ma=2592000,h3-Q046=':443'; ma=2592000,h3-Q043=':443'; ma=2592000,quic=':443'; ma=2592000; v='46,43'"},{"id": 16, "name": "transfer-encoding", "value": "chunked"}],
+    lookup: {  "1": "content-type", "2": "x-ua-compatible", "3": "cache-control", "4": "pragma", "5": "expires", "6": "date", "7": "strict-transport-security", "8": "content-security-policy", "9": "link", "10": "content-encoding", "11": "server", "12": "x-xss-protection", "13": "x-frame-options", "14": "x-content-type-options", "15": "alt-svc", "16": "transfer-encoding" },
+    sort: 'id',
+    sortDir:'asc',
+    page: 0,
+    pageSize: 25
+  }),
+  methods: {
+    viewRow: function(event) {
+        var rowId = $(event.target).closest('tr').find('td:first').text()
+        var site = this.lookup[rowId]
+        document.location = "/header/" + site
+    },
+    sortBy: function(s) {
+      if (s === this.sort) {
+        this.sortDir = (this.sortDir === 'asc') ? 'desc' : 'asc';
+      } else {
+        this.sortDir = 'asc';
+      }
+      this.sort = s;
+    },
+    isActiveSort: function(s) { 
+      return this.sort === s; 
+    },
+    hasPage: function(dir) {
+      if (dir === -1 && (this.page > 0)) return true;
+      if (dir ===  1 && (((this.page+1)*this.pageSize) < this.rows.length)) return true;
+      return false;
+    },
+    prevPage: function() {
+      if (this.hasPage(-1)) this.page--;
+    },
+    nextPage: function() {
+      if (this.hasPage(1)) this.page++;
+    }
+  },
+  computed: {
+    sortedRows: function() {
+      return this.rows.sort((a, b) => {
+        let dir = (this.sortDir === 'asc') ? 1 : -1;
+        if (a[this.sort] < b[this.sort]) {
+          return -1 * dir;
+        } else if (a[this.sort] > b[this.sort]) {
+          return  1 * dir;
+        } else {
+          return 0;
+        }
+      }).filter((row, idx) => {
+        let s = this.page*this.pageSize;
+        let e = (this.page+1)*this.pageSize;
+        return (idx >= s && idx < e);
+        });
+    },
+    pageSizeModel: {
+      get() {
+        return this.pageSize;
+      },
+      set(v) {
+        this.pageSize = v;
+        this.page = 0;
+      }
+    }
+  },
+  filters: {
+    capitalize: function (v) {
+      if (!v) return ''
+      v = v.toString()
+      return v.charAt(0).toUpperCase() + v.slice(1)
+    }
+  }
+}).$mount('#app');
+</script>
+</body>
+</html>

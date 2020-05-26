@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+    <title>HTML Header Counts</title>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css'>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"> 
+    <style>
+/* Colors for badges */
+
+h1 { font-family: 'Bebas Neue', cursive;}
+
+.badge-red {
+  background-color: #d54625;
+}
+
+.badge-green {
+  background-color: #35bd4a;
+}
+
+.badge-blue {
+  background-color: #357ebd;
+}
+
+.table-sortable > thead > tr > th {
+  cursor: pointer;
+}
+.table-sortable > thead > tr > th[data-sorting="disabled"] {
+  cursor: default;
+}
+.table-sortable > thead > tr > th[data-sorting="disabled"]:hover,
+.table-sortable > thead > tr > th[data-sorting="disabled"]:active {
+  background: inherit;
+}
+.table-sortable > thead > tr > th:hover,
+.table-sortable > thead > tr > th:active {
+  background: #F5F5F5;
+}
+.table-sortable > tbody > tr > td mark,
+.table-sortable > tbody > tr > td .mark {
+  padding-left: 0;
+  padding-right: 0;
+}
+    </style>
+
+</head>
+<body>
+<div class='container-fluid'>
+  <div class='row'>
+    <div class='col-sm-12'>
+      <br>
+      <div class='form-horizontal'>
+        <div class='form-group has-feedback'>
+          <div class='col-sm-12'>
+            <input class='form-control table-sortable-search' placeholder='Search...' type='search'>
+            <span class='glyphicon glyphicon-remove form-control-feedback search-cancel-button'></span>
+          </div>
+        </div>
+      </div>
+      <br>
+      <div class='panel panel-default'>
+        <div class='table-responsive' id="app">
+
+  <h1 style="margin-left:5px">Sites for <b>X-POWERED-BY</b> ⭐️</h1>
+  <hr>
+
+  <label>Rows per page</label>
+  <select v-model="pageSizeModel">
+    <option value="3">3</option>
+    <option value="5">5</option>
+    <option value="10">10</option>
+    <option value="25">25</option>
+  </select>
+    
+  <table class="table table-sortable">
+    <thead>
+      <tr>
+        <th :class="{ sorted: sort === 'id' }" @click="sortBy('id')">
+          Id
+        </th>
+        <th :class="{ sorted: sort === 'name' }" @click="sortBy('name')">
+          Name
+        </th>
+        <th :class="{ sorted: sort === 'value' }" @click="sortBy('value')" >
+          Value
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="row in sortedRows">
+        <td>{{ row.id }}</td>
+        <td>{{ row.name  }}</td>
+        <td>{{ row.value }}</td>
+        <td data-id="{{ row.id }}">
+          <div class='btn-group btn-group-xs'>
+            <button v-on:click="viewRow" class="btn btn-default" title="View">
+              <span class="glyphicon glyphicon-eye-open"></span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <div class="controls">
+    <button class="btn btn-sm" :disabled="!hasPage(-1)" @click="prevPage">←</button> 
+    <button class="btn btn-sm" :disabled="!hasPage(1)"  @click="nextPage">→</button>
+    <span style="float:right; margin-right:30px; margin-top:20px" class="badge badge-primary"><span class="glyphicon glyphicon-heart"></span> vsoch</span>
+
+  </div>
+  <hr>
+</div>
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+  <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js'></script>
+  <script>
+// Handle socket to send /receive messages from server without refresh
+$(document).ready(function(){
+
+});
+
+// tables.js
+function preg_quote( str ) {
+  // http://kevin.vanzonneveld.net
+  // +   original by: booeyOH
+  // +   improved by: Ates Goral (http://magnetiq.com)
+  // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  // +   bugfixed by: Onno Marsman
+  // *     example 1: preg_quote("$40");
+  // *     returns 1: '\$40'
+  // *     example 2: preg_quote("*RRRING* Hello?");
+  // *     returns 2: '\*RRRING\* Hello\?'
+  // *     example 3: preg_quote("\\.+*?[^]$(){}=!<>|:");
+  // *     returns 3: '\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:'
+  return (str+'').replace(/([\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:])/g, "\\$1");
+}
+
+function highlight(data, search){
+  return data.replace(new RegExp( "(" + preg_quote( search ) + ")" , 'gi' ), "<mark>$1</mark>" );
+}
+
+// Table
+    
+function Table($table,$input){
+
+    $table.find("th").each(function($key, el){
+        if ($(el).attr("data-sorting")!="disabled"){
+            $("<span/>").attr("class","fa").attr("row-id",$key+1).appendTo(el);
+    }}).click(function(){
+        var asc=true;
+        if ($(this).find("span.fa").attr("class")=="fa"||$(this).find("span.fa").attr("class")=="fa fa-caret-up fa-fw"){
+            $table.find("th[data-sorting!=disabled] span.fa").attr("class","fa");
+            $(this).find("span.fa").attr("class","fa fa-caret-down fa-fw");
+            asc=true;
+        }
+        else if ($(this).find("span.fa").attr("class")=="fa fa-caret-down fa-fw"){
+            $table.find("th[data-sorting!=disabled] span.fa").attr("class","fa");
+            $(this).find("span.fa").attr("class","fa fa-caret-up fa-fw");
+            asc=false
+        }
+        value=$.map($table.find("td:nth-child("+($(this).find("span.fa").attr("row-id"))+")"),function(el){
+            return {text:$(el).text().trim(),row:$(el).parent()};
+        });
+
+        value.sort(function(x, y){ 
+            if (asc){
+                if (x.text < y.text) {
+                    return -1;
+                }
+                if (x.text > y.text) {
+                    return 1;
+                }
+            } else {
+                if (x.text < y.text) {
+                    return 1;
+                }
+                if (x.text > y.text) {
+                    return -1;
+                }
+            }
+            return 0;
+        });
+        $table.find("tr:gt(0)").remove();
+        $.each(value,function(key,value){
+            $(value.row).appendTo($table);
+        });
+    });
+    $table.find("th:first").click();
+    $input.on("keyup change",function(){
+        var newText=$(this).val();
+        $table.find("span.text-wrap").each(function(key,value){
+            $(value).html($(value).text());
+            $(value).contents().unwrap();
+        });        
+        if (newText.trim()!=""){    
+            $table.find("tr:gt(0)").hide();                        
+            var textNode=$table.find("tr:gt(0) *")
+              .contents()
+              .filter(function() {
+                return this.nodeType === 3; //Node.TEXT_NODE
+              }).each(function(key,value){
+                    var nodeText=value.data;
+                    if (nodeText.toLowerCase().indexOf(newText.toLowerCase())!=-1){
+                        $(value).closest("tr").show();
+                        if ($(value).parent().attr("class")!="text-wrap")
+                            $(value).wrap("<span class='text-wrap'></span>");
+                        $(value).parent().html(highlight(nodeText ,newText));
+                    }
+                
+              });;
+              
+              }else{
+                $table.find("tr").show();
+              }
+    });
+    
+}
+
+$(function(){
+    Table($(".table-sortable"),$(".table-sortable-search"));
+});
+
+// Search
+
+$('input[type="search"]').keyup(function () {
+  var t = $(this);
+  t.next('span').toggle(Boolean(t.val()));
+});
+
+$('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val()).click(function () {
+  $(this).prev('input').val('').focus();
+  $(this).hide();
+});
+
+const app = new Vue({
+  data: () => ({
+    rows: [{"id": 1, "name": "https://vk.com", "value": "PHP/3.102245"},{"id": 2, "name": "https://who.int", "value": "ASP.NET"},{"id": 3, "name": "https://msn.com", "value": "ASP.NET"},{"id": 4, "name": "https://networkadvertising.org", "value": "PHP/5.5.9-1ubuntu4.29"},{"id": 5, "name": "https://hugedomains.com", "value": "ASP.NET"},{"id": 6, "name": "https://tinyurl.com", "value": "PHP/7.3.12"},{"id": 7, "name": "https://businessinsider.com", "value": "Fenrir"},{"id": 8, "name": "https://techcrunch.com", "value": "WordPress VIP <https://wpvip.com>"},{"id": 9, "name": "https://wsj.com", "value": "Express"},{"id": 10, "name": "https://plesk.com", "value": "PHP/7.1.33, PleskLin"},{"id": 11, "name": "https://independent.co.uk", "value": "Express"},{"id": 12, "name": "https://twitter.com", "value": "Express"},{"id": 13, "name": "https://latimes.com", "value": "Brightspot"},{"id": 14, "name": "https://aboutads.info", "value": "PHP/7.1.33"},{"id": 15, "name": "https://buydomains.com", "value": "PHP/5.6.8"},{"id": 16, "name": "https://thesun.co.uk", "value": "WordPress VIP <https://wpvip.com>"},{"id": 17, "name": "https://time.com", "value": "Element"},{"id": 18, "name": "https://a8.net", "value": "PHP/7.3.11"},{"id": 19, "name": "https://e-recht24.de", "value": "PHP/7.2.31, PleskLin"},{"id": 20, "name": "https://berkeley.edu", "value": "PHP/5.4.16"},{"id": 21, "name": "https://www.noaa.gov", "value": "PHP/5.5.9-1ubuntu4.26"},{"id": 22, "name": "https://dell.com", "value": ", "},{"id": 23, "name": "https://sciencemag.org", "value": "PHP/5.5.38"},{"id": 24, "name": "https://ox.ac.uk", "value": "PHP/5.4.45-0+deb7u29"},{"id": 25, "name": "https://fortune.com", "value": "Express"},{"id": 26, "name": "https://imageshack.us", "value": "PHP/5.2.9"},{"id": 27, "name": "https://hp.com", "value": "Servlet/2.5 JSP/2.1"},{"id": 28, "name": "https://metro.co.uk", "value": "WordPress VIP <https://wpvip.com>"},{"id": 29, "name": "https://umich.edu", "value": "Victors"},{"id": 30, "name": "https://psychologytoday.com", "value": "PHP/7.1.33"},{"id": 31, "name": "https://cornell.edu", "value": "ARR/3.0"},{"id": 32, "name": "https://godaddy.com", "value": "ARR/3.0"},{"id": 33, "name": "https://rambler.ru", "value": "Express"},{"id": 34, "name": "https://stanford.edu", "value": "WP Engine"},{"id": 35, "name": "https://hm.com", "value": "ASP.NET"},{"id": 36, "name": "https://standard.co.uk", "value": "Express"},{"id": 37, "name": "https://gizmodo.com", "value": "Express"},{"id": 38, "name": "https://imageshack.com", "value": "PHP/5.2.9"},{"id": 39, "name": "https://netvibes.com", "value": "PHP/7.3.6"},{"id": 40, "name": "https://sina.com.cn", "value": "shci_v1.13"},{"id": 41, "name": "https://e-monsite.com", "value": "PHP/7.4.5"},{"id": 42, "name": "https://venturebeat.com", "value": "WordPress VIP <https://wpvip.com>"},{"id": 43, "name": "https://vkontakte.ru", "value": "PHP/3.24581"},{"id": 44, "name": "https://history.com", "value": "Express"},{"id": 45, "name": "https://dictionary.com", "value": "Express"},{"id": 46, "name": "https://thedailybeast.com", "value": "Express"},{"id": 47, "name": "https://cbslocal.com", "value": "WordPress VIP <https://wpvip.com>"},{"id": 48, "name": "https://coursera.org", "value": "Express"},{"id": 49, "name": "https://csmonitor.com", "value": "Lovestack Edition"},{"id": 50, "name": "https://membership.businesswire.com", "value": "HubSpot"},{"id": 51, "name": "https://nbcnews.com", "value": "Express"},{"id": 52, "name": "https://arstechnica.com", "value": "PHP/7.3.18"},{"id": 53, "name": "https://www.dominos.com/en/", "value": "Express"},{"id": 54, "name": "https://www.nike.com", "value": "Nessie"},{"id": 55, "name": "https://www.docker.com", "value": "PHP/7.3.14"}],
+    lookup: {  "1": "https://vk.com", "2": "https://who.int", "3": "https://msn.com", "4": "https://networkadvertising.org", "5": "https://hugedomains.com", "6": "https://tinyurl.com", "7": "https://businessinsider.com", "8": "https://techcrunch.com", "9": "https://wsj.com", "10": "https://plesk.com", "11": "https://independent.co.uk", "12": "https://twitter.com", "13": "https://latimes.com", "14": "https://aboutads.info", "15": "https://buydomains.com", "16": "https://thesun.co.uk", "17": "https://time.com", "18": "https://a8.net", "19": "https://e-recht24.de", "20": "https://berkeley.edu", "21": "https://www.noaa.gov", "22": "https://dell.com", "23": "https://sciencemag.org", "24": "https://ox.ac.uk", "25": "https://fortune.com", "26": "https://imageshack.us", "27": "https://hp.com", "28": "https://metro.co.uk", "29": "https://umich.edu", "30": "https://psychologytoday.com", "31": "https://cornell.edu", "32": "https://godaddy.com", "33": "https://rambler.ru", "34": "https://stanford.edu", "35": "https://hm.com", "36": "https://standard.co.uk", "37": "https://gizmodo.com", "38": "https://imageshack.com", "39": "https://netvibes.com", "40": "https://sina.com.cn", "41": "https://e-monsite.com", "42": "https://venturebeat.com", "43": "https://vkontakte.ru", "44": "https://history.com", "45": "https://dictionary.com", "46": "https://thedailybeast.com", "47": "https://cbslocal.com", "48": "https://coursera.org", "49": "https://csmonitor.com", "50": "https://membership.businesswire.com", "51": "https://nbcnews.com", "52": "https://arstechnica.com", "53": "https://www.dominos.com/en/", "54": "https://www.nike.com", "55": "https://www.docker.com" },
+    sort: 'id',
+    sortDir:'asc',
+    page: 0,
+    pageSize: 25
+  }),
+  methods: {
+    viewRow: function(event) {
+        var rowId = $(event.target).closest('tr').find('td:first').text()
+        var site = this.lookup[rowId].replace(/(^\w+:|^)\/\//, '');
+        document.location = "/site/" + site
+    },
+    sortBy: function(s) {
+      if (s === this.sort) {
+        this.sortDir = (this.sortDir === 'asc') ? 'desc' : 'asc';
+      } else {
+        this.sortDir = 'asc';
+      }
+      this.sort = s;
+    },
+    isActiveSort: function(s) { 
+      return this.sort === s; 
+    },
+    hasPage: function(dir) {
+      if (dir === -1 && (this.page > 0)) return true;
+      if (dir ===  1 && (((this.page+1)*this.pageSize) < this.rows.length)) return true;
+      return false;
+    },
+    prevPage: function() {
+      if (this.hasPage(-1)) this.page--;
+    },
+    nextPage: function() {
+      if (this.hasPage(1)) this.page++;
+    }
+  },
+  computed: {
+    sortedRows: function() {
+      return this.rows.sort((a, b) => {
+        let dir = (this.sortDir === 'asc') ? 1 : -1;
+        if (a[this.sort] < b[this.sort]) {
+          return -1 * dir;
+        } else if (a[this.sort] > b[this.sort]) {
+          return  1 * dir;
+        } else {
+          return 0;
+        }
+      }).filter((row, idx) => {
+        let s = this.page*this.pageSize;
+        let e = (this.page+1)*this.pageSize;
+        return (idx >= s && idx < e);
+        });
+    },
+    pageSizeModel: {
+      get() {
+        return this.pageSize;
+      },
+      set(v) {
+        this.pageSize = v;
+        this.page = 0;
+      }
+    }
+  },
+  filters: {
+    capitalize: function (v) {
+      if (!v) return ''
+      v = v.toString()
+      return v.charAt(0).toUpperCase() + v.slice(1)
+    }
+  }
+}).$mount('#app');
+</script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+    <title>HTML Cookie Counts</title>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css'>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"> 
+    <style>
+/* Colors for badges */
+
+h1 { font-family: 'Bebas Neue', cursive;}
+
+.badge-red {
+  background-color: #d54625;
+}
+
+.badge-green {
+  background-color: #35bd4a;
+}
+
+.badge-blue {
+  background-color: #357ebd;
+}
+
+.table-sortable > thead > tr > th {
+  cursor: pointer;
+}
+.table-sortable > thead > tr > th[data-sorting="disabled"] {
+  cursor: default;
+}
+.table-sortable > thead > tr > th[data-sorting="disabled"]:hover,
+.table-sortable > thead > tr > th[data-sorting="disabled"]:active {
+  background: inherit;
+}
+.table-sortable > thead > tr > th:hover,
+.table-sortable > thead > tr > th:active {
+  background: #F5F5F5;
+}
+.table-sortable > tbody > tr > td mark,
+.table-sortable > tbody > tr > td .mark {
+  padding-left: 0;
+  padding-right: 0;
+}
+    </style>
+
+</head>
+<body>
+<div class='container-fluid'>
+  <div class='row'>
+    <div class='col-sm-12'>
+      <br>
+      <div class='form-horizontal'>
+        <div class='form-group has-feedback'>
+          <div class='col-sm-12'>
+            <input class='form-control table-sortable-search' placeholder='Search...' type='search'>
+            <span class='glyphicon glyphicon-remove form-control-feedback search-cancel-button'></span>
+          </div>
+        </div>
+      </div>
+      <br>
+      <div class='panel panel-default'>
+        <div class='table-responsive' id="app">
+
+  <h1 style="margin-left:5px">Sites for <b>MAX-AGE</b> ⭐️</h1>
+  <hr>
+
+  <label>Rows per page</label>
+  <select v-model="pageSizeModel">
+    <option value="3">3</option>
+    <option value="5">5</option>
+    <option value="10">10</option>
+    <option value="25">25</option>
+  </select>
+    
+  <table class="table table-sortable">
+    <thead>
+      <tr>
+        <th :class="{ sorted: sort === 'id' }" @click="sortBy('id')">
+          Id
+        </th>
+        <th :class="{ sorted: sort === 'name' }" @click="sortBy('name')">
+          Name
+        </th>
+        <th :class="{ sorted: sort === 'value' }" @click="sortBy('value')" >
+          Value
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="row in sortedRows">
+        <td>{{ row.id }}</td>
+        <td>{{ row.name  }}</td>
+        <td>{{ row.value }}</td>
+        <td data-id="{{ row.id }}">
+          <div class='btn-group btn-group-xs'>
+            <button v-on:click="viewRow" class="btn btn-default" title="View">
+              <span class="glyphicon glyphicon-eye-open"></span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <div class="controls">
+    <button class="btn btn-sm" :disabled="!hasPage(-1)" @click="prevPage">←</button> 
+    <button class="btn btn-sm" :disabled="!hasPage(1)"  @click="nextPage">→</button>
+    <span style="float:right; margin-right:30px; margin-top:20px" class="badge badge-primary"><span class="glyphicon glyphicon-heart"></span> vsoch</span>
+
+  </div>
+  <hr>
+</div>
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+  <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js'></script>
+  <script>
+// Handle socket to send /receive messages from server without refresh
+$(document).ready(function(){
+
+});
+
+// tables.js
+function preg_quote( str ) {
+  // http://kevin.vanzonneveld.net
+  // +   original by: booeyOH
+  // +   improved by: Ates Goral (http://magnetiq.com)
+  // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  // +   bugfixed by: Onno Marsman
+  // *     example 1: preg_quote("$40");
+  // *     returns 1: '\$40'
+  // *     example 2: preg_quote("*RRRING* Hello?");
+  // *     returns 2: '\*RRRING\* Hello\?'
+  // *     example 3: preg_quote("\\.+*?[^]$(){}=!<>|:");
+  // *     returns 3: '\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:'
+  return (str+'').replace(/([\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:])/g, "\\$1");
+}
+
+function highlight(data, search){
+  return data.replace(new RegExp( "(" + preg_quote( search ) + ")" , 'gi' ), "<mark>$1</mark>" );
+}
+
+// Table
+    
+function Table($table,$input){
+
+    $table.find("th").each(function($key, el){
+        if ($(el).attr("data-sorting")!="disabled"){
+            $("<span/>").attr("class","fa").attr("row-id",$key+1).appendTo(el);
+    }}).click(function(){
+        var asc=true;
+        if ($(this).find("span.fa").attr("class")=="fa"||$(this).find("span.fa").attr("class")=="fa fa-caret-up fa-fw"){
+            $table.find("th[data-sorting!=disabled] span.fa").attr("class","fa");
+            $(this).find("span.fa").attr("class","fa fa-caret-down fa-fw");
+            asc=true;
+        }
+        else if ($(this).find("span.fa").attr("class")=="fa fa-caret-down fa-fw"){
+            $table.find("th[data-sorting!=disabled] span.fa").attr("class","fa");
+            $(this).find("span.fa").attr("class","fa fa-caret-up fa-fw");
+            asc=false
+        }
+        value=$.map($table.find("td:nth-child("+($(this).find("span.fa").attr("row-id"))+")"),function(el){
+            return {text:$(el).text().trim(),row:$(el).parent()};
+        });
+
+        value.sort(function(x, y){ 
+            if (asc){
+                if (x.text < y.text) {
+                    return -1;
+                }
+                if (x.text > y.text) {
+                    return 1;
+                }
+            } else {
+                if (x.text < y.text) {
+                    return 1;
+                }
+                if (x.text > y.text) {
+                    return -1;
+                }
+            }
+            return 0;
+        });
+        $table.find("tr:gt(0)").remove();
+        $.each(value,function(key,value){
+            $(value.row).appendTo($table);
+        });
+    });
+    $table.find("th:first").click();
+    $input.on("keyup change",function(){
+        var newText=$(this).val();
+        $table.find("span.text-wrap").each(function(key,value){
+            $(value).html($(value).text());
+            $(value).contents().unwrap();
+        });        
+        if (newText.trim()!=""){    
+            $table.find("tr:gt(0)").hide();                        
+            var textNode=$table.find("tr:gt(0) *")
+              .contents()
+              .filter(function() {
+                return this.nodeType === 3; //Node.TEXT_NODE
+              }).each(function(key,value){
+                    var nodeText=value.data;
+                    if (nodeText.toLowerCase().indexOf(newText.toLowerCase())!=-1){
+                        $(value).closest("tr").show();
+                        if ($(value).parent().attr("class")!="text-wrap")
+                            $(value).wrap("<span class='text-wrap'></span>");
+                        $(value).parent().html(highlight(nodeText ,newText));
+                    }
+                
+              });;
+              
+              }else{
+                $table.find("tr").show();
+              }
+    });
+    
+}
+
+$(function(){
+    Table($(".table-sortable"),$(".table-sortable-search"));
+});
+
+// Search
+
+$('input[type="search"]').keyup(function () {
+  var t = $(this);
+  t.next('span').toggle(Boolean(t.val()));
+});
+
+$('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val()).click(function () {
+  $(this).prev('input').val('').focus();
+  $(this).hide();
+});
+
+const app = new Vue({
+  data: () => ({
+    rows: [{"id": 1, "name": "https://adobe.com", "value": ""},{"id": 2, "name": "https://vimeo.com", "value": ""},{"id": 3, "name": "https://facebook.com", "value": ""},{"id": 4, "name": "https://whatsapp.com", "value": ""},{"id": 5, "name": "https://paypal.com", "value": ""},{"id": 6, "name": "https://dailymotion.com", "value": ""},{"id": 7, "name": "https://www.yahoo.com", "value": ""},{"id": 8, "name": "https://tinyurl.com", "value": ""},{"id": 9, "name": "https://aol.com", "value": ""},{"id": 10, "name": "https://techcrunch.com", "value": ""},{"id": 11, "name": "https://issuu.com", "value": ""},{"id": 12, "name": "https://huffingtonpost.com", "value": ""},{"id": 13, "name": "https://dailymail.co.uk", "value": ""},{"id": 14, "name": "https://steampowered.com", "value": ""},{"id": 15, "name": "https://twitter.com", "value": ""},{"id": 16, "name": "https://pinterest.com", "value": ""},{"id": 17, "name": "https://mediafire.com", "value": ""},{"id": 18, "name": "https://change.org", "value": ""},{"id": 19, "name": "https://aboutads.info", "value": ""},{"id": 20, "name": "https://thesun.co.uk", "value": ""},{"id": 21, "name": "https://walmart.com", "value": ""},{"id": 22, "name": "https://dell.com", "value": ""},{"id": 23, "name": "https://www.weebly.com", "value": ""},{"id": 24, "name": "https://theatlantic.com", "value": ""},{"id": 25, "name": "https://foursquare.com", "value": ""},{"id": 26, "name": "https://huffpost.com", "value": ""},{"id": 27, "name": "https://lemonde.fr", "value": ""},{"id": 28, "name": "https://spotify.com", "value": ""},{"id": 29, "name": "https://photobucket.com", "value": ""},{"id": 30, "name": "https://nginx.com", "value": ""},{"id": 31, "name": "https://channel4.com", "value": ""},{"id": 32, "name": "https://tes.com", "value": ""},{"id": 33, "name": "https://www.ikea.com", "value": ""},{"id": 34, "name": "https://surveymonkey.com", "value": ""},{"id": 35, "name": "https://target.com", "value": ""},{"id": 36, "name": "https://yelp.com", "value": ""},{"id": 37, "name": "https://engadget.com", "value": ""},{"id": 38, "name": "https://www.khanacademy.org", "value": ""},{"id": 39, "name": "https://gofundme.com", "value": ""},{"id": 40, "name": "https://www.wix.com", "value": ""},{"id": 41, "name": "https://shutterstock.com", "value": ""},{"id": 42, "name": "https://goo.ne.jp", "value": ""},{"id": 43, "name": "https://rambler.ru", "value": ""},{"id": 44, "name": "https://instagram.com", "value": ""},{"id": 45, "name": "https://researchgate.net", "value": ""},{"id": 46, "name": "https://sendspace.com", "value": ""},{"id": 47, "name": "https://sapo.pt", "value": ""},{"id": 48, "name": "https://netflix.com", "value": ""},{"id": 49, "name": "https://my.yahoo.com", "value": ""},{"id": 50, "name": "https://gizmodo.com", "value": ""},{"id": 51, "name": "https://deezer.com", "value": ""},{"id": 52, "name": "https://box.com", "value": ""},{"id": 53, "name": "https://quora.com", "value": ""},{"id": 54, "name": "https://economist.com", "value": ""},{"id": 55, "name": "https://fb.me", "value": ""},{"id": 56, "name": "https://billboard.com", "value": ""},{"id": 57, "name": "https://orange.fr", "value": ""},{"id": 58, "name": "https://evernote.com", "value": ""},{"id": 59, "name": "https://nicovideo.jp", "value": ""},{"id": 60, "name": "https://statista.com", "value": ""},{"id": 61, "name": "https://answers.com", "value": ""},{"id": 62, "name": "https://etsy.com", "value": ""},{"id": 63, "name": "https://offset.com", "value": ""},{"id": 64, "name": "https://xing.com", "value": ""},{"id": 65, "name": "https://pinterest.co.uk", "value": ""},{"id": 66, "name": "https://about.me", "value": ""},{"id": 67, "name": "https://mixcloud.com", "value": ""},{"id": 68, "name": "https://dreamstime.com", "value": ""},{"id": 69, "name": "https://www.pizzahut.com", "value": ""},{"id": 70, "name": "https://www.glassdoor.com", "value": ""},{"id": 71, "name": "https://www.vmware.com", "value": ""},{"id": 72, "name": "https://readthedocs.org", "value": ""}],
+    lookup: {  "1": "https://adobe.com", "2": "https://vimeo.com", "3": "https://facebook.com", "4": "https://whatsapp.com", "5": "https://paypal.com", "6": "https://dailymotion.com", "7": "https://www.yahoo.com", "8": "https://tinyurl.com", "9": "https://aol.com", "10": "https://techcrunch.com", "11": "https://issuu.com", "12": "https://huffingtonpost.com", "13": "https://dailymail.co.uk", "14": "https://steampowered.com", "15": "https://twitter.com", "16": "https://pinterest.com", "17": "https://mediafire.com", "18": "https://change.org", "19": "https://aboutads.info", "20": "https://thesun.co.uk", "21": "https://walmart.com", "22": "https://dell.com", "23": "https://www.weebly.com", "24": "https://theatlantic.com", "25": "https://foursquare.com", "26": "https://huffpost.com", "27": "https://lemonde.fr", "28": "https://spotify.com", "29": "https://photobucket.com", "30": "https://nginx.com", "31": "https://channel4.com", "32": "https://tes.com", "33": "https://www.ikea.com", "34": "https://surveymonkey.com", "35": "https://target.com", "36": "https://yelp.com", "37": "https://engadget.com", "38": "https://www.khanacademy.org", "39": "https://gofundme.com", "40": "https://www.wix.com", "41": "https://shutterstock.com", "42": "https://goo.ne.jp", "43": "https://rambler.ru", "44": "https://instagram.com", "45": "https://researchgate.net", "46": "https://sendspace.com", "47": "https://sapo.pt", "48": "https://netflix.com", "49": "https://my.yahoo.com", "50": "https://gizmodo.com", "51": "https://deezer.com", "52": "https://box.com", "53": "https://quora.com", "54": "https://economist.com", "55": "https://fb.me", "56": "https://billboard.com", "57": "https://orange.fr", "58": "https://evernote.com", "59": "https://nicovideo.jp", "60": "https://statista.com", "61": "https://answers.com", "62": "https://etsy.com", "63": "https://offset.com", "64": "https://xing.com", "65": "https://pinterest.co.uk", "66": "https://about.me", "67": "https://mixcloud.com", "68": "https://dreamstime.com", "69": "https://www.pizzahut.com", "70": "https://www.glassdoor.com", "71": "https://www.vmware.com", "72": "https://readthedocs.org" },
+    sort: 'id',
+    sortDir:'asc',
+    page: 0,
+    pageSize: 25
+  }),
+  methods: {
+    viewRow: function(event) {
+        var rowId = $(event.target).closest('tr').find('td:first').text()
+        var site = this.lookup[rowId].replace(/(^\w+:|^)\/\//, '');
+        document.location = "/site/" + site
+    },
+    sortBy: function(s) {
+      if (s === this.sort) {
+        this.sortDir = (this.sortDir === 'asc') ? 'desc' : 'asc';
+      } else {
+        this.sortDir = 'asc';
+      }
+      this.sort = s;
+    },
+    isActiveSort: function(s) { 
+      return this.sort === s; 
+    },
+    hasPage: function(dir) {
+      if (dir === -1 && (this.page > 0)) return true;
+      if (dir ===  1 && (((this.page+1)*this.pageSize) < this.rows.length)) return true;
+      return false;
+    },
+    prevPage: function() {
+      if (this.hasPage(-1)) this.page--;
+    },
+    nextPage: function() {
+      if (this.hasPage(1)) this.page++;
+    }
+  },
+  computed: {
+    sortedRows: function() {
+      return this.rows.sort((a, b) => {
+        let dir = (this.sortDir === 'asc') ? 1 : -1;
+        if (a[this.sort] < b[this.sort]) {
+          return -1 * dir;
+        } else if (a[this.sort] > b[this.sort]) {
+          return  1 * dir;
+        } else {
+          return 0;
+        }
+      }).filter((row, idx) => {
+        let s = this.page*this.pageSize;
+        let e = (this.page+1)*this.pageSize;
+        return (idx >= s && idx < e);
+        });
+    },
+    pageSizeModel: {
+      get() {
+        return this.pageSize;
+      },
+      set(v) {
+        this.pageSize = v;
+        this.page = 0;
+      }
+    }
+  },
+  filters: {
+    capitalize: function (v) {
+      if (!v) return ''
+      v = v.toString()
+      return v.charAt(0).toUpperCase() + v.slice(1)
+    }
+  }
+}).$mount('#app');
+</script>
+</body>
+</html>

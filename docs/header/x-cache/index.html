@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+    <title>HTML Header Counts</title>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css'>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"> 
+    <style>
+/* Colors for badges */
+
+h1 { font-family: 'Bebas Neue', cursive;}
+
+.badge-red {
+  background-color: #d54625;
+}
+
+.badge-green {
+  background-color: #35bd4a;
+}
+
+.badge-blue {
+  background-color: #357ebd;
+}
+
+.table-sortable > thead > tr > th {
+  cursor: pointer;
+}
+.table-sortable > thead > tr > th[data-sorting="disabled"] {
+  cursor: default;
+}
+.table-sortable > thead > tr > th[data-sorting="disabled"]:hover,
+.table-sortable > thead > tr > th[data-sorting="disabled"]:active {
+  background: inherit;
+}
+.table-sortable > thead > tr > th:hover,
+.table-sortable > thead > tr > th:active {
+  background: #F5F5F5;
+}
+.table-sortable > tbody > tr > td mark,
+.table-sortable > tbody > tr > td .mark {
+  padding-left: 0;
+  padding-right: 0;
+}
+    </style>
+
+</head>
+<body>
+<div class='container-fluid'>
+  <div class='row'>
+    <div class='col-sm-12'>
+      <br>
+      <div class='form-horizontal'>
+        <div class='form-group has-feedback'>
+          <div class='col-sm-12'>
+            <input class='form-control table-sortable-search' placeholder='Search...' type='search'>
+            <span class='glyphicon glyphicon-remove form-control-feedback search-cancel-button'></span>
+          </div>
+        </div>
+      </div>
+      <br>
+      <div class='panel panel-default'>
+        <div class='table-responsive' id="app">
+
+  <h1 style="margin-left:5px">Sites for <b>X-CACHE</b> ⭐️</h1>
+  <hr>
+
+  <label>Rows per page</label>
+  <select v-model="pageSizeModel">
+    <option value="3">3</option>
+    <option value="5">5</option>
+    <option value="10">10</option>
+    <option value="25">25</option>
+  </select>
+    
+  <table class="table table-sortable">
+    <thead>
+      <tr>
+        <th :class="{ sorted: sort === 'id' }" @click="sortBy('id')">
+          Id
+        </th>
+        <th :class="{ sorted: sort === 'name' }" @click="sortBy('name')">
+          Name
+        </th>
+        <th :class="{ sorted: sort === 'value' }" @click="sortBy('value')" >
+          Value
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="row in sortedRows">
+        <td>{{ row.id }}</td>
+        <td>{{ row.name  }}</td>
+        <td>{{ row.value }}</td>
+        <td data-id="{{ row.id }}">
+          <div class='btn-group btn-group-xs'>
+            <button v-on:click="viewRow" class="btn btn-default" title="View">
+              <span class="glyphicon glyphicon-eye-open"></span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <div class="controls">
+    <button class="btn btn-sm" :disabled="!hasPage(-1)" @click="prevPage">←</button> 
+    <button class="btn btn-sm" :disabled="!hasPage(1)"  @click="nextPage">→</button>
+    <span style="float:right; margin-right:30px; margin-top:20px" class="badge badge-primary"><span class="glyphicon glyphicon-heart"></span> vsoch</span>
+
+  </div>
+  <hr>
+</div>
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+  <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js'></script>
+  <script>
+// Handle socket to send /receive messages from server without refresh
+$(document).ready(function(){
+
+});
+
+// tables.js
+function preg_quote( str ) {
+  // http://kevin.vanzonneveld.net
+  // +   original by: booeyOH
+  // +   improved by: Ates Goral (http://magnetiq.com)
+  // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+  // +   bugfixed by: Onno Marsman
+  // *     example 1: preg_quote("$40");
+  // *     returns 1: '\$40'
+  // *     example 2: preg_quote("*RRRING* Hello?");
+  // *     returns 2: '\*RRRING\* Hello\?'
+  // *     example 3: preg_quote("\\.+*?[^]$(){}=!<>|:");
+  // *     returns 3: '\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:'
+  return (str+'').replace(/([\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:])/g, "\\$1");
+}
+
+function highlight(data, search){
+  return data.replace(new RegExp( "(" + preg_quote( search ) + ")" , 'gi' ), "<mark>$1</mark>" );
+}
+
+// Table
+    
+function Table($table,$input){
+
+    $table.find("th").each(function($key, el){
+        if ($(el).attr("data-sorting")!="disabled"){
+            $("<span/>").attr("class","fa").attr("row-id",$key+1).appendTo(el);
+    }}).click(function(){
+        var asc=true;
+        if ($(this).find("span.fa").attr("class")=="fa"||$(this).find("span.fa").attr("class")=="fa fa-caret-up fa-fw"){
+            $table.find("th[data-sorting!=disabled] span.fa").attr("class","fa");
+            $(this).find("span.fa").attr("class","fa fa-caret-down fa-fw");
+            asc=true;
+        }
+        else if ($(this).find("span.fa").attr("class")=="fa fa-caret-down fa-fw"){
+            $table.find("th[data-sorting!=disabled] span.fa").attr("class","fa");
+            $(this).find("span.fa").attr("class","fa fa-caret-up fa-fw");
+            asc=false
+        }
+        value=$.map($table.find("td:nth-child("+($(this).find("span.fa").attr("row-id"))+")"),function(el){
+            return {text:$(el).text().trim(),row:$(el).parent()};
+        });
+
+        value.sort(function(x, y){ 
+            if (asc){
+                if (x.text < y.text) {
+                    return -1;
+                }
+                if (x.text > y.text) {
+                    return 1;
+                }
+            } else {
+                if (x.text < y.text) {
+                    return 1;
+                }
+                if (x.text > y.text) {
+                    return -1;
+                }
+            }
+            return 0;
+        });
+        $table.find("tr:gt(0)").remove();
+        $.each(value,function(key,value){
+            $(value.row).appendTo($table);
+        });
+    });
+    $table.find("th:first").click();
+    $input.on("keyup change",function(){
+        var newText=$(this).val();
+        $table.find("span.text-wrap").each(function(key,value){
+            $(value).html($(value).text());
+            $(value).contents().unwrap();
+        });        
+        if (newText.trim()!=""){    
+            $table.find("tr:gt(0)").hide();                        
+            var textNode=$table.find("tr:gt(0) *")
+              .contents()
+              .filter(function() {
+                return this.nodeType === 3; //Node.TEXT_NODE
+              }).each(function(key,value){
+                    var nodeText=value.data;
+                    if (nodeText.toLowerCase().indexOf(newText.toLowerCase())!=-1){
+                        $(value).closest("tr").show();
+                        if ($(value).parent().attr("class")!="text-wrap")
+                            $(value).wrap("<span class='text-wrap'></span>");
+                        $(value).parent().html(highlight(nodeText ,newText));
+                    }
+                
+              });;
+              
+              }else{
+                $table.find("tr").show();
+              }
+    });
+    
+}
+
+$(function(){
+    Table($(".table-sortable"),$(".table-sortable-search"));
+});
+
+// Search
+
+$('input[type="search"]').keyup(function () {
+  var t = $(this);
+  t.next('span').toggle(Boolean(t.val()));
+});
+
+$('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val()).click(function () {
+  $(this).prev('input').val('').focus();
+  $(this).hide();
+});
+
+const app = new Vue({
+  data: () => ({
+    rows: [{"id": 1, "name": "https://en.wikipedia.org", "value": "cp1089 miss, cp1087 hit/1252"},{"id": 2, "name": "https://vimeo.com", "value": "MISS"},{"id": 3, "name": "https://istockphoto.com", "value": "Miss from cloudfront"},{"id": 4, "name": "https://amazon.com", "value": "Miss from cloudfront"},{"id": 5, "name": "https://es.wikipedia.org", "value": "cp1075 miss, cp1087 hit/4646"},{"id": 6, "name": "https://cnn.com", "value": "HIT"},{"id": 7, "name": "https://nytimes.com", "value": "HIT, MISS"},{"id": 8, "name": "https://jimdofree.com", "value": "HIT, HIT"},{"id": 9, "name": "https://who.int", "value": "Hit from cloudfront"},{"id": 10, "name": "https://bbc.com", "value": "HIT"},{"id": 11, "name": "https://nih.gov", "value": "HIT"},{"id": 12, "name": "https://reuters.com", "value": "Hit from cloudfront"},{"id": 13, "name": "https://pt.wikipedia.org", "value": "cp1077 miss, cp1087 hit/25"},{"id": 14, "name": "https://fr.wikipedia.org", "value": "cp1085 miss, cp1087 hit/1174"},{"id": 15, "name": "https://uol.com.br", "value": "Hit from cloudfront"},{"id": 16, "name": "https://wikimedia.org", "value": "cp1079 hit, cp1087 hit/207"},{"id": 17, "name": "https://imdb.com", "value": "Miss from cloudfront"},{"id": 18, "name": "https://forbes.com", "value": "HIT"},{"id": 19, "name": "https://businessinsider.com", "value": "HIT"},{"id": 20, "name": "https://www.nasa.gov", "value": "Hit from cloudfront"},{"id": 21, "name": "https://wikia.com", "value": "HIT, HIT"},{"id": 22, "name": "https://techcrunch.com", "value": "hit"},{"id": 23, "name": "https://wsj.com", "value": "Miss from cloudfront"},{"id": 24, "name": "https://wired.com", "value": "HIT"},{"id": 25, "name": "https://amazon.de", "value": "Miss from cloudfront"},{"id": 26, "name": "https://bloomberg.com", "value": "MISS"},{"id": 27, "name": "https://independent.co.uk", "value": "HIT"},{"id": 28, "name": "https://harvard.edu", "value": "HIT, HIT"},{"id": 29, "name": "https://latimes.com", "value": "Hit from cloudfront"},{"id": 30, "name": "https://mirror.co.uk", "value": "Hit from cloudfront"},{"id": 31, "name": "https://abcnews.go.com", "value": "Miss from cloudfront"},{"id": 32, "name": "https://usatoday.com", "value": "HIT, HIT"},{"id": 33, "name": "https://scribd.com", "value": "MISS"},{"id": 34, "name": "https://opera.com", "value": "MISS"},{"id": 35, "name": "https://fandom.com", "value": "HIT, HIT"},{"id": 36, "name": "https://amazon.co.uk", "value": "Miss from cloudfront"},{"id": 37, "name": "https://www.gov.uk", "value": "HIT, HIT"},{"id": 38, "name": "https://de.wikipedia.org", "value": "cp1083 miss, cp1087 hit/3"},{"id": 39, "name": "https://time.com", "value": "Hit from cloudfront"},{"id": 40, "name": "https://a8.net", "value": "Miss from cloudfront"},{"id": 41, "name": "https://it.wikipedia.org", "value": "cp1081 hit, cp1087 hit/190"},{"id": 42, "name": "https://bandcamp.com", "value": "MISS"},{"id": 43, "name": "https://sciencedaily.com", "value": "Hit from cloudfront"},{"id": 44, "name": "https://www.noaa.gov", "value": "Hit from cloudfront"},{"id": 45, "name": "https://m.wikipedia.org", "value": "cp1079 hit, cp1087 hit/203341"},{"id": 46, "name": "https://blackberry.com", "value": "Hit from cloudfront"},{"id": 47, "name": "https://soundcloud.com", "value": "Miss from cloudfront"},{"id": 48, "name": "https://sciencemag.org", "value": "HIT"},{"id": 49, "name": "https://pbs.org", "value": "Miss from cloudfront"},{"id": 50, "name": "https://vox.com", "value": "HIT"},{"id": 51, "name": "https://ign.com", "value": "MISS, HIT"},{"id": 52, "name": "https://stackoverflow.com", "value": "MISS"},{"id": 53, "name": "https://theatlantic.com", "value": "HIT, HIT"},{"id": 54, "name": "https://ox.ac.uk", "value": "HIT"},{"id": 55, "name": "https://fortune.com", "value": "Miss from cloudfront"},{"id": 56, "name": "https://foursquare.com", "value": "MISS"},{"id": 57, "name": "https://www.worldbank.org/", "value": "Hit from cloudfront"},{"id": 58, "name": "https://lemonde.fr", "value": "MISS, MISS"},{"id": 59, "name": "https://spotify.com", "value": "HIT from ad5735dbb171"},{"id": 60, "name": "https://yale.edu", "value": "HIT, HIT, MISS"},{"id": 61, "name": "https://express.co.uk", "value": "Hit from cloudfront"},{"id": 62, "name": "https://ja.wikipedia.org", "value": "cp1075 miss, cp1087 hit/36"},{"id": 63, "name": "https://tes.com", "value": "MISS, MISS"},{"id": 64, "name": "https://smh.com.au", "value": "HIT, HIT"},{"id": 65, "name": "https://www.wikipedia.org", "value": "cp1079 hit, cp1087 hit/204020"},{"id": 66, "name": "https://en.unesco.org", "value": "HIT"},{"id": 67, "name": "https://surveymonkey.com", "value": "Miss from cloudfront"},{"id": 68, "name": "https://id.wikipedia.org", "value": "cp1085 hit, cp1087 hit/10"},{"id": 69, "name": "https://sfgate.com", "value": "HIT"},{"id": 70, "name": "https://metro.co.uk", "value": "hit"},{"id": 71, "name": "https://amazon.fr", "value": "Miss from cloudfront"},{"id": 72, "name": "https://yelp.com", "value": "MISS"},{"id": 73, "name": "https://psychologytoday.com", "value": "HIT"},{"id": 74, "name": "https://espn.com", "value": "Miss from cloudfront"},{"id": 75, "name": "https://www.khanacademy.org", "value": "MISS, MISS"},{"id": 76, "name": "https://gofundme.com", "value": "Miss from cloudfront"},{"id": 77, "name": "https://buzzfeed.com", "value": "HIT"},{"id": 78, "name": "https://fastcompany.com", "value": "HIT"},{"id": 79, "name": "https://nature.com", "value": "MISS, MISS"},{"id": 80, "name": "https://spiegel.de", "value": "HIT"},{"id": 81, "name": "https://twitch.tv", "value": "MISS"},{"id": 82, "name": "https://stanford.edu", "value": "MISS"},{"id": 83, "name": "https://princeton.edu", "value": "HIT"},{"id": 84, "name": "https://urbandictionary.com", "value": "HIT"},{"id": 85, "name": "https://vice.com", "value": "HIT"},{"id": 86, "name": "https://ted.com", "value": "HIT, HIT"},{"id": 87, "name": "https://pl.wikipedia.org", "value": "cp1083 miss, cp1087 hit/46"},{"id": 88, "name": "https://kickstarter.com", "value": "MISS"},{"id": 89, "name": "https://www.elmundo.es", "value": "HIT, HIT"},{"id": 90, "name": "https://theverge.com", "value": "HIT"},{"id": 91, "name": "https://about.com", "value": "HIT, HIT"},{"id": 92, "name": "https://standard.co.uk", "value": "HIT"},{"id": 93, "name": "https://gizmodo.com", "value": "HIT"},{"id": 94, "name": "https://ru.wikipedia.org", "value": "cp1083 miss, cp1087 hit/2"},{"id": 95, "name": "https://newsweek.com", "value": "hit cached"},{"id": 96, "name": "https://quora.com", "value": "MISS"},{"id": 97, "name": "https://economist.com", "value": "Miss from cloudfront"},{"id": 98, "name": "https://utexas.edu", "value": "HIT, MISS"},{"id": 99, "name": "https://boston.com", "value": "HIT"},{"id": 100, "name": "https://sina.com.cn", "value": "HIT.178"},{"id": 101, "name": "https://corriere.it", "value": "HIT, HIT"},{"id": 102, "name": "https://chron.com", "value": "HIT"},{"id": 103, "name": "https://airbnb.com", "value": "HIT, HIT"},{"id": 104, "name": "https://thoughtco.com", "value": "MISS, MISS"},{"id": 105, "name": "https://venturebeat.com", "value": "hit"},{"id": 106, "name": "https://history.com", "value": "HIT"},{"id": 107, "name": "https://ap.org", "value": "Hit from cloudfront"},{"id": 108, "name": "https://imgur.com", "value": "HIT"},{"id": 109, "name": "https://biblegateway.com", "value": "Miss from cloudfront"},{"id": 110, "name": "https://dictionary.com", "value": "HIT"},{"id": 111, "name": "https://example.com", "value": "HIT"},{"id": 112, "name": "https://answers.com", "value": "MISS"},{"id": 113, "name": "https://etsy.com", "value": "MISS"},{"id": 114, "name": "https://espn.go.com", "value": "Miss from cloudfront"},{"id": 115, "name": "https://inc.com", "value": "MISS, HIT"},{"id": 116, "name": "https://trustpilot.com", "value": "Hit from cloudfront"},{"id": 117, "name": "https://cbslocal.com", "value": "hit"},{"id": 118, "name": "https://newyorker.com", "value": "HIT"},{"id": 119, "name": "https://adweek.com", "value": "HIT"},{"id": 120, "name": "https://wiktionary.org", "value": "cp1079 hit, cp1087 hit/673"},{"id": 121, "name": "https://wiley.com", "value": "Miss from cloudfront"},{"id": 122, "name": "https://usgs.gov", "value": "Hit from cloudfront"},{"id": 123, "name": "https://dribbble.com", "value": "MISS"},{"id": 124, "name": "https://coursera.org", "value": "Miss from cloudfront"},{"id": 125, "name": "https://upenn.edu", "value": "HIT, HIT, MISS"},{"id": 126, "name": "https://csmonitor.com", "value": "Hit from cloudfront"},{"id": 127, "name": "https://greenpeace.org", "value": "HIT"},{"id": 128, "name": "https://20minutos.es", "value": "Hit from cloudfront"},{"id": 129, "name": "https://mystrikingly.com", "value": "Hit from cloudfront"},{"id": 130, "name": "https://behance.net", "value": "MISS, MISS"},{"id": 131, "name": "https://scientificamerican.com", "value": "MISS, MISS"},{"id": 132, "name": "https://psu.edu", "value": "HIT"},{"id": 133, "name": "https://timeout.com", "value": "Hit from cloudfront"},{"id": 134, "name": "https://entrepreneur.com", "value": "HIT, MISS"},{"id": 135, "name": "https://gitlab.com", "value": "HIT"},{"id": 136, "name": "https://sylabs.io", "value": "MISS"},{"id": 137, "name": "https://www.observe.ai", "value": "HIT, HIT"},{"id": 138, "name": "https://www.lyft.com", "value": "Miss from cloudfront"},{"id": 139, "name": "https://www.hellosign.com", "value": "HIT, HIT"},{"id": 140, "name": "https://www.docusign.com", "value": "HIT, HIT, HIT"},{"id": 141, "name": "https://www.fastly.com", "value": "HIT, HIT"},{"id": 142, "name": "https://www.docker.com", "value": "Hit from cloudfront"},{"id": 143, "name": "https://www.rust-lang.org", "value": "Miss from cloudfront"},{"id": 144, "name": "https://us-rse.org", "value": "MISS"}],
+    lookup: {  "1": "https://en.wikipedia.org", "2": "https://vimeo.com", "3": "https://istockphoto.com", "4": "https://amazon.com", "5": "https://es.wikipedia.org", "6": "https://cnn.com", "7": "https://nytimes.com", "8": "https://jimdofree.com", "9": "https://who.int", "10": "https://bbc.com", "11": "https://nih.gov", "12": "https://reuters.com", "13": "https://pt.wikipedia.org", "14": "https://fr.wikipedia.org", "15": "https://uol.com.br", "16": "https://wikimedia.org", "17": "https://imdb.com", "18": "https://forbes.com", "19": "https://businessinsider.com", "20": "https://www.nasa.gov", "21": "https://wikia.com", "22": "https://techcrunch.com", "23": "https://wsj.com", "24": "https://wired.com", "25": "https://amazon.de", "26": "https://bloomberg.com", "27": "https://independent.co.uk", "28": "https://harvard.edu", "29": "https://latimes.com", "30": "https://mirror.co.uk", "31": "https://abcnews.go.com", "32": "https://usatoday.com", "33": "https://scribd.com", "34": "https://opera.com", "35": "https://fandom.com", "36": "https://amazon.co.uk", "37": "https://www.gov.uk", "38": "https://de.wikipedia.org", "39": "https://time.com", "40": "https://a8.net", "41": "https://it.wikipedia.org", "42": "https://bandcamp.com", "43": "https://sciencedaily.com", "44": "https://www.noaa.gov", "45": "https://m.wikipedia.org", "46": "https://blackberry.com", "47": "https://soundcloud.com", "48": "https://sciencemag.org", "49": "https://pbs.org", "50": "https://vox.com", "51": "https://ign.com", "52": "https://stackoverflow.com", "53": "https://theatlantic.com", "54": "https://ox.ac.uk", "55": "https://fortune.com", "56": "https://foursquare.com", "57": "https://www.worldbank.org/", "58": "https://lemonde.fr", "59": "https://spotify.com", "60": "https://yale.edu", "61": "https://express.co.uk", "62": "https://ja.wikipedia.org", "63": "https://tes.com", "64": "https://smh.com.au", "65": "https://www.wikipedia.org", "66": "https://en.unesco.org", "67": "https://surveymonkey.com", "68": "https://id.wikipedia.org", "69": "https://sfgate.com", "70": "https://metro.co.uk", "71": "https://amazon.fr", "72": "https://yelp.com", "73": "https://psychologytoday.com", "74": "https://espn.com", "75": "https://www.khanacademy.org", "76": "https://gofundme.com", "77": "https://buzzfeed.com", "78": "https://fastcompany.com", "79": "https://nature.com", "80": "https://spiegel.de", "81": "https://twitch.tv", "82": "https://stanford.edu", "83": "https://princeton.edu", "84": "https://urbandictionary.com", "85": "https://vice.com", "86": "https://ted.com", "87": "https://pl.wikipedia.org", "88": "https://kickstarter.com", "89": "https://www.elmundo.es", "90": "https://theverge.com", "91": "https://about.com", "92": "https://standard.co.uk", "93": "https://gizmodo.com", "94": "https://ru.wikipedia.org", "95": "https://newsweek.com", "96": "https://quora.com", "97": "https://economist.com", "98": "https://utexas.edu", "99": "https://boston.com", "100": "https://sina.com.cn", "101": "https://corriere.it", "102": "https://chron.com", "103": "https://airbnb.com", "104": "https://thoughtco.com", "105": "https://venturebeat.com", "106": "https://history.com", "107": "https://ap.org", "108": "https://imgur.com", "109": "https://biblegateway.com", "110": "https://dictionary.com", "111": "https://example.com", "112": "https://answers.com", "113": "https://etsy.com", "114": "https://espn.go.com", "115": "https://inc.com", "116": "https://trustpilot.com", "117": "https://cbslocal.com", "118": "https://newyorker.com", "119": "https://adweek.com", "120": "https://wiktionary.org", "121": "https://wiley.com", "122": "https://usgs.gov", "123": "https://dribbble.com", "124": "https://coursera.org", "125": "https://upenn.edu", "126": "https://csmonitor.com", "127": "https://greenpeace.org", "128": "https://20minutos.es", "129": "https://mystrikingly.com", "130": "https://behance.net", "131": "https://scientificamerican.com", "132": "https://psu.edu", "133": "https://timeout.com", "134": "https://entrepreneur.com", "135": "https://gitlab.com", "136": "https://sylabs.io", "137": "https://www.observe.ai", "138": "https://www.lyft.com", "139": "https://www.hellosign.com", "140": "https://www.docusign.com", "141": "https://www.fastly.com", "142": "https://www.docker.com", "143": "https://www.rust-lang.org", "144": "https://us-rse.org" },
+    sort: 'id',
+    sortDir:'asc',
+    page: 0,
+    pageSize: 25
+  }),
+  methods: {
+    viewRow: function(event) {
+        var rowId = $(event.target).closest('tr').find('td:first').text()
+        var site = this.lookup[rowId].replace(/(^\w+:|^)\/\//, '');
+        document.location = "/site/" + site
+    },
+    sortBy: function(s) {
+      if (s === this.sort) {
+        this.sortDir = (this.sortDir === 'asc') ? 'desc' : 'asc';
+      } else {
+        this.sortDir = 'asc';
+      }
+      this.sort = s;
+    },
+    isActiveSort: function(s) { 
+      return this.sort === s; 
+    },
+    hasPage: function(dir) {
+      if (dir === -1 && (this.page > 0)) return true;
+      if (dir ===  1 && (((this.page+1)*this.pageSize) < this.rows.length)) return true;
+      return false;
+    },
+    prevPage: function() {
+      if (this.hasPage(-1)) this.page--;
+    },
+    nextPage: function() {
+      if (this.hasPage(1)) this.page++;
+    }
+  },
+  computed: {
+    sortedRows: function() {
+      return this.rows.sort((a, b) => {
+        let dir = (this.sortDir === 'asc') ? 1 : -1;
+        if (a[this.sort] < b[this.sort]) {
+          return -1 * dir;
+        } else if (a[this.sort] > b[this.sort]) {
+          return  1 * dir;
+        } else {
+          return 0;
+        }
+      }).filter((row, idx) => {
+        let s = this.page*this.pageSize;
+        let e = (this.page+1)*this.pageSize;
+        return (idx >= s && idx < e);
+        });
+    },
+    pageSizeModel: {
+      get() {
+        return this.pageSize;
+      },
+      set(v) {
+        this.pageSize = v;
+        this.page = 0;
+      }
+    }
+  },
+  filters: {
+    capitalize: function (v) {
+      if (!v) return ''
+      v = v.toString()
+      return v.charAt(0).toUpperCase() + v.slice(1)
+    }
+  }
+}).$mount('#app');
+</script>
+</body>
+</html>
