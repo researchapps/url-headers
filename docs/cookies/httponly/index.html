@@ -239,8 +239,8 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "https://youtube.com", "value": ""},{"id": 2, "name": "https://youtu.be", "value": ""},{"id": 3, "name": "https://facebook.com", "value": ""},{"id": 4, "name": "https://medium.com", "value": ""},{"id": 5, "name": "https://dropbox.com", "value": ""},{"id": 6, "name": "https://whatsapp.com", "value": ""},{"id": 7, "name": "https://msn.com", "value": ""},{"id": 8, "name": "https://tinyurl.com", "value": ""},{"id": 9, "name": "https://office.com", "value": ""},{"id": 10, "name": "https://bit.ly", "value": ""},{"id": 11, "name": "https://pinterest.com", "value": ""},{"id": 12, "name": "https://mediafire.com", "value": ""},{"id": 13, "name": "https://www.cambridge.org", "value": ""},{"id": 14, "name": "https://engadget.com", "value": ""},{"id": 15, "name": "https://www.khanacademy.org", "value": ""},{"id": 16, "name": "https://twitch.tv", "value": ""},{"id": 17, "name": "https://goo.ne.jp", "value": ""},{"id": 18, "name": "https://bloglovin.com", "value": ""},{"id": 19, "name": "https://researchgate.net", "value": ""},{"id": 20, "name": "https://fb.me", "value": ""},{"id": 21, "name": "https://answers.com", "value": ""},{"id": 22, "name": "https://thedailybeast.com", "value": ""},{"id": 23, "name": "https://pinterest.co.uk", "value": ""},{"id": 24, "name": "https://about.me", "value": ""}],
-    lookup: {  "1": "https://youtube.com", "2": "https://youtu.be", "3": "https://facebook.com", "4": "https://medium.com", "5": "https://dropbox.com", "6": "https://whatsapp.com", "7": "https://msn.com", "8": "https://tinyurl.com", "9": "https://office.com", "10": "https://bit.ly", "11": "https://pinterest.com", "12": "https://mediafire.com", "13": "https://www.cambridge.org", "14": "https://engadget.com", "15": "https://www.khanacademy.org", "16": "https://twitch.tv", "17": "https://goo.ne.jp", "18": "https://bloglovin.com", "19": "https://researchgate.net", "20": "https://fb.me", "21": "https://answers.com", "22": "https://thedailybeast.com", "23": "https://pinterest.co.uk", "24": "https://about.me" },
+    rows: [{"id": 1, "name": "https://youtu.be", "value": ""},{"id": 2, "name": "https://facebook.com", "value": ""},{"id": 3, "name": "https://dropbox.com", "value": ""},{"id": 4, "name": "https://whatsapp.com", "value": ""},{"id": 5, "name": "https://msn.com", "value": ""},{"id": 6, "name": "https://tinyurl.com", "value": ""},{"id": 7, "name": "https://bit.ly", "value": ""},{"id": 8, "name": "https://mediafire.com", "value": ""},{"id": 9, "name": "https://www.khanacademy.org", "value": ""},{"id": 10, "name": "https://bloglovin.com", "value": ""},{"id": 11, "name": "https://fb.me", "value": ""},{"id": 12, "name": "https://thedailybeast.com", "value": ""},{"id": 13, "name": "https://about.me", "value": ""}],
+    lookup: {  "1": "https://youtu.be", "2": "https://facebook.com", "3": "https://dropbox.com", "4": "https://whatsapp.com", "5": "https://msn.com", "6": "https://tinyurl.com", "7": "https://bit.ly", "8": "https://mediafire.com", "9": "https://www.khanacademy.org", "10": "https://bloglovin.com", "11": "https://fb.me", "12": "https://thedailybeast.com", "13": "https://about.me" },
     sort: 'id',
     sortDir:'asc',
     page: 0,
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId].replace(/(^\w+:|^)\/\//, '');
-        document.location = "/site/" + site
+        document.location = "/url-headers/site/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

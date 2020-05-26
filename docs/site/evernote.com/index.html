@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "content-type", "value": "text/html; charset=utf-8"},{"id": 2, "name": "vary", "value": "Accept-Encoding"},{"id": 3, "name": "set-cookie", "value": "Path, web50017PreUserGuid, Domain, Secure, Max-Age"},{"id": 4, "name": "x-content-type-options", "value": "nosniff"},{"id": 5, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 6, "name": "content-encoding", "value": "gzip"},{"id": 7, "name": "x-cloud-trace-context", "value": "c5378ea47c43c3ac488aa99fa2ad0956"},{"id": 8, "name": "date", "value": "Tue, 26 May 2020 18:18:47 GMT"},{"id": 9, "name": "server", "value": "Google Frontend"},{"id": 10, "name": "cache-control", "value": "private"},{"id": 11, "name": "expires", "value": "Tue, 26 May 2020 18:18:47 GMT"},{"id": 12, "name": "x-app-server", "value": "corpab-t6lb-haproxy-zqn8/be_corpsite_gae/li_corpsite_gae"},{"id": 13, "name": "strict-transport-security", "value": "max-age=31536000"},{"id": 14, "name": "via", "value": "1.1 google"},{"id": 15, "name": "alt-svc", "value": "clear"},{"id": 16, "name": "transfer-encoding", "value": "chunked"}],
+    rows: [{"id": 1, "name": "content-type", "value": "text/html; charset=utf-8"},{"id": 2, "name": "vary", "value": "Accept-Encoding"},{"id": 3, "name": "set-cookie", "value": "['Path', 'web50017PreUserGuid', 'Domain', 'Secure', 'Max-Age']"},{"id": 4, "name": "x-content-type-options", "value": "nosniff"},{"id": 5, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 6, "name": "content-encoding", "value": "gzip"},{"id": 7, "name": "x-cloud-trace-context", "value": "c5378ea47c43c3ac488aa99fa2ad0956"},{"id": 8, "name": "date", "value": "Tue, 26 May 2020 18:18:47 GMT"},{"id": 9, "name": "server", "value": "Google Frontend"},{"id": 10, "name": "cache-control", "value": "private"},{"id": 11, "name": "expires", "value": "Tue, 26 May 2020 18:18:47 GMT"},{"id": 12, "name": "x-app-server", "value": "corpab-t6lb-haproxy-zqn8/be_corpsite_gae/li_corpsite_gae"},{"id": 13, "name": "strict-transport-security", "value": "max-age=31536000"},{"id": 14, "name": "via", "value": "1.1 google"},{"id": 15, "name": "alt-svc", "value": "clear"},{"id": 16, "name": "transfer-encoding", "value": "chunked"}],
     lookup: {  "1": "content-type", "2": "vary", "3": "set-cookie", "4": "x-content-type-options", "5": "x-frame-options", "6": "content-encoding", "7": "x-cloud-trace-context", "8": "date", "9": "server", "10": "cache-control", "11": "expires", "12": "x-app-server", "13": "strict-transport-security", "14": "via", "15": "alt-svc", "16": "transfer-encoding" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

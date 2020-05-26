@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "server", "value": "Apache"},{"id": 2, "name": "vary", "value": "Accept-Encoding"},{"id": 3, "name": "cache-control", "value": "must-revalidate"},{"id": 4, "name": "content-type", "value": "text/html"},{"id": 5, "name": "content-encoding", "value": "gzip"},{"id": 6, "name": "content-security-policy", "value": "upgrade-insecure-requests"},{"id": 7, "name": "strict-transport-security", "value": "max-age=15552000; includeSubDomains"},{"id": 8, "name": "date", "value": "Tue, 26 May 2020 18:19:18 GMT"},{"id": 9, "name": "keep-alive", "value": "timeout=5, max=99"},{"id": 10, "name": "etag", "value": "'651ca6c2686a62039a12860669c6667e1590517158-gzip'"},{"id": 11, "name": "connection", "value": "Keep-Alive"},{"id": 12, "name": "set-cookie", "value": "tz, domain, path"},{"id": 13, "name": "last-modified", "value": "Tue, 26 May 2020 14:19:18 EDT"},{"id": 14, "name": "x-skycache", "value": "stored"},{"id": 15, "name": "content-length", "value": "13750"}],
+    rows: [{"id": 1, "name": "server", "value": "Apache"},{"id": 2, "name": "vary", "value": "Accept-Encoding"},{"id": 3, "name": "cache-control", "value": "must-revalidate"},{"id": 4, "name": "content-type", "value": "text/html"},{"id": 5, "name": "content-encoding", "value": "gzip"},{"id": 6, "name": "content-security-policy", "value": "upgrade-insecure-requests"},{"id": 7, "name": "strict-transport-security", "value": "max-age=15552000; includeSubDomains"},{"id": 8, "name": "date", "value": "Tue, 26 May 2020 18:19:18 GMT"},{"id": 9, "name": "keep-alive", "value": "timeout=5, max=99"},{"id": 10, "name": "etag", "value": "'651ca6c2686a62039a12860669c6667e1590517158-gzip'"},{"id": 11, "name": "connection", "value": "Keep-Alive"},{"id": 12, "name": "set-cookie", "value": "['tz', 'domain', 'path']"},{"id": 13, "name": "last-modified", "value": "Tue, 26 May 2020 14:19:18 EDT"},{"id": 14, "name": "x-skycache", "value": "stored"},{"id": 15, "name": "content-length", "value": "13750"}],
     lookup: {  "1": "server", "2": "vary", "3": "cache-control", "4": "content-type", "5": "content-encoding", "6": "content-security-policy", "7": "strict-transport-security", "8": "date", "9": "keep-alive", "10": "etag", "11": "connection", "12": "set-cookie", "13": "last-modified", "14": "x-skycache", "15": "content-length" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

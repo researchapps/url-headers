@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "server", "value": "nginx"},{"id": 2, "name": "date", "value": "Tue, 26 May 2020 18:01:37 GMT"},{"id": 3, "name": "content-type", "value": "text/html; charset=UTF-8"},{"id": 4, "name": "transfer-encoding", "value": "chunked"},{"id": 5, "name": "connection", "value": "keep-alive"},{"id": 6, "name": "keep-alive", "value": "timeout=20"},{"id": 7, "name": "vary", "value": "Accept-Encoding, Accept-Encoding, Accept-Encoding"},{"id": 8, "name": "set-cookie", "value": "wordpress_google_apps_login, path, secure, su-homesite-show-alert"},{"id": 9, "name": "link", "value": "<https://www.stanford.edu/wp-json/>; rel='https://api.w.org/', <https://www.stanford.edu/>; rel=shortlink"},{"id": 10, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 11, "name": "x-powered-by", "value": "WP Engine"},{"id": 12, "name": "x-cacheable", "value": "NO:Set Known Cookie"},{"id": 13, "name": "cache-control", "value": "max-age=0, must-revalidate, private"},{"id": 14, "name": "x-cache", "value": "MISS"},{"id": 15, "name": "x-cache-group", "value": "normal"},{"id": 16, "name": "content-encoding", "value": "gzip"}],
+    rows: [{"id": 1, "name": "server", "value": "nginx"},{"id": 2, "name": "date", "value": "Tue, 26 May 2020 18:01:37 GMT"},{"id": 3, "name": "content-type", "value": "text/html; charset=UTF-8"},{"id": 4, "name": "transfer-encoding", "value": "chunked"},{"id": 5, "name": "connection", "value": "keep-alive"},{"id": 6, "name": "keep-alive", "value": "timeout=20"},{"id": 7, "name": "vary", "value": "Accept-Encoding, Accept-Encoding, Accept-Encoding"},{"id": 8, "name": "set-cookie", "value": "['wordpress_google_apps_login', 'path', 'secure, su-homesite-show-alert']"},{"id": 9, "name": "link", "value": "<https://www.stanford.edu/wp-json/>; rel='https://api.w.org/', <https://www.stanford.edu/>; rel=shortlink"},{"id": 10, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 11, "name": "x-powered-by", "value": "WP Engine"},{"id": 12, "name": "x-cacheable", "value": "NO:Set Known Cookie"},{"id": 13, "name": "cache-control", "value": "max-age=0, must-revalidate, private"},{"id": 14, "name": "x-cache", "value": "MISS"},{"id": 15, "name": "x-cache-group", "value": "normal"},{"id": 16, "name": "content-encoding", "value": "gzip"}],
     lookup: {  "1": "server", "2": "date", "3": "content-type", "4": "transfer-encoding", "5": "connection", "6": "keep-alive", "7": "vary", "8": "set-cookie", "9": "link", "10": "x-frame-options", "11": "x-powered-by", "12": "x-cacheable", "13": "cache-control", "14": "x-cache", "15": "x-cache-group", "16": "content-encoding" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

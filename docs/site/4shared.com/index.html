@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "server", "value": "566"},{"id": 2, "name": "set-cookie", "value": "Path, Expires, Domain, day1host"},{"id": 3, "name": "pragma", "value": "no-cache"},{"id": 4, "name": "expires", "value": "Thu, 01 Jan 1970 00:00:00 GMT"},{"id": 5, "name": "cache-control", "value": "no-cache"},{"id": 6, "name": "content-type", "value": "text/html;charset=UTF-8"},{"id": 7, "name": "content-language", "value": "en"},{"id": 8, "name": "transfer-encoding", "value": "chunked"},{"id": 9, "name": "date", "value": "Tue, 26 May 2020 18:04:07 GMT"}],
+    rows: [{"id": 1, "name": "server", "value": "566"},{"id": 2, "name": "set-cookie", "value": "['Path', 'Expires', 'Domain', 'day1host']"},{"id": 3, "name": "pragma", "value": "no-cache"},{"id": 4, "name": "expires", "value": "Thu, 01 Jan 1970 00:00:00 GMT"},{"id": 5, "name": "cache-control", "value": "no-cache"},{"id": 6, "name": "content-type", "value": "text/html;charset=UTF-8"},{"id": 7, "name": "content-language", "value": "en"},{"id": 8, "name": "transfer-encoding", "value": "chunked"},{"id": 9, "name": "date", "value": "Tue, 26 May 2020 18:04:07 GMT"}],
     lookup: {  "1": "server", "2": "set-cookie", "3": "pragma", "4": "expires", "5": "cache-control", "6": "content-type", "7": "content-language", "8": "transfer-encoding", "9": "date" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

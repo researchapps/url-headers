@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "set-cookie", "value": "web_core_geoCountry, Path, Domain, Secure, Expires, Secure, web_core_geoRedirected"},{"id": 2, "name": "expires", "value": "Thu, 01 Jan 1970 00:00:00 GMT"},{"id": 3, "name": "date", "value": "Tue, 26 May 2020 18:19:36 GMT"},{"id": 4, "name": "server", "value": "Apache"},{"id": 5, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 6, "name": "strict-transport-security", "value": "max-age=31536000; includeSubDomains; preload"},{"id": 7, "name": "accept-ranges", "value": "bytes"},{"id": 8, "name": "x-mod-pagespeed", "value": "active"},{"id": 9, "name": "vary", "value": "Accept-Encoding"},{"id": 10, "name": "content-encoding", "value": "gzip"},{"id": 11, "name": "x-content-type-options", "value": "nosniff"},{"id": 12, "name": "referrer-policy", "value": "no-referrer-when-downgrade"},{"id": 13, "name": "x-ua-compatible", "value": "IE=9; IE=8; IE=7; IE=EDGE"},{"id": 14, "name": "cache-control", "value": "max-age=0, no-cache, s-maxage=10"},{"id": 15, "name": "content-type", "value": "text/html"},{"id": 16, "name": "content-length", "value": "23426"}],
+    rows: [{"id": 1, "name": "set-cookie", "value": "['web_core_geoCountry', 'Path', 'Domain', 'Secure', 'Expires', 'Secure, web_core_geoRedirected']"},{"id": 2, "name": "expires", "value": "Thu, 01 Jan 1970 00:00:00 GMT"},{"id": 3, "name": "date", "value": "Tue, 26 May 2020 18:19:36 GMT"},{"id": 4, "name": "server", "value": "Apache"},{"id": 5, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 6, "name": "strict-transport-security", "value": "max-age=31536000; includeSubDomains; preload"},{"id": 7, "name": "accept-ranges", "value": "bytes"},{"id": 8, "name": "x-mod-pagespeed", "value": "active"},{"id": 9, "name": "vary", "value": "Accept-Encoding"},{"id": 10, "name": "content-encoding", "value": "gzip"},{"id": 11, "name": "x-content-type-options", "value": "nosniff"},{"id": 12, "name": "referrer-policy", "value": "no-referrer-when-downgrade"},{"id": 13, "name": "x-ua-compatible", "value": "IE=9; IE=8; IE=7; IE=EDGE"},{"id": 14, "name": "cache-control", "value": "max-age=0, no-cache, s-maxage=10"},{"id": 15, "name": "content-type", "value": "text/html"},{"id": 16, "name": "content-length", "value": "23426"}],
     lookup: {  "1": "set-cookie", "2": "expires", "3": "date", "4": "server", "5": "x-frame-options", "6": "strict-transport-security", "7": "accept-ranges", "8": "x-mod-pagespeed", "9": "vary", "10": "content-encoding", "11": "x-content-type-options", "12": "referrer-policy", "13": "x-ua-compatible", "14": "cache-control", "15": "content-type", "16": "content-length" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

@@ -239,8 +239,8 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "https://news.yahoo.com", "value": ""},{"id": 2, "name": "https://aol.com", "value": ""},{"id": 3, "name": "https://huffingtonpost.com", "value": ""},{"id": 4, "name": "https://samsung.com", "value": ""},{"id": 5, "name": "https://aboutads.info", "value": ""},{"id": 6, "name": "https://huffpost.com", "value": ""},{"id": 7, "name": "https://abc.net.au", "value": ""},{"id": 8, "name": "https://channel4.com", "value": ""},{"id": 9, "name": "https://engadget.com", "value": ""},{"id": 10, "name": "https://yahoo.co.jp", "value": ""},{"id": 11, "name": "https://rambler.ru", "value": ""},{"id": 12, "name": "https://finance.yahoo.com", "value": ""},{"id": 13, "name": "https://gizmodo.com", "value": ""},{"id": 14, "name": "https://groups.yahoo.com", "value": ""},{"id": 15, "name": "https://answers.yahoo.com", "value": ""},{"id": 16, "name": "https://answers.com", "value": ""},{"id": 17, "name": "https://usgs.gov", "value": ""},{"id": 18, "name": "https://sports.yahoo.com", "value": ""},{"id": 19, "name": "https://timeout.com", "value": ""},{"id": 20, "name": "https://nbcnews.com", "value": ""},{"id": 21, "name": "https://www.pizzahut.com", "value": ""},{"id": 22, "name": "https://www.glassdoor.com", "value": ""},{"id": 23, "name": "https://www.sap.com", "value": ""}],
-    lookup: {  "1": "https://news.yahoo.com", "2": "https://aol.com", "3": "https://huffingtonpost.com", "4": "https://samsung.com", "5": "https://aboutads.info", "6": "https://huffpost.com", "7": "https://abc.net.au", "8": "https://channel4.com", "9": "https://engadget.com", "10": "https://yahoo.co.jp", "11": "https://rambler.ru", "12": "https://finance.yahoo.com", "13": "https://gizmodo.com", "14": "https://groups.yahoo.com", "15": "https://answers.yahoo.com", "16": "https://answers.com", "17": "https://usgs.gov", "18": "https://sports.yahoo.com", "19": "https://timeout.com", "20": "https://nbcnews.com", "21": "https://www.pizzahut.com", "22": "https://www.glassdoor.com", "23": "https://www.sap.com" },
+    rows: [{"id": 1, "name": "https://news.yahoo.com", "value": ""},{"id": 2, "name": "https://aol.com", "value": ""},{"id": 3, "name": "https://yahoo.co.jp", "value": ""},{"id": 4, "name": "https://finance.yahoo.com", "value": ""},{"id": 5, "name": "https://groups.yahoo.com", "value": ""},{"id": 6, "name": "https://answers.yahoo.com", "value": ""},{"id": 7, "name": "https://sports.yahoo.com", "value": ""}],
+    lookup: {  "1": "https://news.yahoo.com", "2": "https://aol.com", "3": "https://yahoo.co.jp", "4": "https://finance.yahoo.com", "5": "https://groups.yahoo.com", "6": "https://answers.yahoo.com", "7": "https://sports.yahoo.com" },
     sort: 'id',
     sortDir:'asc',
     page: 0,
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId].replace(/(^\w+:|^)\/\//, '');
-        document.location = "/site/" + site
+        document.location = "/url-headers/site/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

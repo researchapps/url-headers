@@ -239,8 +239,8 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "https://istockphoto.com", "value": ""},{"id": 2, "name": "https://myspace.com", "value": ""},{"id": 3, "name": "https://target.com", "value": ""},{"id": 4, "name": "https://gofundme.com", "value": ""},{"id": 5, "name": "https://shutterstock.com", "value": ""},{"id": 6, "name": "https://kickstarter.com", "value": ""},{"id": 7, "name": "https://economist.com", "value": ""},{"id": 8, "name": "https://xing.com", "value": ""},{"id": 9, "name": "https://dreamstime.com", "value": ""},{"id": 10, "name": "https://www.instacart.com", "value": ""}],
-    lookup: {  "1": "https://istockphoto.com", "2": "https://myspace.com", "3": "https://target.com", "4": "https://gofundme.com", "5": "https://shutterstock.com", "6": "https://kickstarter.com", "7": "https://economist.com", "8": "https://xing.com", "9": "https://dreamstime.com", "10": "https://www.instacart.com" },
+    rows: [{"id": 1, "name": "https://kickstarter.com", "value": ""}],
+    lookup: {  "1": "https://kickstarter.com" },
     sort: 'id',
     sortDir:'asc',
     page: 0,
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId].replace(/(^\w+:|^)\/\//, '');
-        document.location = "/site/" + site
+        document.location = "/url-headers/site/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "connection", "value": "keep-alive"},{"id": 2, "name": "content-length", "value": "4540"},{"id": 3, "name": "last-modified", "value": "Tue, 26 May 2020 17:53:10 GMT"},{"id": 4, "name": "etag", "value": "'6d44c000944a459d4b1e481749b211c9'"},{"id": 5, "name": "content-type", "value": "text/html"},{"id": 6, "name": "content-security-policy", "value": "upgrade-insecure-requests"},{"id": 7, "name": "cache-control", "value": "max-age: 31536000, public"},{"id": 8, "name": "accept-ranges", "value": "bytes"},{"id": 9, "name": "date", "value": "Tue, 26 May 2020 18:18:50 GMT"},{"id": 10, "name": "age", "value": "495"},{"id": 11, "name": "x-served-by", "value": "cache-lhr7339-LHR"},{"id": 12, "name": "x-cache", "value": "HIT"},{"id": 13, "name": "x-cache-hits", "value": "8"},{"id": 14, "name": "x-timer", "value": "S1590517131.789065,VS0,VE0"},{"id": 15, "name": "vary", "value": "Accept-Encoding"},{"id": 16, "name": "server", "value": "cat factory 1.0"},{"id": 17, "name": "x-frame-options", "value": "DENY"},{"id": 18, "name": "set-cookie", "value": ", domain, frontpagebetav2, Expires, path"},{"id": 19, "name": "access-control-allow-origin", "value": "https://imgur.com"},{"id": 20, "name": "access-control-allow-credentials", "value": "false"}],
+    rows: [{"id": 1, "name": "connection", "value": "keep-alive"},{"id": 2, "name": "content-length", "value": "4540"},{"id": 3, "name": "last-modified", "value": "Tue, 26 May 2020 17:53:10 GMT"},{"id": 4, "name": "etag", "value": "'6d44c000944a459d4b1e481749b211c9'"},{"id": 5, "name": "content-type", "value": "text/html"},{"id": 6, "name": "content-security-policy", "value": "upgrade-insecure-requests"},{"id": 7, "name": "cache-control", "value": "max-age: 31536000, public"},{"id": 8, "name": "accept-ranges", "value": "bytes"},{"id": 9, "name": "date", "value": "Tue, 26 May 2020 18:18:50 GMT"},{"id": 10, "name": "age", "value": "495"},{"id": 11, "name": "x-served-by", "value": "cache-lhr7339-LHR"},{"id": 12, "name": "x-cache", "value": "HIT"},{"id": 13, "name": "x-cache-hits", "value": "8"},{"id": 14, "name": "x-timer", "value": "S1590517131.789065,VS0,VE0"},{"id": 15, "name": "vary", "value": "Accept-Encoding"},{"id": 16, "name": "server", "value": "cat factory 1.0"},{"id": 17, "name": "x-frame-options", "value": "DENY"},{"id": 18, "name": "set-cookie", "value": "['', 'domain', 'frontpagebetav2', 'Expires', 'path']"},{"id": 19, "name": "access-control-allow-origin", "value": "https://imgur.com"},{"id": 20, "name": "access-control-allow-credentials", "value": "false"}],
     lookup: {  "1": "connection", "2": "content-length", "3": "last-modified", "4": "etag", "5": "content-type", "6": "content-security-policy", "7": "cache-control", "8": "accept-ranges", "9": "date", "10": "age", "11": "x-served-by", "12": "x-cache", "13": "x-cache-hits", "14": "x-timer", "15": "vary", "16": "server", "17": "x-frame-options", "18": "set-cookie", "19": "access-control-allow-origin", "20": "access-control-allow-credentials" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

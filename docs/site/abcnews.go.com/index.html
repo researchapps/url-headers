@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "content-type", "value": "text/html;charset=UTF-8"},{"id": 2, "name": "content-length", "value": "49084"},{"id": 3, "name": "connection", "value": "keep-alive"},{"id": 4, "name": "date", "value": "Tue, 26 May 2020 17:56:42 GMT"},{"id": 5, "name": "etag", "value": "W/'Ck/uVC/IOjbXt0ZQSIi7Cg=='"},{"id": 6, "name": "content-encoding", "value": "gzip"},{"id": 7, "name": "via", "value": "1.1 varnish-v4, 1.1 336e3c5e609a1115b5bba6aaccd0ce62.cloudfront.net (CloudFront)"},{"id": 8, "name": "cache-control", "value": "max-age=26"},{"id": 9, "name": "vary", "value": "Accept-Encoding"},{"id": 10, "name": "accept-ranges", "value": "bytes"},{"id": 11, "name": "set-cookie", "value": ", domain, SWID, Expires, path"},{"id": 12, "name": "x-cache", "value": "Miss from cloudfront"},{"id": 13, "name": "x-amz-cf-pop", "value": "IAD79-C2"},{"id": 14, "name": "x-amz-cf-id", "value": "-iVEVyHdAVV7aexbXObDaNWnjX3jKAR8HD44vtaSJgEMGM9v_NWyuw=="}],
+    rows: [{"id": 1, "name": "content-type", "value": "text/html;charset=UTF-8"},{"id": 2, "name": "content-length", "value": "49084"},{"id": 3, "name": "connection", "value": "keep-alive"},{"id": 4, "name": "date", "value": "Tue, 26 May 2020 17:56:42 GMT"},{"id": 5, "name": "etag", "value": "W/'Ck/uVC/IOjbXt0ZQSIi7Cg=='"},{"id": 6, "name": "content-encoding", "value": "gzip"},{"id": 7, "name": "via", "value": "1.1 varnish-v4, 1.1 336e3c5e609a1115b5bba6aaccd0ce62.cloudfront.net (CloudFront)"},{"id": 8, "name": "cache-control", "value": "max-age=26"},{"id": 9, "name": "vary", "value": "Accept-Encoding"},{"id": 10, "name": "accept-ranges", "value": "bytes"},{"id": 11, "name": "set-cookie", "value": "['', 'domain', 'SWID', 'Expires', 'path']"},{"id": 12, "name": "x-cache", "value": "Miss from cloudfront"},{"id": 13, "name": "x-amz-cf-pop", "value": "IAD79-C2"},{"id": 14, "name": "x-amz-cf-id", "value": "-iVEVyHdAVV7aexbXObDaNWnjX3jKAR8HD44vtaSJgEMGM9v_NWyuw=="}],
     lookup: {  "1": "content-type", "2": "content-length", "3": "connection", "4": "date", "5": "etag", "6": "content-encoding", "7": "via", "8": "cache-control", "9": "vary", "10": "accept-ranges", "11": "set-cookie", "12": "x-cache", "13": "x-amz-cf-pop", "14": "x-amz-cf-id" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

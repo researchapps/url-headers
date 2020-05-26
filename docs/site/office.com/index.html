@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "cache-control", "value": "no-store,no-cache"},{"id": 2, "name": "pragma", "value": "no-cache"},{"id": 3, "name": "transfer-encoding", "value": "chunked"},{"id": 4, "name": "content-type", "value": "text/html; charset=utf-8"},{"id": 5, "name": "content-encoding", "value": "gzip"},{"id": 6, "name": "vary", "value": "Accept-Encoding"},{"id": 7, "name": "set-cookie", "value": "secure, expires, samesite, httponly, OhpAuth, domain, httponly, OH.DCAffinity, httponly, p.UnAuthUserCookie, OH.SID, path"},{"id": 8, "name": "strict-transport-security", "value": "max-age=31536000; includeSubDomains"},{"id": 9, "name": "referrer-policy", "value": "strict-origin-when-cross-origin"},{"id": 10, "name": "x-content-type-options", "value": "nosniff"},{"id": 11, "name": "x-xss-protection", "value": "1; mode=block"},{"id": 12, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 13, "name": "x-ua-compatible", "value": "IE=edge,chrome=1"},{"id": 14, "name": "x-msedge-ref", "value": "Ref A: 9F82EBEE8E854B41A0191F2D8F5B9D42 Ref B: BLUEDGE0509 Ref C: 2020-05-26T17:56:16Z"},{"id": 15, "name": "date", "value": "Tue, 26 May 2020 17:56:16 GMT"}],
+    rows: [{"id": 1, "name": "cache-control", "value": "no-store,no-cache"},{"id": 2, "name": "pragma", "value": "no-cache"},{"id": 3, "name": "transfer-encoding", "value": "chunked"},{"id": 4, "name": "content-type", "value": "text/html; charset=utf-8"},{"id": 5, "name": "content-encoding", "value": "gzip"},{"id": 6, "name": "vary", "value": "Accept-Encoding"},{"id": 7, "name": "set-cookie", "value": "['secure', 'expires', 'samesite', 'httponly, OhpAuth', 'domain', 'httponly, OH.DCAffinity', 'httponly, p.UnAuthUserCookie', 'OH.SID', 'path']"},{"id": 8, "name": "strict-transport-security", "value": "max-age=31536000; includeSubDomains"},{"id": 9, "name": "referrer-policy", "value": "strict-origin-when-cross-origin"},{"id": 10, "name": "x-content-type-options", "value": "nosniff"},{"id": 11, "name": "x-xss-protection", "value": "1; mode=block"},{"id": 12, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 13, "name": "x-ua-compatible", "value": "IE=edge,chrome=1"},{"id": 14, "name": "x-msedge-ref", "value": "Ref A: 9F82EBEE8E854B41A0191F2D8F5B9D42 Ref B: BLUEDGE0509 Ref C: 2020-05-26T17:56:16Z"},{"id": 15, "name": "date", "value": "Tue, 26 May 2020 17:56:16 GMT"}],
     lookup: {  "1": "cache-control", "2": "pragma", "3": "transfer-encoding", "4": "content-type", "5": "content-encoding", "6": "vary", "7": "set-cookie", "8": "strict-transport-security", "9": "referrer-policy", "10": "x-content-type-options", "11": "x-xss-protection", "12": "x-frame-options", "13": "x-ua-compatible", "14": "x-msedge-ref", "15": "date" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

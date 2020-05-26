@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "connection", "value": "keep-alive"},{"id": 2, "name": "content-length", "value": "31198"},{"id": 3, "name": "x-content-type-options", "value": "nosniff"},{"id": 4, "name": "x-download-options", "value": "noopen"},{"id": 5, "name": "x-xss-protection", "value": "1; mode=block"},{"id": 6, "name": "cache-control", "value": "max-age=0, no-cache, must-revalidate"},{"id": 7, "name": "content-type", "value": "text/html; charset=utf-8"},{"id": 8, "name": "etag", "value": "W/'2c6f0-/YqNXg4PoLTsMPFeMt7XOiDO004'"},{"id": 9, "name": "content-encoding", "value": "gzip"},{"id": 10, "name": "accept-ranges", "value": "bytes"},{"id": 11, "name": "date", "value": "Tue, 26 May 2020 17:56:16 GMT"},{"id": 12, "name": "age", "value": "4"},{"id": 13, "name": "vary", "value": "ft-flags, ft-anonymous-user, ft-edition, accept, et-app, FT-Site, FT-Regional-News, Accept-Encoding, FT-Site, FT-Regional-News"},{"id": 14, "name": "set-cookie", "value": "FTAllocation, Path, Expires, Domain"},{"id": 15, "name": "strict-transport-security", "value": "max-age=63072000; includeSubDomains; preload"}],
+    rows: [{"id": 1, "name": "connection", "value": "keep-alive"},{"id": 2, "name": "content-length", "value": "31198"},{"id": 3, "name": "x-content-type-options", "value": "nosniff"},{"id": 4, "name": "x-download-options", "value": "noopen"},{"id": 5, "name": "x-xss-protection", "value": "1; mode=block"},{"id": 6, "name": "cache-control", "value": "max-age=0, no-cache, must-revalidate"},{"id": 7, "name": "content-type", "value": "text/html; charset=utf-8"},{"id": 8, "name": "etag", "value": "W/'2c6f0-/YqNXg4PoLTsMPFeMt7XOiDO004'"},{"id": 9, "name": "content-encoding", "value": "gzip"},{"id": 10, "name": "accept-ranges", "value": "bytes"},{"id": 11, "name": "date", "value": "Tue, 26 May 2020 17:56:16 GMT"},{"id": 12, "name": "age", "value": "4"},{"id": 13, "name": "vary", "value": "ft-flags, ft-anonymous-user, ft-edition, accept, et-app, FT-Site, FT-Regional-News, Accept-Encoding, FT-Site, FT-Regional-News"},{"id": 14, "name": "set-cookie", "value": "['FTAllocation', 'Path', 'Expires', 'Domain']"},{"id": 15, "name": "strict-transport-security", "value": "max-age=63072000; includeSubDomains; preload"}],
     lookup: {  "1": "connection", "2": "content-length", "3": "x-content-type-options", "4": "x-download-options", "5": "x-xss-protection", "6": "cache-control", "7": "content-type", "8": "etag", "9": "content-encoding", "10": "accept-ranges", "11": "date", "12": "age", "13": "vary", "14": "set-cookie", "15": "strict-transport-security" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

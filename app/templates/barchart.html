@@ -63,7 +63,7 @@
         var activeElement = myChart.lastActive;
         var idx = activeElement[0]._index
         var label = myChart.chart.config.data.labels[idx]
-        document.location = "/{% if title %}{{ title | lower}}{% else %}header{% endif %}/" + label
+        document.location = "/url-headers/{% if title %}{{ title | lower}}{% else %}header{% endif %}/" + label
       };
     </script>
 

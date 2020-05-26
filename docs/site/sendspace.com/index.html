@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "server", "value": "nginx"},{"id": 2, "name": "date", "value": "Tue, 26 May 2020 18:01:39 GMT"},{"id": 3, "name": "content-type", "value": "text/html; charset=UTF-8"},{"id": 4, "name": "transfer-encoding", "value": "chunked"},{"id": 5, "name": "connection", "value": "keep-alive"},{"id": 6, "name": "keep-alive", "value": "timeout=20"},{"id": 7, "name": "set-cookie", "value": "expires, domain, SID, Max-Age, path"},{"id": 8, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 9, "name": "x-xss-protection", "value": "1; mode=block"},{"id": 10, "name": "x-content-type-options", "value": "nosniff"},{"id": 11, "name": "expires", "value": "0"},{"id": 12, "name": "pragma", "value": "no-cache"},{"id": 13, "name": "last-modified", "value": "Tue, 26 May 2020 18:01:39 GMT"},{"id": 14, "name": "cache-control", "value": "no-cache,no-store,max-age=0,s-maxage=0,must-revalidate"},{"id": 15, "name": "content-encoding", "value": "gzip"},{"id": 16, "name": "vary", "value": "Accept-Encoding"}],
+    rows: [{"id": 1, "name": "server", "value": "nginx"},{"id": 2, "name": "date", "value": "Tue, 26 May 2020 18:01:39 GMT"},{"id": 3, "name": "content-type", "value": "text/html; charset=UTF-8"},{"id": 4, "name": "transfer-encoding", "value": "chunked"},{"id": 5, "name": "connection", "value": "keep-alive"},{"id": 6, "name": "keep-alive", "value": "timeout=20"},{"id": 7, "name": "set-cookie", "value": "['expires', 'domain', 'SID', 'Max-Age', 'path']"},{"id": 8, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 9, "name": "x-xss-protection", "value": "1; mode=block"},{"id": 10, "name": "x-content-type-options", "value": "nosniff"},{"id": 11, "name": "expires", "value": "0"},{"id": 12, "name": "pragma", "value": "no-cache"},{"id": 13, "name": "last-modified", "value": "Tue, 26 May 2020 18:01:39 GMT"},{"id": 14, "name": "cache-control", "value": "no-cache,no-store,max-age=0,s-maxage=0,must-revalidate"},{"id": 15, "name": "content-encoding", "value": "gzip"},{"id": 16, "name": "vary", "value": "Accept-Encoding"}],
     lookup: {  "1": "server", "2": "date", "3": "content-type", "4": "transfer-encoding", "5": "connection", "6": "keep-alive", "7": "set-cookie", "8": "x-frame-options", "9": "x-xss-protection", "10": "x-content-type-options", "11": "expires", "12": "pragma", "13": "last-modified", "14": "cache-control", "15": "content-encoding", "16": "vary" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

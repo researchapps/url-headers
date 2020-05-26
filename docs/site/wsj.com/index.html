@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "content-type", "value": "text/html; charset=utf-8"},{"id": 2, "name": "transfer-encoding", "value": "chunked"},{"id": 3, "name": "connection", "value": "keep-alive"},{"id": 4, "name": "date", "value": "Tue, 26 May 2020 17:56:20 GMT"},{"id": 5, "name": "x-powered-by", "value": "Express"},{"id": 6, "name": "x-content-type-options", "value": "nosniff"},{"id": 7, "name": "x-xss-protection", "value": "1; mode=block"},{"id": 8, "name": "cache-control", "value": "public, max-age=0"},{"id": 9, "name": "set-cookie", "value": "DJSESSION, Expires, Domain, Path"},{"id": 10, "name": "content-encoding", "value": "gzip"},{"id": 11, "name": "x-cache", "value": "Miss from cloudfront"},{"id": 12, "name": "via", "value": "1.1 c30e2e24424040c28e96664ae03f9685.cloudfront.net (CloudFront)"},{"id": 13, "name": "x-amz-cf-pop", "value": "IAD79-C1"},{"id": 14, "name": "x-amz-cf-id", "value": "3QJt8CGeRDm3YbwdT6Z7MoZLk7yzqx37rGZsKgbvNyhHvj93-QaogA=="}],
+    rows: [{"id": 1, "name": "content-type", "value": "text/html; charset=utf-8"},{"id": 2, "name": "transfer-encoding", "value": "chunked"},{"id": 3, "name": "connection", "value": "keep-alive"},{"id": 4, "name": "date", "value": "Tue, 26 May 2020 17:56:20 GMT"},{"id": 5, "name": "x-powered-by", "value": "Express"},{"id": 6, "name": "x-content-type-options", "value": "nosniff"},{"id": 7, "name": "x-xss-protection", "value": "1; mode=block"},{"id": 8, "name": "cache-control", "value": "public, max-age=0"},{"id": 9, "name": "set-cookie", "value": "['DJSESSION', 'Expires', 'Domain', 'Path']"},{"id": 10, "name": "content-encoding", "value": "gzip"},{"id": 11, "name": "x-cache", "value": "Miss from cloudfront"},{"id": 12, "name": "via", "value": "1.1 c30e2e24424040c28e96664ae03f9685.cloudfront.net (CloudFront)"},{"id": 13, "name": "x-amz-cf-pop", "value": "IAD79-C1"},{"id": 14, "name": "x-amz-cf-id", "value": "3QJt8CGeRDm3YbwdT6Z7MoZLk7yzqx37rGZsKgbvNyhHvj93-QaogA=="}],
     lookup: {  "1": "content-type", "2": "transfer-encoding", "3": "connection", "4": "date", "5": "x-powered-by", "6": "x-content-type-options", "7": "x-xss-protection", "8": "cache-control", "9": "set-cookie", "10": "content-encoding", "11": "x-cache", "12": "via", "13": "x-amz-cf-pop", "14": "x-amz-cf-id" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

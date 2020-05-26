@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "content-type", "value": "text/plain;charset=UTF-8"},{"id": 2, "name": "transfer-encoding", "value": "chunked"},{"id": 3, "name": "connection", "value": "keep-alive"},{"id": 4, "name": "server", "value": "Server"},{"id": 5, "name": "date", "value": "Tue, 26 May 2020 17:55:49 GMT"},{"id": 6, "name": "strict-transport-security", "value": "max-age=47474747; includeSubDomains; preload"},{"id": 7, "name": "set-cookie", "value": "Path, Expires, Domain, ubid-main"},{"id": 8, "name": "vary", "value": "Accept-Encoding,X-Amzn-CDN-Cache,X-Amzn-AX-Treatment,User-Agent"},{"id": 9, "name": "content-encoding", "value": "gzip"},{"id": 10, "name": "x-amz-rid", "value": "BDRRB2D4A3TV3HC0CCAF"},{"id": 11, "name": "x-cache", "value": "Miss from cloudfront"},{"id": 12, "name": "via", "value": "1.1 72b77c557ac4c265c32d99bdef4e9d6a.cloudfront.net (CloudFront)"},{"id": 13, "name": "x-amz-cf-pop", "value": "IAD79-C3"},{"id": 14, "name": "x-amz-cf-id", "value": "qh7rvXY10Ag6Wp2FXlobY_0QlhIQ5INq-pjaJ8DPaMf0waE4nZbZNQ=="}],
+    rows: [{"id": 1, "name": "content-type", "value": "text/plain;charset=UTF-8"},{"id": 2, "name": "transfer-encoding", "value": "chunked"},{"id": 3, "name": "connection", "value": "keep-alive"},{"id": 4, "name": "server", "value": "Server"},{"id": 5, "name": "date", "value": "Tue, 26 May 2020 17:55:49 GMT"},{"id": 6, "name": "strict-transport-security", "value": "max-age=47474747; includeSubDomains; preload"},{"id": 7, "name": "set-cookie", "value": "['Path', 'Expires', 'Domain', 'ubid-main']"},{"id": 8, "name": "vary", "value": "Accept-Encoding,X-Amzn-CDN-Cache,X-Amzn-AX-Treatment,User-Agent"},{"id": 9, "name": "content-encoding", "value": "gzip"},{"id": 10, "name": "x-amz-rid", "value": "BDRRB2D4A3TV3HC0CCAF"},{"id": 11, "name": "x-cache", "value": "Miss from cloudfront"},{"id": 12, "name": "via", "value": "1.1 72b77c557ac4c265c32d99bdef4e9d6a.cloudfront.net (CloudFront)"},{"id": 13, "name": "x-amz-cf-pop", "value": "IAD79-C3"},{"id": 14, "name": "x-amz-cf-id", "value": "qh7rvXY10Ag6Wp2FXlobY_0QlhIQ5INq-pjaJ8DPaMf0waE4nZbZNQ=="}],
     lookup: {  "1": "content-type", "2": "transfer-encoding", "3": "connection", "4": "server", "5": "date", "6": "strict-transport-security", "7": "set-cookie", "8": "vary", "9": "content-encoding", "10": "x-amz-rid", "11": "x-cache", "12": "via", "13": "x-amz-cf-pop", "14": "x-amz-cf-id" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

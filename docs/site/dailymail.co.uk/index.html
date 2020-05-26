@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "content-type", "value": "text/html;charset=UTF-8"},{"id": 2, "name": "set-cookie", "value": "HttpOnly, Secure, Max-Age, path, x-loc"},{"id": 3, "name": "x-storage", "value": "channels"},{"id": 4, "name": "vary", "value": "User-Agent, Accept-Encoding"},{"id": 5, "name": "content-security-policy-report-only", "value": "block-all-mixed-content; report-uri https://mol.report-uri.io/r/default/csp/reportOnly"},{"id": 6, "name": "server-timing", "value": "edge; dur=1, cdn-cache; desc=HIT"},{"id": 7, "name": "x-graced", "value": "false"},{"id": 8, "name": "x-mol-georesp", "value": "us"},{"id": 9, "name": "x-rs-time", "value": "Tue, 26 May 2020 17-53-32 GMT"},{"id": 10, "name": "x-rs-ops", "value": "varnish-web-a1-fe.hsk.mol.dmgt.net:6081"},{"id": 11, "name": "restarts", "value": "0"},{"id": 12, "name": "x-rs-ben", "value": "cljfe-b10:8181"},{"id": 13, "name": "x-akamai-transformed", "value": "9 971657 0 pmb=mRUM,2"},{"id": 14, "name": "content-encoding", "value": "gzip"},{"id": 15, "name": "cache-control", "value": "max-age=49"},{"id": 16, "name": "date", "value": "Tue, 26 May 2020 17:56:19 GMT"},{"id": 17, "name": "connection", "value": "close"}],
+    rows: [{"id": 1, "name": "content-type", "value": "text/html;charset=UTF-8"},{"id": 2, "name": "set-cookie", "value": "['HttpOnly', 'Secure', 'Max-Age', 'path', 'x-loc']"},{"id": 3, "name": "x-storage", "value": "channels"},{"id": 4, "name": "vary", "value": "User-Agent, Accept-Encoding"},{"id": 5, "name": "content-security-policy-report-only", "value": "block-all-mixed-content; report-uri https://mol.report-uri.io/r/default/csp/reportOnly"},{"id": 6, "name": "server-timing", "value": "edge; dur=1, cdn-cache; desc=HIT"},{"id": 7, "name": "x-graced", "value": "false"},{"id": 8, "name": "x-mol-georesp", "value": "us"},{"id": 9, "name": "x-rs-time", "value": "Tue, 26 May 2020 17-53-32 GMT"},{"id": 10, "name": "x-rs-ops", "value": "varnish-web-a1-fe.hsk.mol.dmgt.net:6081"},{"id": 11, "name": "restarts", "value": "0"},{"id": 12, "name": "x-rs-ben", "value": "cljfe-b10:8181"},{"id": 13, "name": "x-akamai-transformed", "value": "9 971657 0 pmb=mRUM,2"},{"id": 14, "name": "content-encoding", "value": "gzip"},{"id": 15, "name": "cache-control", "value": "max-age=49"},{"id": 16, "name": "date", "value": "Tue, 26 May 2020 17:56:19 GMT"},{"id": 17, "name": "connection", "value": "close"}],
     lookup: {  "1": "content-type", "2": "set-cookie", "3": "x-storage", "4": "vary", "5": "content-security-policy-report-only", "6": "server-timing", "7": "x-graced", "8": "x-mol-georesp", "9": "x-rs-time", "10": "x-rs-ops", "11": "restarts", "12": "x-rs-ben", "13": "x-akamai-transformed", "14": "content-encoding", "15": "cache-control", "16": "date", "17": "connection" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

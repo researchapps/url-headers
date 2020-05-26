@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "date", "value": "Tue, 26 May 2020 17:55:28 GMT"},{"id": 2, "name": "expires", "value": "-1"},{"id": 3, "name": "cache-control", "value": "private, max-age=0"},{"id": 4, "name": "content-type", "value": "text/html; charset=UTF-8"},{"id": 5, "name": "content-encoding", "value": "gzip"},{"id": 6, "name": "server", "value": "gws"},{"id": 7, "name": "x-xss-protection", "value": "0"},{"id": 8, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 9, "name": "set-cookie", "value": "expires, domain, 1P_JAR, Secure, path"},{"id": 10, "name": "alt-svc", "value": "h3-27=':443'; ma=2592000,h3-25=':443'; ma=2592000,h3-T050=':443'; ma=2592000,h3-Q050=':443'; ma=2592000,h3-Q049=':443'; ma=2592000,h3-Q048=':443'; ma=2592000,h3-Q046=':443'; ma=2592000,h3-Q043=':443'; ma=2592000,quic=':443'; ma=2592000; v='46,43'"},{"id": 11, "name": "transfer-encoding", "value": "chunked"}],
+    rows: [{"id": 1, "name": "date", "value": "Tue, 26 May 2020 17:55:28 GMT"},{"id": 2, "name": "expires", "value": "-1"},{"id": 3, "name": "cache-control", "value": "private, max-age=0"},{"id": 4, "name": "content-type", "value": "text/html; charset=UTF-8"},{"id": 5, "name": "content-encoding", "value": "gzip"},{"id": 6, "name": "server", "value": "gws"},{"id": 7, "name": "x-xss-protection", "value": "0"},{"id": 8, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 9, "name": "set-cookie", "value": "['expires', 'domain', '1P_JAR', 'Secure', 'path']"},{"id": 10, "name": "alt-svc", "value": "h3-27=':443'; ma=2592000,h3-25=':443'; ma=2592000,h3-T050=':443'; ma=2592000,h3-Q050=':443'; ma=2592000,h3-Q049=':443'; ma=2592000,h3-Q048=':443'; ma=2592000,h3-Q046=':443'; ma=2592000,h3-Q043=':443'; ma=2592000,quic=':443'; ma=2592000; v='46,43'"},{"id": 11, "name": "transfer-encoding", "value": "chunked"}],
     lookup: {  "1": "date", "2": "expires", "3": "cache-control", "4": "content-type", "5": "content-encoding", "6": "server", "7": "x-xss-protection", "8": "x-frame-options", "9": "set-cookie", "10": "alt-svc", "11": "transfer-encoding" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

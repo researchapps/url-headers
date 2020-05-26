@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "date", "value": "Tue, 26 May 2020 18:19:00 GMT"},{"id": 2, "name": "content-type", "value": "text/html; charset=utf-8"},{"id": 3, "name": "content-length", "value": "95070"},{"id": 4, "name": "connection", "value": "keep-alive"},{"id": 5, "name": "server", "value": "nginx"},{"id": 6, "name": "x-frame-options", "value": "DENY"},{"id": 7, "name": "set-cookie", "value": "HttpOnly, SameSite, Path, Domain, _photo_session_id, Secure, Max-Age, Expires"},{"id": 8, "name": "x-end-user-visit-id", "value": "65704832225"},{"id": 9, "name": "x-end-user-visitor-id", "value": "60519815309"},{"id": 10, "name": "etag", "value": "W/'1735e-UbCnpxGJEJeK9eN8yqf/s0wOb6o'"}],
+    rows: [{"id": 1, "name": "date", "value": "Tue, 26 May 2020 18:19:00 GMT"},{"id": 2, "name": "content-type", "value": "text/html; charset=utf-8"},{"id": 3, "name": "content-length", "value": "95070"},{"id": 4, "name": "connection", "value": "keep-alive"},{"id": 5, "name": "server", "value": "nginx"},{"id": 6, "name": "x-frame-options", "value": "DENY"},{"id": 7, "name": "set-cookie", "value": "['HttpOnly', 'SameSite', 'Path', 'Domain', '_photo_session_id', 'Secure', 'Max-Age', 'Expires']"},{"id": 8, "name": "x-end-user-visit-id", "value": "65704832225"},{"id": 9, "name": "x-end-user-visitor-id", "value": "60519815309"},{"id": 10, "name": "etag", "value": "W/'1735e-UbCnpxGJEJeK9eN8yqf/s0wOb6o'"}],
     lookup: {  "1": "date", "2": "content-type", "3": "content-length", "4": "connection", "5": "server", "6": "x-frame-options", "7": "set-cookie", "8": "x-end-user-visit-id", "9": "x-end-user-visitor-id", "10": "etag" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

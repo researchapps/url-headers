@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "content-type", "value": "text/html; charset=UTF-8"},{"id": 2, "name": "content-length", "value": "26552"},{"id": 3, "name": "connection", "value": "keep-alive"},{"id": 4, "name": "date", "value": "Tue, 26 May 2020 18:01:13 GMT"},{"id": 5, "name": "server", "value": "nginx"},{"id": 6, "name": "content-encoding", "value": "gzip"},{"id": 7, "name": "set-cookie", "value": "expires, visitor, domain, Max-Age, path"},{"id": 8, "name": "vary", "value": "Accept-Encoding"},{"id": 9, "name": "x-server", "value": "web003.internal.gofundme.com"},{"id": 10, "name": "content-security-policy", "value": "frame-ancestors gofundme.com *.gofundme.com;"},{"id": 11, "name": "x-cache", "value": "Miss from cloudfront"},{"id": 12, "name": "via", "value": "1.1 9cdf83ac92372e14c2c11c5760f6d17a.cloudfront.net (CloudFront)"},{"id": 13, "name": "x-amz-cf-pop", "value": "IAD79-C3"},{"id": 14, "name": "x-amz-cf-id", "value": "twDDsj8MhRgvhiXCaWjh0o-PmPwpGyBWAGRQs9-Gi-z22hMRmGfQ_Q=="}],
+    rows: [{"id": 1, "name": "content-type", "value": "text/html; charset=UTF-8"},{"id": 2, "name": "content-length", "value": "26552"},{"id": 3, "name": "connection", "value": "keep-alive"},{"id": 4, "name": "date", "value": "Tue, 26 May 2020 18:01:13 GMT"},{"id": 5, "name": "server", "value": "nginx"},{"id": 6, "name": "content-encoding", "value": "gzip"},{"id": 7, "name": "set-cookie", "value": "['expires', 'visitor', 'domain', 'Max-Age', 'path']"},{"id": 8, "name": "vary", "value": "Accept-Encoding"},{"id": 9, "name": "x-server", "value": "web003.internal.gofundme.com"},{"id": 10, "name": "content-security-policy", "value": "frame-ancestors gofundme.com *.gofundme.com;"},{"id": 11, "name": "x-cache", "value": "Miss from cloudfront"},{"id": 12, "name": "via", "value": "1.1 9cdf83ac92372e14c2c11c5760f6d17a.cloudfront.net (CloudFront)"},{"id": 13, "name": "x-amz-cf-pop", "value": "IAD79-C3"},{"id": 14, "name": "x-amz-cf-id", "value": "twDDsj8MhRgvhiXCaWjh0o-PmPwpGyBWAGRQs9-Gi-z22hMRmGfQ_Q=="}],
     lookup: {  "1": "content-type", "2": "content-length", "3": "connection", "4": "date", "5": "server", "6": "content-encoding", "7": "set-cookie", "8": "vary", "9": "x-server", "10": "content-security-policy", "11": "x-cache", "12": "via", "13": "x-amz-cf-pop", "14": "x-amz-cf-id" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

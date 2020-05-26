@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "date", "value": "Tue, 26 May 2020 18:04:39 GMT"},{"id": 2, "name": "expires", "value": "-1"},{"id": 3, "name": "cache-control", "value": "private, max-age=0"},{"id": 4, "name": "content-type", "value": "text/html; charset=UTF-8"},{"id": 5, "name": "strict-transport-security", "value": "max-age=31536000"},{"id": 6, "name": "p3p", "value": "CP='This is not a P3P policy! See g.co/p3phelp for more info.'"},{"id": 7, "name": "content-encoding", "value": "gzip"},{"id": 8, "name": "server", "value": "gws"},{"id": 9, "name": "x-xss-protection", "value": "0"},{"id": 10, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 11, "name": "set-cookie", "value": "expires, Secure, NID, HttpOnly, domain, 1P_JAR, Secure, path"},{"id": 12, "name": "alt-svc", "value": "h3-27=':443'; ma=2592000,h3-25=':443'; ma=2592000,h3-T050=':443'; ma=2592000,h3-Q050=':443'; ma=2592000,h3-Q049=':443'; ma=2592000,h3-Q048=':443'; ma=2592000,h3-Q046=':443'; ma=2592000,h3-Q043=':443'; ma=2592000,quic=':443'; ma=2592000; v='46,43'"},{"id": 13, "name": "transfer-encoding", "value": "chunked"}],
+    rows: [{"id": 1, "name": "date", "value": "Tue, 26 May 2020 18:04:39 GMT"},{"id": 2, "name": "expires", "value": "-1"},{"id": 3, "name": "cache-control", "value": "private, max-age=0"},{"id": 4, "name": "content-type", "value": "text/html; charset=UTF-8"},{"id": 5, "name": "strict-transport-security", "value": "max-age=31536000"},{"id": 6, "name": "p3p", "value": "CP='This is not a P3P policy! See g.co/p3phelp for more info.'"},{"id": 7, "name": "content-encoding", "value": "gzip"},{"id": 8, "name": "server", "value": "gws"},{"id": 9, "name": "x-xss-protection", "value": "0"},{"id": 10, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 11, "name": "set-cookie", "value": "['expires', 'Secure, NID', 'HttpOnly', 'domain', '1P_JAR', 'Secure', 'path']"},{"id": 12, "name": "alt-svc", "value": "h3-27=':443'; ma=2592000,h3-25=':443'; ma=2592000,h3-T050=':443'; ma=2592000,h3-Q050=':443'; ma=2592000,h3-Q049=':443'; ma=2592000,h3-Q048=':443'; ma=2592000,h3-Q046=':443'; ma=2592000,h3-Q043=':443'; ma=2592000,quic=':443'; ma=2592000; v='46,43'"},{"id": 13, "name": "transfer-encoding", "value": "chunked"}],
     lookup: {  "1": "date", "2": "expires", "3": "cache-control", "4": "content-type", "5": "strict-transport-security", "6": "p3p", "7": "content-encoding", "8": "server", "9": "x-xss-protection", "10": "x-frame-options", "11": "set-cookie", "12": "alt-svc", "13": "transfer-encoding" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

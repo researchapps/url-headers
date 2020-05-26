@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "content-type", "value": "text/html;charset=UTF-8"},{"id": 2, "name": "server", "value": "nginx"},{"id": 3, "name": "pb-rid", "value": "r03mjwfpFrn70s"},{"id": 4, "name": "pb-pid", "value": "p0OOE1ErN9FoXr"},{"id": 5, "name": "x-served-by", "value": "pb"},{"id": 6, "name": "x-backend", "value": "http://pagebuilder-app.wpit.nile.works/pb"},{"id": 7, "name": "access-control-allow-origin", "value": "*"},{"id": 8, "name": "strict-transport-security", "value": "max-age=0; includeSubdomains"},{"id": 9, "name": "content-encoding", "value": "gzip"},{"id": 10, "name": "vary", "value": "Accept-Encoding"},{"id": 11, "name": "content-length", "value": "121692"},{"id": 12, "name": "cache-control", "value": "max-age=120, s-maxage=120"},{"id": 13, "name": "expires", "value": "Tue, 26 May 2020 17:58:07 GMT"},{"id": 14, "name": "date", "value": "Tue, 26 May 2020 17:56:07 GMT"},{"id": 15, "name": "connection", "value": "keep-alive"},{"id": 16, "name": "set-cookie", "value": "expires, secure, rplampr, domain, wp_country, path"},{"id": 17, "name": "content-security-policy", "value": "upgrade-insecure-requests"}],
+    rows: [{"id": 1, "name": "content-type", "value": "text/html;charset=UTF-8"},{"id": 2, "name": "server", "value": "nginx"},{"id": 3, "name": "pb-rid", "value": "r03mjwfpFrn70s"},{"id": 4, "name": "pb-pid", "value": "p0OOE1ErN9FoXr"},{"id": 5, "name": "x-served-by", "value": "pb"},{"id": 6, "name": "x-backend", "value": "http://pagebuilder-app.wpit.nile.works/pb"},{"id": 7, "name": "access-control-allow-origin", "value": "*"},{"id": 8, "name": "strict-transport-security", "value": "max-age=0; includeSubdomains"},{"id": 9, "name": "content-encoding", "value": "gzip"},{"id": 10, "name": "vary", "value": "Accept-Encoding"},{"id": 11, "name": "content-length", "value": "121692"},{"id": 12, "name": "cache-control", "value": "max-age=120, s-maxage=120"},{"id": 13, "name": "expires", "value": "Tue, 26 May 2020 17:58:07 GMT"},{"id": 14, "name": "date", "value": "Tue, 26 May 2020 17:56:07 GMT"},{"id": 15, "name": "connection", "value": "keep-alive"},{"id": 16, "name": "set-cookie", "value": "['expires', 'secure, rplampr', 'domain', 'wp_country', 'path']"},{"id": 17, "name": "content-security-policy", "value": "upgrade-insecure-requests"}],
     lookup: {  "1": "content-type", "2": "server", "3": "pb-rid", "4": "pb-pid", "5": "x-served-by", "6": "x-backend", "7": "access-control-allow-origin", "8": "strict-transport-security", "9": "content-encoding", "10": "vary", "11": "content-length", "12": "cache-control", "13": "expires", "14": "date", "15": "connection", "16": "set-cookie", "17": "content-security-policy" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

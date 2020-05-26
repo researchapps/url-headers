@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "date", "value": "Tue, 26 May 2020 18:18:49 GMT"},{"id": 2, "name": "server", "value": "Apache"},{"id": 3, "name": "x-niconico-authflag", "value": "0"},{"id": 4, "name": "set-cookie", "value": "expires, domain, Max-Age, nicosid, path"},{"id": 5, "name": "x-niconico-sid", "value": "1590517129.492218529"},{"id": 6, "name": "x-content-type-options", "value": "nosniff"},{"id": 7, "name": "x-xss-protection", "value": "1; mode=block"},{"id": 8, "name": "content-security-policy", "value": "frame-ancestors 'none'"},{"id": 9, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 10, "name": "vary", "value": "Accept-Encoding"},{"id": 11, "name": "content-encoding", "value": "gzip"},{"id": 12, "name": "access-control-allow-credentials", "value": "true"},{"id": 13, "name": "content-length", "value": "16922"},{"id": 14, "name": "connection", "value": "close"},{"id": 15, "name": "content-type", "value": "text/html; charset=UTF-8"},{"id": 16, "name": "content-language", "value": "ja"}],
+    rows: [{"id": 1, "name": "date", "value": "Tue, 26 May 2020 18:18:49 GMT"},{"id": 2, "name": "server", "value": "Apache"},{"id": 3, "name": "x-niconico-authflag", "value": "0"},{"id": 4, "name": "set-cookie", "value": "['expires', 'domain', 'Max-Age', 'nicosid', 'path']"},{"id": 5, "name": "x-niconico-sid", "value": "1590517129.492218529"},{"id": 6, "name": "x-content-type-options", "value": "nosniff"},{"id": 7, "name": "x-xss-protection", "value": "1; mode=block"},{"id": 8, "name": "content-security-policy", "value": "frame-ancestors 'none'"},{"id": 9, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 10, "name": "vary", "value": "Accept-Encoding"},{"id": 11, "name": "content-encoding", "value": "gzip"},{"id": 12, "name": "access-control-allow-credentials", "value": "true"},{"id": 13, "name": "content-length", "value": "16922"},{"id": 14, "name": "connection", "value": "close"},{"id": 15, "name": "content-type", "value": "text/html; charset=UTF-8"},{"id": 16, "name": "content-language", "value": "ja"}],
     lookup: {  "1": "date", "2": "server", "3": "x-niconico-authflag", "4": "set-cookie", "5": "x-niconico-sid", "6": "x-content-type-options", "7": "x-xss-protection", "8": "content-security-policy", "9": "x-frame-options", "10": "vary", "11": "content-encoding", "12": "access-control-allow-credentials", "13": "content-length", "14": "connection", "15": "content-type", "16": "content-language" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

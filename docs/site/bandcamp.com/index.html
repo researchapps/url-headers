@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "connection", "value": "keep-alive"},{"id": 2, "name": "server", "value": "nginx"},{"id": 3, "name": "content-type", "value": "text/html; charset=UTF-8"},{"id": 4, "name": "set-cookie", "value": "domain, expires, client_id, path"},{"id": 5, "name": "content-encoding", "value": "gzip"},{"id": 6, "name": "accept-ranges", "value": "bytes, bytes"},{"id": 7, "name": "date", "value": "Tue, 26 May 2020 17:59:29 GMT"},{"id": 8, "name": "via", "value": "1.1 varnish"},{"id": 9, "name": "age", "value": "0"},{"id": 10, "name": "x-served-by", "value": "cache-bwi5059-BWI"},{"id": 11, "name": "x-cache", "value": "MISS"},{"id": 12, "name": "x-cache-hits", "value": "0"},{"id": 13, "name": "x-timer", "value": "S1590515969.681262,VS0,VE932"},{"id": 14, "name": "vary", "value": "Accept-Encoding"},{"id": 15, "name": "transfer-encoding", "value": "chunked"}],
+    rows: [{"id": 1, "name": "connection", "value": "keep-alive"},{"id": 2, "name": "server", "value": "nginx"},{"id": 3, "name": "content-type", "value": "text/html; charset=UTF-8"},{"id": 4, "name": "set-cookie", "value": "['domain', 'expires', 'client_id', 'path']"},{"id": 5, "name": "content-encoding", "value": "gzip"},{"id": 6, "name": "accept-ranges", "value": "bytes, bytes"},{"id": 7, "name": "date", "value": "Tue, 26 May 2020 17:59:29 GMT"},{"id": 8, "name": "via", "value": "1.1 varnish"},{"id": 9, "name": "age", "value": "0"},{"id": 10, "name": "x-served-by", "value": "cache-bwi5059-BWI"},{"id": 11, "name": "x-cache", "value": "MISS"},{"id": 12, "name": "x-cache-hits", "value": "0"},{"id": 13, "name": "x-timer", "value": "S1590515969.681262,VS0,VE932"},{"id": 14, "name": "vary", "value": "Accept-Encoding"},{"id": 15, "name": "transfer-encoding", "value": "chunked"}],
     lookup: {  "1": "connection", "2": "server", "3": "content-type", "4": "set-cookie", "5": "content-encoding", "6": "accept-ranges", "7": "date", "8": "via", "9": "age", "10": "x-served-by", "11": "x-cache", "12": "x-cache-hits", "13": "x-timer", "14": "vary", "15": "transfer-encoding" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

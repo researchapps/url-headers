@@ -239,8 +239,8 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "https://apple.com", "value": ""},{"id": 2, "name": "https://theguardian.com", "value": ""},{"id": 3, "name": "https://www.bluehost.com", "value": ""},{"id": 4, "name": "https://elpais.com", "value": ""},{"id": 5, "name": "https://terra.com.br", "value": ""},{"id": 6, "name": "https://cnet.com", "value": ""},{"id": 7, "name": "https://vox.com", "value": ""},{"id": 8, "name": "https://tes.com", "value": ""},{"id": 9, "name": "https://buzzfeed.com", "value": ""},{"id": 10, "name": "https://guardian.co.uk", "value": ""},{"id": 11, "name": "https://theverge.com", "value": ""},{"id": 12, "name": "https://gizmodo.com", "value": ""},{"id": 13, "name": "https://mega.nz", "value": ""},{"id": 14, "name": "https://economist.com", "value": ""},{"id": 15, "name": "https://answers.com", "value": ""},{"id": 16, "name": "https://zdnet.com", "value": ""},{"id": 17, "name": "https://inc.com", "value": ""},{"id": 18, "name": "https://www.salesforce.com", "value": ""}],
-    lookup: {  "1": "https://apple.com", "2": "https://theguardian.com", "3": "https://www.bluehost.com", "4": "https://elpais.com", "5": "https://terra.com.br", "6": "https://cnet.com", "7": "https://vox.com", "8": "https://tes.com", "9": "https://buzzfeed.com", "10": "https://guardian.co.uk", "11": "https://theverge.com", "12": "https://gizmodo.com", "13": "https://mega.nz", "14": "https://economist.com", "15": "https://answers.com", "16": "https://zdnet.com", "17": "https://inc.com", "18": "https://www.salesforce.com" },
+    rows: [{"id": 1, "name": "https://apple.com", "value": ""}],
+    lookup: {  "1": "https://apple.com" },
     sort: 'id',
     sortDir:'asc',
     page: 0,
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId].replace(/(^\w+:|^)\/\//, '');
-        document.location = "/site/" + site
+        document.location = "/url-headers/site/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

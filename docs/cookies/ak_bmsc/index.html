@@ -239,8 +239,8 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "https://adobe.com", "value": ""},{"id": 2, "name": "https://cbc.ca", "value": ""},{"id": 3, "name": "https://nationalgeographic.com", "value": ""},{"id": 4, "name": "https://www.vmware.com", "value": ""}],
-    lookup: {  "1": "https://adobe.com", "2": "https://cbc.ca", "3": "https://nationalgeographic.com", "4": "https://www.vmware.com" },
+    rows: [{"id": 1, "name": "https://cbc.ca", "value": ""},{"id": 2, "name": "https://nationalgeographic.com", "value": ""},{"id": 3, "name": "https://www.vmware.com", "value": ""}],
+    lookup: {  "1": "https://cbc.ca", "2": "https://nationalgeographic.com", "3": "https://www.vmware.com" },
     sort: 'id',
     sortDir:'asc',
     page: 0,
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId].replace(/(^\w+:|^)\/\//, '');
-        document.location = "/site/" + site
+        document.location = "/url-headers/site/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

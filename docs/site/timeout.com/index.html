@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "content-type", "value": "text/html; charset=UTF-8"},{"id": 2, "name": "content-length", "value": "50637"},{"id": 3, "name": "connection", "value": "keep-alive"},{"id": 4, "name": "date", "value": "Tue, 26 May 2020 18:05:45 GMT"},{"id": 5, "name": "server", "value": "nginx"},{"id": 6, "name": "cache-control", "value": "public, s-maxage=1800"},{"id": 7, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 8, "name": "content-security-policy", "value": "frame-ancestors 'self'"},{"id": 9, "name": "x-content-type-options", "value": "nosniff"},{"id": 10, "name": "x-xss-protection", "value": "1; mode=block"},{"id": 11, "name": "content-encoding", "value": "gzip"},{"id": 12, "name": "vary", "value": "Accept-Encoding"},{"id": 13, "name": "set-cookie", "value": "_TO_AB_Testing, , expires, domain, path"},{"id": 14, "name": "x-cache", "value": "Hit from cloudfront"},{"id": 15, "name": "via", "value": "1.1 eb9474b59027c3531e9fe4ca132f8d87.cloudfront.net (CloudFront)"},{"id": 16, "name": "x-amz-cf-pop", "value": "IAD79-C1"},{"id": 17, "name": "x-amz-cf-id", "value": "-UArcgg9FgQJ7pDkKpuUj1z7sf4EXJphHIrjoS9U83_yyGRR0XKQkg=="}],
+    rows: [{"id": 1, "name": "content-type", "value": "text/html; charset=UTF-8"},{"id": 2, "name": "content-length", "value": "50637"},{"id": 3, "name": "connection", "value": "keep-alive"},{"id": 4, "name": "date", "value": "Tue, 26 May 2020 18:05:45 GMT"},{"id": 5, "name": "server", "value": "nginx"},{"id": 6, "name": "cache-control", "value": "public, s-maxage=1800"},{"id": 7, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 8, "name": "content-security-policy", "value": "frame-ancestors 'self'"},{"id": 9, "name": "x-content-type-options", "value": "nosniff"},{"id": 10, "name": "x-xss-protection", "value": "1; mode=block"},{"id": 11, "name": "content-encoding", "value": "gzip"},{"id": 12, "name": "vary", "value": "Accept-Encoding"},{"id": 13, "name": "set-cookie", "value": "['_TO_AB_Testing', '', 'expires', 'domain', 'path']"},{"id": 14, "name": "x-cache", "value": "Hit from cloudfront"},{"id": 15, "name": "via", "value": "1.1 eb9474b59027c3531e9fe4ca132f8d87.cloudfront.net (CloudFront)"},{"id": 16, "name": "x-amz-cf-pop", "value": "IAD79-C1"},{"id": 17, "name": "x-amz-cf-id", "value": "-UArcgg9FgQJ7pDkKpuUj1z7sf4EXJphHIrjoS9U83_yyGRR0XKQkg=="}],
     lookup: {  "1": "content-type", "2": "content-length", "3": "connection", "4": "date", "5": "server", "6": "cache-control", "7": "x-frame-options", "8": "content-security-policy", "9": "x-content-type-options", "10": "x-xss-protection", "11": "content-encoding", "12": "vary", "13": "set-cookie", "14": "x-cache", "15": "via", "16": "x-amz-cf-pop", "17": "x-amz-cf-id" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

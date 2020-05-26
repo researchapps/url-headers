@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "server", "value": "openresty"},{"id": 2, "name": "date", "value": "Tue, 26 May 2020 18:01:26 GMT"},{"id": 3, "name": "content-type", "value": "text/html;charset=UTF-8"},{"id": 4, "name": "transfer-encoding", "value": "chunked"},{"id": 5, "name": "connection", "value": "keep-alive"},{"id": 6, "name": "content-language", "value": "en"},{"id": 7, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 8, "name": "cache-control", "value": "no-cache"},{"id": 9, "name": "pragma", "value": "no-cache"},{"id": 10, "name": "p3p", "value": "CP='CAO DSP COR CURa ADMa DEVa PSAa PSDa IVAi IVDi CONi OUR OTRi IND PHY ONL UNI FIN COM NAV INT DEM STA', CP='CAO DSP COR CURa ADMa DEVa PSAa PSDa IVAi IVDi CONi OUR OTRi IND PHY ONL UNI FIN COM NAV INT DEM STA'"},{"id": 11, "name": "set-cookie", "value": "userId, SameSite, Path, Domain, Secure, Expires"},{"id": 12, "name": "vary", "value": "Accept-Encoding"},{"id": 13, "name": "content-encoding", "value": "gzip"},{"id": 14, "name": "datacenter", "value": "ny8.nyc"}],
+    rows: [{"id": 1, "name": "server", "value": "openresty"},{"id": 2, "name": "date", "value": "Tue, 26 May 2020 18:01:26 GMT"},{"id": 3, "name": "content-type", "value": "text/html;charset=UTF-8"},{"id": 4, "name": "transfer-encoding", "value": "chunked"},{"id": 5, "name": "connection", "value": "keep-alive"},{"id": 6, "name": "content-language", "value": "en"},{"id": 7, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 8, "name": "cache-control", "value": "no-cache"},{"id": 9, "name": "pragma", "value": "no-cache"},{"id": 10, "name": "p3p", "value": "CP='CAO DSP COR CURa ADMa DEVa PSAa PSDa IVAi IVDi CONi OUR OTRi IND PHY ONL UNI FIN COM NAV INT DEM STA', CP='CAO DSP COR CURa ADMa DEVa PSAa PSDa IVAi IVDi CONi OUR OTRi IND PHY ONL UNI FIN COM NAV INT DEM STA'"},{"id": 11, "name": "set-cookie", "value": "['userId', 'SameSite', 'Path', 'Domain', 'Secure', 'Expires']"},{"id": 12, "name": "vary", "value": "Accept-Encoding"},{"id": 13, "name": "content-encoding", "value": "gzip"},{"id": 14, "name": "datacenter", "value": "ny8.nyc"}],
     lookup: {  "1": "server", "2": "date", "3": "content-type", "4": "transfer-encoding", "5": "connection", "6": "content-language", "7": "x-frame-options", "8": "cache-control", "9": "pragma", "10": "p3p", "11": "set-cookie", "12": "vary", "13": "content-encoding", "14": "datacenter" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

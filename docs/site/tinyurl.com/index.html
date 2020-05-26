@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "date", "value": "Tue, 26 May 2020 17:56:14 GMT"},{"id": 2, "name": "content-type", "value": "text/html; charset=UTF-8"},{"id": 3, "name": "transfer-encoding", "value": "chunked"},{"id": 4, "name": "connection", "value": "keep-alive"},{"id": 5, "name": "set-cookie", "value": "expires, HttpOnly, SameSite, samesite, domain, httponly, Max-Age, __cfduid, path"},{"id": 6, "name": "x-powered-by", "value": "PHP/7.3.12"},{"id": 7, "name": "cache-control", "value": "no-cache, private"},{"id": 8, "name": "content-language", "value": "en"},{"id": 9, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 10, "name": "strict-transport-security", "value": "max-age=31536000; includeSubDomains; preload"},{"id": 11, "name": "cf-cache-status", "value": "DYNAMIC"},{"id": 12, "name": "cf-request-id", "value": "02f3b9ca2c0000097369396200000001"},{"id": 13, "name": "expect-ct", "value": "max-age=604800, report-uri='https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct'"},{"id": 14, "name": "server", "value": "cloudflare"},{"id": 15, "name": "cf-ray", "value": "59995f237b1f0973-IAD"},{"id": 16, "name": "content-encoding", "value": "gzip"},{"id": 17, "name": "alt-svc", "value": "h3-27=':443'; ma=86400, h3-25=':443'; ma=86400, h3-24=':443'; ma=86400, h3-23=':443'; ma=86400"}],
+    rows: [{"id": 1, "name": "date", "value": "Tue, 26 May 2020 17:56:14 GMT"},{"id": 2, "name": "content-type", "value": "text/html; charset=UTF-8"},{"id": 3, "name": "transfer-encoding", "value": "chunked"},{"id": 4, "name": "connection", "value": "keep-alive"},{"id": 5, "name": "set-cookie", "value": "['expires', 'HttpOnly', 'SameSite', 'samesite', 'domain', 'httponly', 'Max-Age', '__cfduid', 'path']"},{"id": 6, "name": "x-powered-by", "value": "PHP/7.3.12"},{"id": 7, "name": "cache-control", "value": "no-cache, private"},{"id": 8, "name": "content-language", "value": "en"},{"id": 9, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 10, "name": "strict-transport-security", "value": "max-age=31536000; includeSubDomains; preload"},{"id": 11, "name": "cf-cache-status", "value": "DYNAMIC"},{"id": 12, "name": "cf-request-id", "value": "02f3b9ca2c0000097369396200000001"},{"id": 13, "name": "expect-ct", "value": "max-age=604800, report-uri='https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct'"},{"id": 14, "name": "server", "value": "cloudflare"},{"id": 15, "name": "cf-ray", "value": "59995f237b1f0973-IAD"},{"id": 16, "name": "content-encoding", "value": "gzip"},{"id": 17, "name": "alt-svc", "value": "h3-27=':443'; ma=86400, h3-25=':443'; ma=86400, h3-24=':443'; ma=86400, h3-23=':443'; ma=86400"}],
     lookup: {  "1": "date", "2": "content-type", "3": "transfer-encoding", "4": "connection", "5": "set-cookie", "6": "x-powered-by", "7": "cache-control", "8": "content-language", "9": "x-frame-options", "10": "strict-transport-security", "11": "cf-cache-status", "12": "cf-request-id", "13": "expect-ct", "14": "server", "15": "cf-ray", "16": "content-encoding", "17": "alt-svc" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

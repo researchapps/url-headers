@@ -50,7 +50,7 @@ def index():
     return render_template("barchart.html", values=values, labels=labels, legend=legend)
 
 
-@app.route("/cookies/")
+@app.route("/url-headers/cookies/")
 def cookielist():
     """An equivalent table, but we use cookies instead.
     """
@@ -62,7 +62,7 @@ def cookielist():
     )
 
 
-@app.route("/header/<name>/")
+@app.route("/url-headers/header/<name>/")
 def header(name):
 
     # The header must be known
@@ -85,7 +85,7 @@ def header(name):
     return render_template("header.html", values=sites, name=name.upper())
 
 
-@app.route("/site/<path:name>/")
+@app.route("/url-headers/site/<path:name>/")
 def site(name):
 
     # Add https back
@@ -103,7 +103,7 @@ def site(name):
     return render_template("site.html", name=name, values=values, nexturl="header")
 
 
-@app.route("/cookies/<name>/")
+@app.route("/url-headers/cookies/<name>/")
 def cookie(name):
 
     # The header must be known

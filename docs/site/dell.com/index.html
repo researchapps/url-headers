@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "content-type", "value": "text/html; charset=utf-8"},{"id": 2, "name": "content-encoding", "value": "gzip"},{"id": 3, "name": "server", "value": "Microsoft-IIS/8.5"},{"id": 4, "name": "x-vcap-request-id", "value": "a72f94cd-feae-4785-4525-e4670e6ec7b0"},{"id": 5, "name": "x-powered-by", "value": ", "},{"id": 6, "name": "p3p", "value": "CP=' BUS CAO CNT COM CUR DEV DSP INT NAV OUR PSA PSD SAM STA TAI UNI '"},{"id": 7, "name": "x-ua-compatible", "value": "IE=edge"},{"id": 8, "name": "x-arrserver", "value": "PWOLARR04"},{"id": 9, "name": "x-akamai-transformed", "value": "9 26960 0 pmb=mTOE,2mRUM,1"},{"id": 10, "name": "date", "value": "Tue, 26 May 2020 17:59:37 GMT"},{"id": 11, "name": "content-length", "value": "27884"},{"id": 12, "name": "connection", "value": "keep-alive"},{"id": 13, "name": "set-cookie", "value": "HttpOnly, bm_sv, SameSite, HttpOnly, Path, akaas_EnableHomepage, Domain, Secure, Max-Age, Expires, path"},{"id": 14, "name": "x-akamai-erpolicy", "value": "Responsive_redirects"},{"id": 15, "name": "x-akamai-erruleid", "value": ""},{"id": 16, "name": "vary", "value": "Accept-Encoding, User-Agent"}],
+    rows: [{"id": 1, "name": "content-type", "value": "text/html; charset=utf-8"},{"id": 2, "name": "content-encoding", "value": "gzip"},{"id": 3, "name": "server", "value": "Microsoft-IIS/8.5"},{"id": 4, "name": "x-vcap-request-id", "value": "a72f94cd-feae-4785-4525-e4670e6ec7b0"},{"id": 5, "name": "x-powered-by", "value": ", "},{"id": 6, "name": "p3p", "value": "CP=' BUS CAO CNT COM CUR DEV DSP INT NAV OUR PSA PSD SAM STA TAI UNI '"},{"id": 7, "name": "x-ua-compatible", "value": "IE=edge"},{"id": 8, "name": "x-arrserver", "value": "PWOLARR04"},{"id": 9, "name": "x-akamai-transformed", "value": "9 26960 0 pmb=mTOE,2mRUM,1"},{"id": 10, "name": "date", "value": "Tue, 26 May 2020 17:59:37 GMT"},{"id": 11, "name": "content-length", "value": "27884"},{"id": 12, "name": "connection", "value": "keep-alive"},{"id": 13, "name": "set-cookie", "value": "['HttpOnly, bm_sv', 'SameSite', 'HttpOnly', 'Path', 'akaas_EnableHomepage', 'Domain', 'Secure', 'Max-Age', 'Expires', 'path']"},{"id": 14, "name": "x-akamai-erpolicy", "value": "Responsive_redirects"},{"id": 15, "name": "x-akamai-erruleid", "value": ""},{"id": 16, "name": "vary", "value": "Accept-Encoding, User-Agent"}],
     lookup: {  "1": "content-type", "2": "content-encoding", "3": "server", "4": "x-vcap-request-id", "5": "x-powered-by", "6": "p3p", "7": "x-ua-compatible", "8": "x-arrserver", "9": "x-akamai-transformed", "10": "date", "11": "content-length", "12": "connection", "13": "set-cookie", "14": "x-akamai-erpolicy", "15": "x-akamai-erruleid", "16": "vary" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

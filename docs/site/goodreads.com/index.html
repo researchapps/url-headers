@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "server", "value": "Server"},{"id": 2, "name": "date", "value": "Tue, 26 May 2020 17:59:59 GMT"},{"id": 3, "name": "content-type", "value": "text/html; charset=utf-8"},{"id": 4, "name": "transfer-encoding", "value": "chunked"},{"id": 5, "name": "connection", "value": "keep-alive"},{"id": 6, "name": "status", "value": "200 OK"},{"id": 7, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 8, "name": "x-xss-protection", "value": "1; mode=block"},{"id": 9, "name": "x-content-type-options", "value": "nosniff, nosniff"},{"id": 10, "name": "strict-transport-security", "value": "max-age=63072000; includeSubDomains; preload"},{"id": 11, "name": "etag", "value": "W/'f1e1bf4dfd064bc50875bda6f9fe4780'"},{"id": 12, "name": "cache-control", "value": "max-age=0, private, must-revalidate"},{"id": 13, "name": "set-cookie", "value": "HttpOnly, expires, ccsid, path"},{"id": 14, "name": "x-request-id", "value": "ZTK9NY5QS5DZBH12QVWC"},{"id": 15, "name": "x-runtime", "value": "0.119667"},{"id": 16, "name": "content-encoding", "value": "gzip"},{"id": 17, "name": "vary", "value": "User-Agent,Content-Type,Accept-Encoding,X-Amzn-CDN-Cache,X-Amzn-AX-Treatment,User-Agent"},{"id": 18, "name": "x-amz-rid", "value": "ZTK9NY5QS5DZBH12QVWC"}],
+    rows: [{"id": 1, "name": "server", "value": "Server"},{"id": 2, "name": "date", "value": "Tue, 26 May 2020 17:59:59 GMT"},{"id": 3, "name": "content-type", "value": "text/html; charset=utf-8"},{"id": 4, "name": "transfer-encoding", "value": "chunked"},{"id": 5, "name": "connection", "value": "keep-alive"},{"id": 6, "name": "status", "value": "200 OK"},{"id": 7, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 8, "name": "x-xss-protection", "value": "1; mode=block"},{"id": 9, "name": "x-content-type-options", "value": "nosniff, nosniff"},{"id": 10, "name": "strict-transport-security", "value": "max-age=63072000; includeSubDomains; preload"},{"id": 11, "name": "etag", "value": "W/'f1e1bf4dfd064bc50875bda6f9fe4780'"},{"id": 12, "name": "cache-control", "value": "max-age=0, private, must-revalidate"},{"id": 13, "name": "set-cookie", "value": "['HttpOnly', 'expires', 'ccsid', 'path']"},{"id": 14, "name": "x-request-id", "value": "ZTK9NY5QS5DZBH12QVWC"},{"id": 15, "name": "x-runtime", "value": "0.119667"},{"id": 16, "name": "content-encoding", "value": "gzip"},{"id": 17, "name": "vary", "value": "User-Agent,Content-Type,Accept-Encoding,X-Amzn-CDN-Cache,X-Amzn-AX-Treatment,User-Agent"},{"id": 18, "name": "x-amz-rid", "value": "ZTK9NY5QS5DZBH12QVWC"}],
     lookup: {  "1": "server", "2": "date", "3": "content-type", "4": "transfer-encoding", "5": "connection", "6": "status", "7": "x-frame-options", "8": "x-xss-protection", "9": "x-content-type-options", "10": "strict-transport-security", "11": "etag", "12": "cache-control", "13": "set-cookie", "14": "x-request-id", "15": "x-runtime", "16": "content-encoding", "17": "vary", "18": "x-amz-rid" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

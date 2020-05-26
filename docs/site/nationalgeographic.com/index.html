@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "last-modified", "value": "Tue, 26 May 2020 17:27:50 GMT"},{"id": 2, "name": "accept-ranges", "value": "bytes"},{"id": 3, "name": "access-control-allow-credentials", "value": "true"},{"id": 4, "name": "access-control-allow-origin", "value": "*"},{"id": 5, "name": "content-encoding", "value": "gzip"},{"id": 6, "name": "content-type", "value": "text/html"},{"id": 7, "name": "server", "value": "Apache/2.4.18 (Ubuntu)"},{"id": 8, "name": "vary", "value": "Accept-Encoding"},{"id": 9, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 10, "name": "content-length", "value": "54646"},{"id": 11, "name": "cache-control", "value": "max-age=259"},{"id": 12, "name": "expires", "value": "Tue, 26 May 2020 18:05:39 GMT"},{"id": 13, "name": "date", "value": "Tue, 26 May 2020 18:01:20 GMT"},{"id": 14, "name": "connection", "value": "keep-alive"},{"id": 15, "name": "set-cookie", "value": "expires, ak_bmsc, max-age, HttpOnly, domain, path"}],
+    rows: [{"id": 1, "name": "last-modified", "value": "Tue, 26 May 2020 17:27:50 GMT"},{"id": 2, "name": "accept-ranges", "value": "bytes"},{"id": 3, "name": "access-control-allow-credentials", "value": "true"},{"id": 4, "name": "access-control-allow-origin", "value": "*"},{"id": 5, "name": "content-encoding", "value": "gzip"},{"id": 6, "name": "content-type", "value": "text/html"},{"id": 7, "name": "server", "value": "Apache/2.4.18 (Ubuntu)"},{"id": 8, "name": "vary", "value": "Accept-Encoding"},{"id": 9, "name": "x-frame-options", "value": "SAMEORIGIN"},{"id": 10, "name": "content-length", "value": "54646"},{"id": 11, "name": "cache-control", "value": "max-age=259"},{"id": 12, "name": "expires", "value": "Tue, 26 May 2020 18:05:39 GMT"},{"id": 13, "name": "date", "value": "Tue, 26 May 2020 18:01:20 GMT"},{"id": 14, "name": "connection", "value": "keep-alive"},{"id": 15, "name": "set-cookie", "value": "['expires', 'ak_bmsc', 'max-age', 'HttpOnly', 'domain', 'path']"}],
     lookup: {  "1": "last-modified", "2": "accept-ranges", "3": "access-control-allow-credentials", "4": "access-control-allow-origin", "5": "content-encoding", "6": "content-type", "7": "server", "8": "vary", "9": "x-frame-options", "10": "content-length", "11": "cache-control", "12": "expires", "13": "date", "14": "connection", "15": "set-cookie" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

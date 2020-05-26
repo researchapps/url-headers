@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "server", "value": "nginx"},{"id": 2, "name": "date", "value": "Tue, 26 May 2020 18:01:38 GMT"},{"id": 3, "name": "content-type", "value": "text/html; charset=UTF-8"},{"id": 4, "name": "transfer-encoding", "value": "chunked"},{"id": 5, "name": "connection", "value": "keep-alive"},{"id": 6, "name": "keep-alive", "value": "timeout=60"},{"id": 7, "name": "set-cookie", "value": "expires, bloglovin[session], httponly, bloglovin-auth, httponly, domain, httponly, bloglovin[referrer_page_type], httponly, bloglovin[page_type], httponly, bloglovin[data], path"},{"id": 8, "name": "vary", "value": "Accept-Encoding,Accept-Encoding"},{"id": 9, "name": "content-encoding", "value": "gzip"},{"id": 10, "name": "x-varnish", "value": "557075892"},{"id": 11, "name": "age", "value": "0"},{"id": 12, "name": "via", "value": "1.1 varnish (Varnish/5.2)"},{"id": 13, "name": "bl-cache-status", "value": "MISS"},{"id": 14, "name": "bl-cdn-provider", "value": "None"},{"id": 15, "name": "accept-ranges", "value": "bytes"}],
+    rows: [{"id": 1, "name": "server", "value": "nginx"},{"id": 2, "name": "date", "value": "Tue, 26 May 2020 18:01:38 GMT"},{"id": 3, "name": "content-type", "value": "text/html; charset=UTF-8"},{"id": 4, "name": "transfer-encoding", "value": "chunked"},{"id": 5, "name": "connection", "value": "keep-alive"},{"id": 6, "name": "keep-alive", "value": "timeout=60"},{"id": 7, "name": "set-cookie", "value": "['expires', 'bloglovin[session]', 'httponly, bloglovin-auth', 'httponly', 'domain', 'httponly, bloglovin[referrer_page_type]', 'httponly, bloglovin[page_type]', 'httponly, bloglovin[data]', 'path']"},{"id": 8, "name": "vary", "value": "Accept-Encoding,Accept-Encoding"},{"id": 9, "name": "content-encoding", "value": "gzip"},{"id": 10, "name": "x-varnish", "value": "557075892"},{"id": 11, "name": "age", "value": "0"},{"id": 12, "name": "via", "value": "1.1 varnish (Varnish/5.2)"},{"id": 13, "name": "bl-cache-status", "value": "MISS"},{"id": 14, "name": "bl-cdn-provider", "value": "None"},{"id": 15, "name": "accept-ranges", "value": "bytes"}],
     lookup: {  "1": "server", "2": "date", "3": "content-type", "4": "transfer-encoding", "5": "connection", "6": "keep-alive", "7": "set-cookie", "8": "vary", "9": "content-encoding", "10": "x-varnish", "11": "age", "12": "via", "13": "bl-cache-status", "14": "bl-cdn-provider", "15": "accept-ranges" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

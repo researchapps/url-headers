@@ -239,7 +239,7 @@ $('input[type="search"] + .search-cancel-button').hide($(this).prev('input').val
 
 const app = new Vue({
   data: () => ({
-    rows: [{"id": 1, "name": "date", "value": "Tue, 26 May 2020 18:01:15 GMT"},{"id": 2, "name": "content-type", "value": "text/html;charset=UTF-8"},{"id": 3, "name": "content-length", "value": "23701"},{"id": 4, "name": "connection", "value": "keep-alive"},{"id": 5, "name": "server", "value": "Apache/2.4.25 (Debian) mod_jk/1.2.46"},{"id": 6, "name": "x-tserver", "value": "ip-10-145-22-195/127.0.1.1"},{"id": 7, "name": "set-cookie", "value": "Path, Domain, Version, bcomID, Expires"},{"id": 8, "name": "content-language", "value": "en-US"},{"id": 9, "name": "vary", "value": "Accept-Encoding,User-Agent"},{"id": 10, "name": "content-encoding", "value": "gzip"},{"id": 11, "name": "x-wserver", "value": "10.145.22.195 (mendel-south-us)"}],
+    rows: [{"id": 1, "name": "date", "value": "Tue, 26 May 2020 18:01:15 GMT"},{"id": 2, "name": "content-type", "value": "text/html;charset=UTF-8"},{"id": 3, "name": "content-length", "value": "23701"},{"id": 4, "name": "connection", "value": "keep-alive"},{"id": 5, "name": "server", "value": "Apache/2.4.25 (Debian) mod_jk/1.2.46"},{"id": 6, "name": "x-tserver", "value": "ip-10-145-22-195/127.0.1.1"},{"id": 7, "name": "set-cookie", "value": "['Path', 'Domain', 'Version', 'bcomID', 'Expires']"},{"id": 8, "name": "content-language", "value": "en-US"},{"id": 9, "name": "vary", "value": "Accept-Encoding,User-Agent"},{"id": 10, "name": "content-encoding", "value": "gzip"},{"id": 11, "name": "x-wserver", "value": "10.145.22.195 (mendel-south-us)"}],
     lookup: {  "1": "date", "2": "content-type", "3": "content-length", "4": "connection", "5": "server", "6": "x-tserver", "7": "set-cookie", "8": "content-language", "9": "vary", "10": "content-encoding", "11": "x-wserver" },
     sort: 'id',
     sortDir:'asc',
@@ -250,7 +250,7 @@ const app = new Vue({
     viewRow: function(event) {
         var rowId = $(event.target).closest('tr').find('td:first').text()
         var site = this.lookup[rowId]
-        document.location = "/header/" + site
+        document.location = "/url-headers/header/" + site
     },
     sortBy: function(s) {
       if (s === this.sort) {

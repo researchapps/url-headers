@@ -37,6 +37,7 @@ def read_file(filename, lines=True, strip_newlines=True):
 # These are the urls we need to get
 port = os.environ.get("INPUT_PORT", "5000")
 baseurl = "http://localhost:%s/" % port
+ghpages = "url-headers"
 
 # Load the sites lookup to generate urls for
 url_file = os.environ.get("INPUT_URLS", os.path.join(here, "urls.txt"))
@@ -111,7 +112,7 @@ def main(outdir):
     # Generate primary cookies / home page
     response = requests.get(f"{baseurl}")
     save_html(response.text, os.path.join(outdir, "index.html"))
-    response = requests.get(f"{baseurl}cookies")
+    response = requests.get(f"{baseurl}{ghpages}/cookies")
     save_html(response.text, os.path.join(outdir, "cookies", "index.html"))
 
     # Generate site-specific urls
@@ -125,7 +126,7 @@ def main(outdir):
             os.makedirs(output_dir)
         output_file = os.path.join(output_dir, "index.html")
         if not os.path.exists(output_file):
-            response = requests.get(f"{baseurl}site/{prefix}")
+            response = requests.get(f"{baseurl}{ghpages}/site/{prefix}")
             if response.status_code != 200:
                 print(f"Problem parsing {url}")
                 continue
@@ -139,7 +140,7 @@ def main(outdir):
             os.makedirs(output_dir)
         output_file = os.path.join(output_dir, "index.html")
         if not os.path.exists(output_file):
-            response = requests.get(f"{baseurl}cookies/{cookie}")
+            response = requests.get(f"{baseurl}{ghpages}/cookies/{cookie}")
             if response.status_code != 200:
                 print(f"Problem parsing cookie url {cookie}")
                 continue
@@ -153,7 +154,7 @@ def main(outdir):
             os.makedirs(output_dir)
         output_file = os.path.join(output_dir, "index.html")
         if not os.path.exists(output_file):
-            response = requests.get(f"{baseurl}header/{header}")
+            response = requests.get(f"{baseurl}{ghpages}/header/{header}")
             if response.status_code != 200:
                 print(f"Problem parsing header url {header}")
                 continue
