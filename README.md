@@ -64,7 +64,7 @@ jobs:
           path: data/*.json
 ```
 
-More verbose details are below.
+See [examples](examples) for this file. More verbose details are below.
 
 ## 1. Parse Data
 
